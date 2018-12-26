@@ -282,7 +282,7 @@ def start_notifier(session, number, school, username, password):
             counter += 1
 
 
-def check_use_exists(user, test_file):
+def check_user_exists(user, test_file):
     file_path = instance_file_url if not test_file else test_file
     with open(instance_file_url, 'r') as file:
         if re.search('^{0}$'.format(re.escape(user)), file.read(), flags=re.M):
@@ -292,7 +292,7 @@ def check_use_exists(user, test_file):
 
 def add_new_user_instance(username, test_file):
     file_path = instance_file_url if not test_file else test_file
-    if not check_use_exists(username.lower()):
+    if not check_user_exists(username.lower(), None):
         with open(file_path, "a") as instance_file:
             instance_file.write("{0}\n".format(username.lower()))
         return True
@@ -318,9 +318,9 @@ def already_in_session_message():
 
 def test_add_remove():
     add_new_user_instance("FOO-BAR", test_instance_file_url)
-    user_exists = check_use_exists("FOO-BAR", test_instance_file_url)
+    user_exists = check_user_exists("FOO-BAR", test_instance_file_url)
     remove_user_instance("FOO-BAR", test_instance_file_url)
-    user_removed = check_use_exists("FOO-BAR", test_instance_file_url)
+    user_removed = check_user_exists("FOO-BAR", test_instance_file_url)
     return user_exists and not user_removed
 
 def test_message_contructions():
