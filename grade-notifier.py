@@ -318,10 +318,11 @@ def already_in_session_message():
 ###********* Tests *********###
 
 def test_add_remove():
-    add_new_user_instance("FOO-BAR", test_instance_file_url)
-    user_exists = check_user_exists("FOO-BAR", test_instance_file_url)
-    remove_user_instance("FOO-BAR", test_instance_file_url)
-    user_removed = check_user_exists("FOO-BAR", test_instance_file_url)
+    username = "FOO-BAR"
+    add_new_user_instance(username, test_instance_file_url)
+    user_exists = check_user_exists(username.lower(), test_instance_file_url)
+    remove_user_instance(username, test_instance_file_url)
+    user_removed = check_user_exists(username.lower(), test_instance_file_url)
     return user_exists and not user_removed
 
 def test_message_contructions():
