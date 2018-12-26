@@ -11,8 +11,6 @@
 import requests
 import getpass
 import re
-import datetime
-import time
 import argparse
 import os
 import atexit
@@ -389,7 +387,6 @@ if __name__ == '__main__':
                                 number, args.school.upper())
             else:
                 print(already_in_session_message())
-
 
     except Exception as e:
         print(str(e))
