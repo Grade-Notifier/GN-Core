@@ -284,7 +284,7 @@ def start_notifier(session, number, school, username, password):
 
 def check_user_exists(user, test_file):
     file_path = instance_file_url if not test_file else test_file
-    with open(instance_file_url, 'r') as file:
+    with open(file_path, 'r') as file:
         if re.search('^{0}$'.format(re.escape(user)), file.read(), flags=re.M):
             return True
         else:
@@ -301,11 +301,11 @@ def add_new_user_instance(username, test_file):
 def remove_user_instance(username, test_file):
     file_path = instance_file_url if not test_file else test_file
     file = ""
-    with open(instance_file_url) as oldfile:
+    with open(file_path) as oldfile:
         for line in oldfile:
             if not username.lower() in line:
                 file += line
-    with open(instance_file_url, 'w') as newfile:
+    with open(file_path, 'w') as newfile:
             newfile.writelines(file)
 
 
