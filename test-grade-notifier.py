@@ -1,6 +1,6 @@
 import os
 
-instance_file_url = "/home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/instances.txt"
+instance_file_url = "/home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/"
 
 print("Starting test suite.....")
 
