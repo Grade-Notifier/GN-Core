@@ -101,7 +101,6 @@ class Class():
         else:
             return False
 
-
 '''
     Sends a text message via Twilio
 
@@ -322,7 +321,7 @@ def test_add_remove():
     user_exists = check_use_exists("FOO-BAR", test_instance_file_url)
     remove_user_instance("FOO-BAR", test_instance_file_url)
     user_removed = check_use_exists("FOO-BAR", test_instance_file_url)
-    return user_exists && not user_removed
+    return user_exists and not user_removed
 
 def test_message_contructions():
     l1 = [{'name': "0", 'grade': "5", 'gradepts': "5"}, {'name': "3", 'grade': "4", 'gradepts': "5"}]
@@ -339,8 +338,7 @@ def test_diff():
 
 if __name__ == '__main__':
     try:
-        parser = argparse.ArgumentParser(
-            description='Specify commands for CUNY Grade Notifier Retriever v1.0')
+        parser = argparse.ArgumentParser(description='Specify commands for CUNY Grade Notifier Retriever v1.0')
         parser.add_argument('--school', default="QNS01")
         parser.add_argument('--list-codes', action='store_true')
         parser.add_argument('--username')
@@ -357,8 +355,7 @@ if __name__ == '__main__':
         args = parser.parse_args()
 
         session = requests.Session()
-        session.headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
+        session.headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
         username = input("Enter username: ") if not args.username else args.username
         password = getpass.getpass("Enter password: ") if not args.password else args.password
         number = input("Enter phone number: ") if not args.phone else args.phone
@@ -366,7 +363,7 @@ if __name__ == '__main__':
         if args.test:
 
             passed_test = True
-            
+
             if args.test_diff:
                 passed_test = test_diff()
             elif args.test_add_remove_instance:
