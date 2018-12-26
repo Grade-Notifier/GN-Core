@@ -292,7 +292,7 @@ def check_user_exists(user, test_file):
 
 def add_new_user_instance(username, test_file):
     file_path = instance_file_url if not test_file else test_file
-    if not check_user_exists(username.lower(), None):
+    if not check_user_exists(username.lower(), file_path):
         with open(file_path, "a") as instance_file:
             instance_file.write("{0}\n".format(username.lower()))
         return True
@@ -381,7 +381,7 @@ if __name__ == '__main__':
             password = getpass.getpass("Enter password: ") if not args.password else args.password
             number = input("Enter phone number: ") if not args.phone else args.phone
 
-            if add_new_user_instance(username):
+            if add_new_user_instance(username, None):
                 atexit.register(exit_handler)
                 create_instance(session, username, password,
                                 number, args.school.upper())
