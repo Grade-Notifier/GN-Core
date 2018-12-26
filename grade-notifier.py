@@ -70,8 +70,8 @@ auth_token = os.getenv('TWILIO_AUTH_TOKEN')
 
 client = Client(account_sid, auth_token)
 
-instance_file_url = "/home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/instances.txt"
-test_instance_file_url = "/home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/test-instances.txt"
+instance_file_url = "/home/fa18/313/adeh6562/public_html/grade-notifier/instances.txt"
+test_instance_file_url = "/home/fa18/313/adeh6562/public_html/grade-notifier/test-instances.txt"
 
 ###********* Helper Methods *********###
 
@@ -354,12 +354,6 @@ if __name__ == '__main__':
 
         args = parser.parse_args()
 
-        session = requests.Session()
-        session.headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
-        username = input("Enter username: ") if not args.username else args.username
-        password = getpass.getpass("Enter password: ") if not args.password else args.password
-        number = input("Enter phone number: ") if not args.phone else args.phone
-
         if args.test:
 
             passed_test = True
@@ -379,6 +373,13 @@ if __name__ == '__main__':
                 print("Test Failed")
 
         else:
+
+            session = requests.Session()
+            session.headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
+            username = input("Enter username: ") if not args.username else args.username
+            password = getpass.getpass("Enter password: ") if not args.password else args.password
+            number = input("Enter phone number: ") if not args.phone else args.phone
+
             if add_new_user_instance(username):
                 atexit.register(exit_handler)
                 create_instance(session, username, password,
