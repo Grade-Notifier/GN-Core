@@ -310,6 +310,7 @@ def remove_user_instance(username, test_file):
 
 
 def exit_handler():
+    send_text("Your session has ended. If you'd like to continue using Grade-Notifier please sign back in at https://venus.cs.qc.cuny.edu/~adeh6562/index.php", number)
     remove_user_instance(username, None)
 
 def already_in_session_message():
