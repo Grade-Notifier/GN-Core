@@ -300,6 +300,7 @@ def add_new_user_instance(username, test_file):
 
 def remove_user_instance(username, test_file):
     file_path = instance_file_url if not test_file else test_file
+    file = ""
     with open(instance_file_url) as oldfile:
         for line in oldfile:
             if not username.lower() in line:
