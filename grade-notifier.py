@@ -333,7 +333,7 @@ def test_message_contructions():
 def test_diff():
     l1 = [Class("0","1","2","3","4","5"), Class("2","1","2","3","4","5")]
     l2 = [Class("0","1","2","4","5","5"), Class("2","1","2","3","4","5"), Class("3","1","2","3","4","5")]
-    l3 = find_changes(l1, l2))
+    l3 = find_changes(l1, l2)
     return l3 == [{'name': "0", 'grade': "5", 'gradepts': "5"}, {'name': "3", 'grade': "4", 'gradepts': "5"}]
 
 if __name__ == '__main__':
