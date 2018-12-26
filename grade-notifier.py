@@ -1,13 +1,21 @@
-# Grade Notifier
-# Ehud Adler
-# Akiva Sherman
-# 12.23.18
+"""Grade-Notifier
+"""
 
-# Enjoy!
-
+__author__      = "Ehud Adler & Akiva Sherman"
+__copyright__   = "Copyright 2018, The Punk Kids"
+__license__     = "MIT"
+__version__     = "1.0.0"
+__maintainer__  = "Ehud Adler & Akiva Sherman"
+__email__       = "self@ehudadler.com"
+__status__      = "Production"
 
 ###********* Imports *********###
 
+## Local
+import constants
+import helper
+
+## Remote
 import requests
 import getpass
 import re
@@ -28,37 +36,6 @@ from dotenv import load_dotenv
 # Create .env file path.
 dotenv_path = join(dirname(__file__), '.env')
 
-# College names and codes pulled from the CunyFirst website
-college_codes = {
-    'BAR01': 'Baruch College',
-    'BMC01': 'Borough of Manhattan CC',
-    'BCC01': 'Bronx CC',
-    'BKL01': 'Brooklyn College',
-    'CTY01': 'City College',
-    'CSI01': 'College of Staten Island',
-    'GRD01': 'Graduate Center',
-    'NCC01': 'Guttman CC',
-    'HOS01': 'Hostos CC',
-    'HTR01': 'Hunter College',
-    'JJC01': 'John Jay College',
-    'KCC01': 'Kingsborough CC',
-    'LAG01': 'LaGuardia CC',
-    'LEH01': 'Lehman College',
-    'MHC01': 'Macaulay Honors College',
-    'MEC01': 'Medgar Evers College',
-    'NYT01': 'NYC College of Technology',
-    'QNS01': 'Queens College',
-    'QCC01': 'Queensborough CC',
-    'SOJ01': 'School of Journalism',
-    'SLU01': 'School of Labor&Urban Studies',
-    'LAW01': 'School of Law',
-    'MED01': 'School of Medicine',
-    'SPS01': 'School of Professional Studies',
-    'SPH01': 'School of Public Health',
-    'UAPC1': 'University Processing Center',
-    'YRK01': 'York College'
-}
-
 # Load file from the path.
 load_dotenv(dotenv_path)
 
@@ -67,9 +44,6 @@ account_sid = os.getenv('TWILIO_SID')
 auth_token = os.getenv('TWILIO_AUTH_TOKEN')
 
 client = Client(account_sid, auth_token)
-
-instance_file_url = "/home/fa18/313/adeh6562/public_html/grade-notifier/instances.txt"
-test_instance_file_url = "/home/fa18/313/adeh6562/public_html/grade-notifier/test-instances.txt"
 
 ###********* Helper Methods *********###
 
@@ -93,11 +67,8 @@ class Class():
         self.gradepts = gradepts
 
     def __eq__(self, other):
-        if self.grade == other.grade \
-                and self.gradepts == other.gradepts:
-            return True
-        else:
-            return False
+        return self.grade == other.grade \
+                and self.gradepts == other.gradepts
 
 '''
     Sends a text message via Twilio
@@ -107,7 +78,7 @@ class Class():
 '''
 def send_text(message, sendNumber):
     client.messages.create(
-        from_='+12013806942',
+        from_= os.getenv('TWILIO_NUMBER'),
         to=sendNumber,
         body=message
     )
@@ -120,29 +91,39 @@ def send_text(message, sendNumber):
 def create_text_message(change_log):
 
     # Message header
-    message = "Grade Alert 🚨 from Grade Notifier\n\n"
-    message += "New Grades have been posted for the following classes\n-------------\n"
+    new_message = Message()
+    new_message \
+    .add("New Grades have been posted for the following classes") \
+    .newline() \
+    .add("-------------") \
+    .newline()
 
     class_num = 1
     for elm in change_log:
         if len(elm['grade']) != 0:
-            message += "{0}. {1}\n".format(class_num, elm['name'])
+            new_message \
+            .add("{0}. {1}".format(class_num, elm['name'])) \
+            .newline()
             class_num += 1
 
-    message += "\nGrade for those classes are:\n-------------\n"
+    message \
+    .newline() \
+    .add("Grade for those classes are:") \
+    .newline() \
+    .add("----------------------------") \
+    .newline()
 
     for elm in change_log:
         if len(elm['grade']) != 0:
-            message += "{0}: {1} (Grade) -- {2} (Grade Points) \n".format(
-                elm['name'], elm['grade'], elm['gradepts'])
+            new_message \
+            .add("{0}: {1} (Grade) -- {2} (Grade Points)".format(
+                elm['name'], elm['grade'], elm['gradepts'])) \
+            .newline()
 
-    return sign_message(message)
+    # Sign the message
+    new_message.sign()
 
-
-def sign_message(message):
-    message += "\nHope you did well! -- Ehud & Akiva"
-    return message
-
+    return new_message.message()
 
 '''
     Finds differences between 2 arrays of classes and returns the differences
@@ -164,9 +145,7 @@ def find_changes(old, new):
                 changelog.append(
                     {'name': class2.name, 'grade': class2.grade, 'gradepts': class2.gradepts})
 
-    if len(changelog) == 0:
-        return None
-    return changelog
+    return None if len(changelog) == 0 else changelog
 
 
 ###********* Main Program *********###
@@ -177,72 +156,66 @@ def create_instance(session, username, password, number, school_code):
 
 def login(session, username, password):
     print('[**] Logging in...')
-    session.get('https://home.cunyfirst.cuny.edu')
 
-    url = 'https://ssologin.cuny.edu/oam/server/auth_cred_submit'
+    session.get(CUNY_FIRST_HOME_URL)
+
+    ## AUTH LOGIN
+
     data = {
         'usernameH': f'{username}@login.cuny.edu',
         'username': username,
         'password': password,
         'submit': ''
     }
+    session.post(CUNY_FIRST_AUTH_SUBMIT_URL, data=data)
 
-    r = session.post(url, data=data)
-
-    url = 'https://hrsa.cunyfirst.cuny.edu/psc/cnyhcprd/EMPLOYEE/HRMS/c/SA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL?FolderPath=PORTAL_ROOT_OBJECT.HC_SSS_STUDENT_CENTER&IsFolder=false&IgnoreParamTempl=FolderPath%2cIsFolder&PortalActualURL=https%3a%2f%2fhrsa.cunyfirst.cuny.edu%2fpsc%2fcnyhcprd%2fEMPLOYEE%2fHRMS%2fc%2fSA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL&PortalContentURL=https%3a%2f%2fhrsa.cunyfirst.cuny.edu%2fpsc%2fcnyhcprd%2fEMPLOYEE%2fHRMS%2fc%2fSA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL&PortalContentProvider=HRMS&PortalCRefLabel=Student%20Center&PortalRegistryName=EMPLOYEE&PortalServletURI=https%3a%2f%2fhome.cunyfirst.cuny.edu%2fpsp%2fcnyepprd%2f&PortalURI=https%3a%2f%2fhome.cunyfirst.cuny.edu%2fpsc%2fcnyepprd%2f&PortalHostNode=EMPL&NoCrumbs=yes&PortalKeyStruct=yes'
-    r = session.get(url)
-    tree = html.fromstring(r.text)
-
+    ## STUDENT CENTER
+    response = session.get(CUNY_FIRST_STUDENT_CENTER_URL)
+    tree = html.fromstring(response.text)
     encquery = tree.xpath('//*[@name="enc_post_data"]/@value')[0]
 
-    url = 'https://ssologin.cuny.edu/obrareq.cgi'
     data = {
         'enc_post_data': encquery
     }
+    response = session.post(CUNY_FIRST_LOGIN-URL, data=data)
 
-    r = session.post(url, data=data)
-
-    tree = html.fromstring(r.text)
+    tree = html.fromstring(response.text)
     encreply = tree.xpath('//*[@name="enc_post_data"]/@value')[0]
 
-    url = 'https://hrsa.cunyfirst.cuny.edu/obrar.cgi'
     data = {
         'enc_post_data': encreply
     }
-    r = session.post(url, data=data)
+    session.post(CUNY_FIRST_LOGIN_2_URL, data=data)
 
-    url = 'https://hrsa.cunyfirst.cuny.edu/psc/cnyhcprd/EMPLOYEE/HRMS/c/SA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL?FolderPath=PORTAL_ROOT_OBJECT.HC_SSS_STUDENT_CENTER&IsFolder=false&IgnoreParamTempl=FolderPath%2cIsFolder&PortalActualURL=https%3a%2f%2fhrsa.cunyfirst.cuny.edu%2fpsc%2fcnyhcprd%2fEMPLOYEE%2fHRMS%2fc%2fSA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL&PortalContentURL=https%3a%2f%2fhrsa.cunyfirst.cuny.edu%2fpsc%2fcnyhcprd%2fEMPLOYEE%2fHRMS%2fc%2fSA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL&PortalContentProvider=HRMS&PortalCRefLabel=Student%20Center&PortalRegistryName=EMPLOYEE&PortalServletURI=https%3a%2f%2fhome.cunyfirst.cuny.edu%2fpsp%2fcnyepprd%2f&PortalURI=https%3a%2f%2fhome.cunyfirst.cuny.edu%2fpsc%2fcnyepprd%2f&PortalHostNode=EMPL&NoCrumbs=yes&PortalKeyStruct=yes'
-    r = session.get(url)
+    response = session.get(CUNY_FIRST_SIGNED_IN_STUDENT_CENTER_URL)
     print('[**] Successfully logged in!')
-    return r
+    return response
 
 
 def refresh(session, school):
 
-    url = 'https://hrsa.cunyfirst.cuny.edu/psc/cnyhcprd/EMPLOYEE/HRMS/c/SA_LEARNER_SERVICES.SSR_SSENRL_GRADE.GBL?Page=SSR_SSENRL_GRADE&Action=A&TargetFrameName=None'
-
-    session.get(url)
+    session.get(CUNY_FIRST_GRADES_URL)
 
     payload = {'ICACTION': 'DERIVED_SSS_SCT_SSS_TERM_LINK'}
-    r = session.post(url, data=payload)
+    response = session.post(CUNY_FIRST_GRADES_URL, data=payload)
 
-    tree = html.fromstring(r.text)
+    tree = html.fromstring(response.text)
 
     payload_key = ''.join(tree.xpath('//span[text()="2018 Fall Term"]/parent::div/parent::td/preceding-sibling::td/div/input/@id'))
     payload_value = ''.join(tree.xpath('//span[text()="2018 Fall Term"]/parent::div/parent::td/preceding-sibling::td/div/input/@value'))
 
-    payload = {payload_key: payload_value,
-               'ICACTION': 'DERIVED_SSS_SCT_SSR_PB_GO'}
-    r = session.post(url, data=payload)
+    payload = {
+        payload_key: payload_value,
+        'ICACTION': 'DERIVED_SSS_SCT_SSR_PB_GO'
+    }
+    response = session.post(CUNY_FIRST_GRADES_URL, data=payload)
 
-    tree = BeautifulSoup(r.text, 'lxml')
+    tree = BeautifulSoup(response.text, 'lxml')
     good_html = tree.prettify()
-
     soup = BeautifulSoup(good_html, 'html.parser')
-
     table = soup.find('table', attrs={'class': "PSLEVEL1GRIDWBO"})
-    result = []
 
+    result = []
     if table is not None:
         row_marker = 0
         for row in table.find_all('tr'):
@@ -280,24 +253,21 @@ def start_notifier(session, number, school, username, password):
             counter += 1
 
 
-def check_user_exists(user, test_file):
-    file_path = instance_file_url if not test_file else test_file
+def check_user_exists(user, isTest):
+    file_path = instance_path(isTest)
     with open(file_path, 'r') as file:
-        if re.search('^{0}$'.format(re.escape(user)), file.read(), flags=re.M):
-            return True
-        else:
-            return False
+        return re.search('^{0}$'.format(re.escape(user)), file.read(), flags=re.M)
 
-def add_new_user_instance(username, test_file):
-    file_path = instance_file_url if not test_file else test_file
+def add_new_user_instance(username, isTest):
+    file_path = instance_path(isTest)
     if not check_user_exists(username.lower(), file_path):
         with open(file_path, "a") as instance_file:
             instance_file.write("{0}\n".format(username.lower()))
         return True
     return False
 
-def remove_user_instance(username, test_file):
-    file_path = instance_file_url if not test_file else test_file
+def remove_user_instance(username, isTest):
+    file_path = instance_path(isTest)
     file = ""
     with open(file_path) as oldfile:
         for line in oldfile:
@@ -308,20 +278,20 @@ def remove_user_instance(username, test_file):
 
 
 def exit_handler():
-    send_text("Your session has ended. If you'd like to continue using Grade-Notifier please sign back in at https://venus.cs.qc.cuny.edu/~adeh6562/index.php", number)
-    remove_user_instance(username, None)
+    send_text(SESSION_ENDED_TEXT, number)
+    remove_user_instance(username, False)
 
 def already_in_session_message():
-    return "This username already has an instance running. You should recieve a text message when a grade changes. Please contact me @ Ehud.Adler62@qmail.cuny.edu if you have any futher questions"
+    return ALREADY_IN_SESSION
 
 ###********* Tests *********###
 
 def test_add_remove():
     username = "FOO-BAR"
-    add_new_user_instance(username, test_instance_file_url)
-    user_exists = check_user_exists(username.lower(), test_instance_file_url)
-    remove_user_instance(username, test_instance_file_url)
-    user_removed = check_user_exists(username.lower(), test_instance_file_url)
+    add_new_user_instance(username, True)
+    user_exists = check_user_exists(username.lower(), True)
+    remove_user_instance(username, True)
+    user_removed = check_user_exists(username.lower(), True)
     return user_exists and not user_removed
 
 def test_message_contructions():
@@ -337,7 +307,9 @@ def test_diff():
     l3 = find_changes(l1, l2)
     return l3 == [{'name': "0", 'grade': "5", 'gradepts': "5"}, {'name': "3", 'grade': "4", 'gradepts': "5"}]
 
-if __name__ == '__main__':
+
+
+def main():
     try:
         parser = argparse.ArgumentParser(description='Specify commands for CUNY Grade Notifier Retriever v1.0')
         parser.add_argument('--school', default="QNS01")
@@ -390,3 +362,7 @@ if __name__ == '__main__':
 
     except Exception as e:
         print(str(e))
+
+
+if __name__ == '__main__':
+    main()
