@@ -155,7 +155,7 @@ def create_instance(session, username, password, number, school_code):
     atexit.register(exit_handler)
     start_notifier(session, number, school_code, username, password)
 
-def login(session, username, password, number):
+def login(session, username, password, number, is_test=False):
     print('[**] Logging in...')
 
     session.get(CUNY_FIRST_HOME_URL)
@@ -184,8 +184,10 @@ def login(session, username, password, number):
     try:
         encreply = tree.xpath('//*[@name="enc_post_data"]/@value')[0]
     except IndexError:
-        exit_invalid_credentials(username number)
-
+        if is_test:
+            return None
+        exit_invalid_credentials(username, number)
+    
 
     data = {
         'enc_post_data': encreply
@@ -281,10 +283,12 @@ def remove_user_instance(username, isTest):
     with open(file_path, 'w') as newfile:
             newfile.writelines(file)
 
-def exit_invalid_credentials(username, number):
+def exit_invalid_credentials(username, number, is_test=False):
     send_text(INVALID_CREDENTIALS_TEXT, number)
-    remove_user_instance(username, False)
-    sys.exit(0)
+    if not is_test:
+        remove_user_instance(username, False) 
+        sys.exit(0)
+    return True
 
 def exit_handler():
     send_text(SESSION_ENDED_TEXT, number)
@@ -316,6 +320,13 @@ def test_diff():
     l3 = find_changes(l1, l2)
     return l3 == [{'name': "0", 'grade': "5", 'gradepts': "5"}, {'name': "3", 'grade': "4", 'gradepts': "5"}]
 
+def test_invalid_credentials():
+    number = '7184338209'
+    session = requests.Session()
+    result = login(session,'fake_username','fake_password',number)
+    if result:
+        return False
+    return exit_invalid_credentials(username, number, True)
 
 
 def main():
@@ -333,6 +344,7 @@ def main():
         parser.add_argument('--test_diff')
         parser.add_argument('--test_add_remove_instance')
         parser.add_argument('--test_message_contruction')
+        parser.add_argument('--test_invalid_credentials')
 
         args = parser.parse_args()
 
@@ -346,6 +358,8 @@ def main():
                 passed_test = test_add_remove()
             elif args.test_message_contruction:
                 passed_test = test_message_contructions()
+            elif args.text_invalid_credentials:
+
             else:
                 print("This test does not exists")
             
