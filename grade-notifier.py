@@ -151,10 +151,11 @@ def find_changes(old, new):
 ###********* Main Program *********###
 
 def create_instance(session, username, password, number, school_code):
-    login(session, username, password)
+    login(session, username, password,number)
+    atexit.register(exit_handler)
     start_notifier(session, number, school_code, username, password)
 
-def login(session, username, password):
+def login(session, username, password, number):
     print('[**] Logging in...')
 
     session.get(CUNY_FIRST_HOME_URL)
@@ -180,7 +181,13 @@ def login(session, username, password):
     response = session.post(CUNY_FIRST_LOGIN-URL, data=data)
 
     tree = html.fromstring(response.text)
-    encreply = tree.xpath('//*[@name="enc_post_data"]/@value')[0]
+    try:
+        encreply = tree.xpath('//*[@name="enc_post_data"]/@value')[0]
+    except IndexError:
+        send_text(INVALID_CREDENTIALS_TEXT, number)
+        remove_user_instance(username, False)
+        sys.exit(0)
+
 
     data = {
         'enc_post_data': encreply
@@ -350,11 +357,12 @@ def main():
             session = requests.Session()
             session.headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
             username = input("Enter username: ") if not args.username else args.username
+            username = re.sub(r'@login\.cuny\.edu','',username)
             password = getpass.getpass("Enter password: ") if not args.password else args.password
             number = input("Enter phone number: ") if not args.phone else args.phone
 
             if add_new_user_instance(username, None):
-                atexit.register(exit_handler)
+                
                 create_instance(session, username, password,
                                 number, args.school.upper())
             else:
