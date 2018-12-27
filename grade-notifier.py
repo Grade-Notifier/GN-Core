@@ -151,7 +151,7 @@ def find_changes(old, new):
 ###********* Main Program *********###
 
 def create_instance(session, username, password, number, school_code):
-    login(session, username, password,number)
+    login(session, username, password, number)
     atexit.register(exit_handler)
     start_notifier(session, number, school_code, username, password)
 
@@ -184,9 +184,7 @@ def login(session, username, password, number):
     try:
         encreply = tree.xpath('//*[@name="enc_post_data"]/@value')[0]
     except IndexError:
-        send_text(INVALID_CREDENTIALS_TEXT, number)
-        remove_user_instance(username, False)
-        sys.exit(0)
+        exit_invalid_credentials(username number)
 
 
     data = {
@@ -283,6 +281,10 @@ def remove_user_instance(username, isTest):
     with open(file_path, 'w') as newfile:
             newfile.writelines(file)
 
+def exit_invalid_credentials(username, number):
+    send_text(INVALID_CREDENTIALS_TEXT, number)
+    remove_user_instance(username, False)
+    sys.exit(0)
 
 def exit_handler():
     send_text(SESSION_ENDED_TEXT, number)
