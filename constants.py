@@ -53,8 +53,8 @@ CUNY_FIRST_GRADES_URL = "https://hrsa.cunyfirst.cuny.edu/psc/cnyhcprd/EMPLOYEE/H
 ALREADY_IN_SESSION = "This username already has an instance running. You should recieve a text message when a grade changes. Please contact me @ Ehud.Adler62@qmail.cuny.edu if you have any futher questions"
 SESSION_ENDED_TEXT = "Your session has ended. If you'd like to continue using Grade-Notifier please sign back in at https://venus.cs.qc.cuny.edu/~adeh6562/index.php"
 
-def instance_path(isTest):
-    return INSTANCE_ABS_PATH if not isTest else INSTANCE_ABS_PATH_TEST
+def instance_path(is_test):
+    return INSTANCE_ABS_PATH if not is_test else INSTANCE_ABS_PATH_TEST
 
 
 
