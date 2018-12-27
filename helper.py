@@ -12,6 +12,21 @@ __status__      = "Production"
 
 
 
+
+class State():
+    TEST = 0
+    DEV  = 1
+    PROD = 2
+
+    @staticmethod
+    def determine_state(args):
+        if args.test:
+            return State.TEST
+        else if args.dev:
+            return State.DEV
+        else:
+            return State.PROD
+
 class Message():
     _message = "Grade Alert 🚨 from Grade Notifier\n\n"
 

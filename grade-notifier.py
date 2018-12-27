@@ -45,6 +45,8 @@ auth_token = os.getenv('TWILIO_AUTH_TOKEN')
 
 client = Client(account_sid, auth_token)
 
+state = State()
+
 ###********* Helper Methods *********###
 
 '''
@@ -307,44 +309,52 @@ def test_diff():
     l3 = find_changes(l1, l2)
     return l3 == [{'name': "0", 'grade': "5", 'gradepts': "5"}, {'name': "3", 'grade': "4", 'gradepts': "5"}]
 
+def parse():
+    parser = argparse.ArgumentParser(description='Specify commands for CUNY Grade Notifier Retriever v1.0')
+    parser.add_argument('--school', default="QNS01")
+    parser.add_argument('--list-codes', action='store_true')
+    parser.add_argument('--username')
+    parser.add_argument('--password')
+    parser.add_argument('--phone')
+    parser.add_argument('--filename')
+
+    ## Development
+    parser.add_argument('--dev')
+
+    ## Testing 
+    parser.add_argument('--test')
+    parser.add_argument('--test_diff')
+    parser.add_argument('--test_add_remove_instance')
+    parser.add_argument('--test_message_contruction')
+    return parser.parse_args()
+
+
+def run_test(args):
+
+    passed_test = True
+
+    if args.test_diff:
+        passed_test = test_diff()
+    elif args.test_add_remove_instance:
+        passed_test = test_add_remove()
+    elif args.test_message_contruction:
+        passed_test = test_message_contructions()
+    else:
+        print("This test does not exists")
+    
+    if passed_test:
+        print("Test Passed")
+    else:
+        print("Test Failed")
 
 
 def main():
+    args = parse()
+    state = State.determine_state(args)
+
     try:
-        parser = argparse.ArgumentParser(description='Specify commands for CUNY Grade Notifier Retriever v1.0')
-        parser.add_argument('--school', default="QNS01")
-        parser.add_argument('--list-codes', action='store_true')
-        parser.add_argument('--username')
-        parser.add_argument('--password')
-        parser.add_argument('--phone')
-        parser.add_argument('--filename')
-
-        ## Testing 
-        parser.add_argument('--test')
-        parser.add_argument('--test_diff')
-        parser.add_argument('--test_add_remove_instance')
-        parser.add_argument('--test_message_contruction')
-
-        args = parser.parse_args()
-
-        if args.test:
-
-            passed_test = True
-
-            if args.test_diff:
-                passed_test = test_diff()
-            elif args.test_add_remove_instance:
-                passed_test = test_add_remove()
-            elif args.test_message_contruction:
-                passed_test = test_message_contructions()
-            else:
-                print("This test does not exists")
-            
-            if passed_test:
-                print("Test Passed")
-            else:
-                print("Test Failed")
-
+        if state == State.TEST:
+            run_test(args)
         else:
 
             session = requests.Session()
