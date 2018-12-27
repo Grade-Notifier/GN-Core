@@ -22,7 +22,7 @@ class State():
     def determine_state(args):
         if args.test:
             return State.TEST
-        else if args.dev:
+        elif args.dev:
             return State.DEV
         else:
             return State.PROD
