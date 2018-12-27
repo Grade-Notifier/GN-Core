@@ -12,6 +12,7 @@ __status__      = "Production"
 ###********* Imports *********###
 
 ## Local
+from helper import State
 import constants
 import helper
 
@@ -42,10 +43,8 @@ load_dotenv(dotenv_path)
 # Accessing variables.
 account_sid = os.getenv('TWILIO_SID')
 auth_token = os.getenv('TWILIO_AUTH_TOKEN')
-
-client = Client(account_sid, auth_token)
-
-state = State()
+client = None
+state = None
 
 ###********* Helper Methods *********###
 
@@ -318,8 +317,11 @@ def parse():
     parser.add_argument('--phone')
     parser.add_argument('--filename')
 
+    ## Production
+    parser.add_argument('--prod') 
+
     ## Development
-    parser.add_argument('--dev')
+    parser.add_argument('--enable_phone')
 
     ## Testing 
     parser.add_argument('--test')
@@ -347,6 +349,8 @@ def run_test(args):
     else:
         print("Test Failed")
 
+def initialize_twilio():
+    client = Client(account_sid, auth_token)
 
 def main():
     args = parse()
@@ -356,6 +360,11 @@ def main():
         if state == State.TEST:
             run_test(args)
         else:
+
+            # Only initialize twilio in production 
+            # or when specifically asked
+            if state == State.PROD or args.enable_phone:
+                initialize_twilio()
 
             session = requests.Session()
             session.headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}

@@ -11,8 +11,6 @@ __email__       = "self@ehudadler.com"
 __status__      = "Production"
 
 
-
-
 class State():
     TEST = 0
     DEV  = 1
@@ -22,10 +20,12 @@ class State():
     def determine_state(args):
         if args.test:
             return State.TEST
-        elif args.dev:
-            return State.DEV
-        else:
+        elif args.prod:
             return State.PROD
+        else:
+            # The default is development
+            return State.DEV
+            
 
 class Message():
     _message = "Grade Alert 🚨 from Grade Notifier\n\n"
