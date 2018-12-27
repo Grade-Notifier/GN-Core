@@ -254,21 +254,21 @@ def start_notifier(session, number, school, username, password):
             counter += 1
 
 
-def check_user_exists(user, is_test):
-    file_path = instance_path(is_test)
+def check_user_exists(user):
+    file_path = instance_path(state == State.TEST)
     with open(file_path, 'r') as file:
         return re.search('^{0}$'.format(re.escape(user)), file.read(), flags=re.M)
 
-def add_new_user_instance(username, is_test):
-    file_path = instance_path(is_test)
+def add_new_user_instance(username):
+    file_path = instance_path(state == State.TEST)
     if not check_user_exists(username.lower(), file_path):
         with open(file_path, "a") as instance_file:
             instance_file.write("{0}\n".format(username.lower()))
         return True
     return False
 
-def remove_user_instance(username, is_test):
-    file_path = instance_path(is_test)
+def remove_user_instance(username):
+    file_path = instance_path(state == State.TEST)
     file = ""
     with open(file_path) as oldfile:
         for line in oldfile:
@@ -280,7 +280,7 @@ def remove_user_instance(username, is_test):
 
 def exit_handler():
     send_text(SESSION_ENDED_TEXT, number)
-    remove_user_instance(username, False)
+    remove_user_instance(username)
 
 def already_in_session_message():
     return ALREADY_IN_SESSION
@@ -289,10 +289,10 @@ def already_in_session_message():
 
 def test_add_remove():
     username = "FOO-BAR"
-    add_new_user_instance(username, True)
-    user_exists = check_user_exists(username.lower(), True)
-    remove_user_instance(username, True)
-    user_removed = check_user_exists(username.lower(), True)
+    add_new_user_instance(username)
+    user_exists = check_user_exists(username.lower())
+    remove_user_instance(username)
+    user_removed = check_user_exists(username.lower())
     return user_exists and not user_removed
 
 def test_message_contructions():
@@ -365,14 +365,14 @@ def main():
             # or when specifically asked
             if state == State.PROD or args.enable_phone:
                 initialize_twilio()
-
+                
             session = requests.Session()
             session.headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
             username = input("Enter username: ") if not args.username else args.username
             password = getpass.getpass("Enter password: ") if not args.password else args.password
             number = input("Enter phone number: ") if not args.phone else args.phone
 
-            if add_new_user_instance(username, None):
+            if add_new_user_instance(username):
                 atexit.register(exit_handler)
                 create_instance(session, username, password,
                                 number, args.school.upper())
