@@ -253,21 +253,21 @@ def start_notifier(session, number, school, username, password):
             counter += 1
 
 
-def check_user_exists(user, isTest):
-    file_path = instance_path(isTest)
+def check_user_exists(user, is_test):
+    file_path = instance_path(is_test)
     with open(file_path, 'r') as file:
         return re.search('^{0}$'.format(re.escape(user)), file.read(), flags=re.M)
 
-def add_new_user_instance(username, isTest):
-    file_path = instance_path(isTest)
+def add_new_user_instance(username, is_test):
+    file_path = instance_path(is_test)
     if not check_user_exists(username.lower(), file_path):
         with open(file_path, "a") as instance_file:
             instance_file.write("{0}\n".format(username.lower()))
         return True
     return False
 
-def remove_user_instance(username, isTest):
-    file_path = instance_path(isTest)
+def remove_user_instance(username, is_test):
+    file_path = instance_path(is_test)
     file = ""
     with open(file_path) as oldfile:
         for line in oldfile:
