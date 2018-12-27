@@ -19,11 +19,13 @@ class State():
     @staticmethod
     def determine_state(args):
         if args.test:
+            print("Running in test mode.....")
             return State.TEST
         elif args.prod:
             return State.PROD
         else:
             # The default is development
+            print("Running in dev mode.....")
             return State.DEV
             
 
