@@ -30,19 +30,22 @@ class State():
             
 
 class Message():
-    _message = "Grade Alert 🚨 from Grade Notifier\n\n"
+    _message = ""
 
-    def message():
-        return _message
+    def __init__(self):
+        self._message = "Grade Alert 🚨 from Grade Notifier\n\n"
 
-    def newline():
-        _message += "\n"
+    def message(self):
+        return self._message
+
+    def newline(self):
+        self._message += "\n"
         return self
 
-    def add(text):
-        _message += text
+    def add(self, text):
+        self._message += text
         return self
     
-    def sign():
-         _message += "\nHope you did well! -- Ehud & Akiva"
+    def sign(self):
+         self._message += "\nHope you did well! -- Ehud & Akiva"
          return self
