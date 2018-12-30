@@ -12,12 +12,15 @@ __status__      = "Production"
 ###********* Imports *********###
 
 ## Local
-from helper import State
-from helper import Message
-from constants import instance_path
-from constants import script_path
 import constants
 import helper
+
+from helper import State
+from helper import Message
+from helper import Session
+
+from constants import instance_path
+from constants import script_path
 
 ## Remote
 import requests
@@ -277,7 +280,7 @@ def remove_user_instance(username):
 
     if not os.path.isfile(file_path):
         return
-        
+
     with open(file_path) as oldfile:
         for line in oldfile:
             if not username.lower() in line:

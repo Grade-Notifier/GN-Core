@@ -11,6 +11,34 @@ __email__       = "self@ehudadler.com"
 __status__      = "Production"
 
 
+
+class SessionState():
+    SIGNED_IN = 0
+    SIGNED_OUT = 1
+
+class Session():
+    state = None
+    session = None
+
+    def __init__(self, new_session):
+        session = new_session
+
+    def refresh_state(self):
+        # TODO
+        #  For Akiva
+        # .....
+        # state = SessionState.SIGNED_IN
+        # else ......
+        # state = SessionState.SIGNED_OUT
+        #
+
+    def is_logged_in(self):
+        refresh_state()
+        return self.state == SessionState.SIGNED_IN
+
+    def set_state(self, new_state):
+        self.state = new_state
+
 class State():
     TEST = 0
     DEV  = 1
