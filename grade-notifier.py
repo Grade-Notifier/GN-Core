@@ -22,6 +22,10 @@ from helper import Session
 from constants import instance_path
 from constants import script_path
 
+import constants
+import helper
+import cunylogin
+
 ## Remote
 import requests
 import getpass
@@ -162,43 +166,6 @@ def create_instance(session, username, password, number, school_code):
     login(session, username, password)
     start_notifier(session, number, school_code, username, password)
 
-def login(session, username, password):
-    print('[**] Logging in...')
-
-    session.get(CUNY_FIRST_HOME_URL)
-
-    ## AUTH LOGIN
-
-    data = {
-        'usernameH': f'{username}@login.cuny.edu',
-        'username': username,
-        'password': password,
-        'submit': ''
-    }
-    session.post(CUNY_FIRST_AUTH_SUBMIT_URL, data=data)
-
-    ## STUDENT CENTER
-    response = session.get(CUNY_FIRST_STUDENT_CENTER_URL)
-    tree = html.fromstring(response.text)
-    encquery = tree.xpath('//*[@name="enc_post_data"]/@value')[0]
-
-    data = {
-        'enc_post_data': encquery
-    }
-    response = session.post(CUNY_FIRST_LOGIN-URL, data=data)
-
-    tree = html.fromstring(response.text)
-    encreply = tree.xpath('//*[@name="enc_post_data"]/@value')[0]
-
-    data = {
-        'enc_post_data': encreply
-    }
-    session.post(CUNY_FIRST_LOGIN_2_URL, data=data)
-
-    response = session.get(CUNY_FIRST_SIGNED_IN_STUDENT_CENTER_URL)
-    print('[**] Successfully logged in!')
-    return response
-
 
 def refresh(session, school):
 
@@ -263,13 +230,13 @@ def start_notifier(session, number, school, username, password):
 
 def check_user_exists(user):
     file_path = instance_path(state)
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r+') as file:
         return re.search('^{0}'.format(re.escape(user)), file.read(), flags=re.M)
 
 def add_new_user_instance(username):
     file_path = instance_path(state)
     if not check_user_exists(username.lower()):
-        with open(file_path, "a") as instance_file:
+        with open(file_path, "a+") as instance_file:
             instance_file.write("{0} : {1}\n".format(username.lower(), os.getpid()))
         return True
     return False
@@ -285,7 +252,7 @@ def remove_user_instance(username):
         for line in oldfile:
             if not username.lower() in line:
                 file += line
-    with open(file_path, 'w') as newfile:
+    with open(file_path, 'w+') as newfile:
             newfile.writelines(file)
 
 
