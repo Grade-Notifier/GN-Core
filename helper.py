@@ -10,7 +10,7 @@ __maintainer__  = "Ehud Adler & Akiva Sherman"
 __email__       = "self@ehudadler.com"
 __status__      = "Production"
 
-
+import constants
 
 
 class SessionState():
@@ -46,7 +46,7 @@ class Session():
 
     def refresh_state(self):
         r = self.current.get(constants.CUNY_FIRST_HOME_URL_TEST, allow_redirects=False)
-        self.state = SessionState.SIGNED_OUT if r.status == 302 else SessionState.SIGNED_IN
+        self.state = SessionState.SIGNED_OUT if r.status_code == 302 else SessionState.SIGNED_IN
 
 
 
