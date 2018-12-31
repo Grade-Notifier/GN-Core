@@ -349,12 +349,16 @@ def run_test(args):
         print("Test Failed")
 
 def initialize_twilio():
+    global client
     client = Client(account_sid, auth_token)
 
 def main():
     global session
+    global state
+
     args = parse()
     state = State.determine_state(args)
+    print(state)
     try:
         if state == State.TEST:
             run_test(args)
