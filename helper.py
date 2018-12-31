@@ -12,18 +12,40 @@ __status__      = "Production"
 
 
 
+
 class SessionState():
     SIGNED_IN = 0
     SIGNED_OUT = 1
 
 class Session():
     state = None
-    session = None
+    current = None
+    username = None
+    password = None
+    number = None
 
-    def __init__(self, new_session):
-        session = new_session
+    def __init__(self, new_session, new_username, new_password, new_number):
+        self.current = new_session
+        self.username = new_username
+        self.password = new_password
+        self.number = new_number
+
+    def set_username(self, new_username):
+        self.username = new_username
+    def set_password(self, new_password):
+        self.password = new_password
+    def set_number(self, new_number):
+        self.number = new_number
+
+    def get_username(self):
+        return self.username
+    def get_password(self):
+       return  self.password
+    def get_number(self):
+        return self.number
 
     def refresh_state(self):
+        pass
         # TODO
         #  For Akiva
         # .....
@@ -33,7 +55,7 @@ class Session():
         #
 
     def is_logged_in(self):
-        refresh_state()
+        self.refresh_state()
         return self.state == SessionState.SIGNED_IN
 
     def set_state(self, new_state):
