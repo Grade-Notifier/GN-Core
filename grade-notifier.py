@@ -183,7 +183,7 @@ def refresh(session, school):
     try:
     	response = session.current.post(constants.CUNY_FIRST_GRADES_URL, data=payload)
     except TimeoutError:
-    	return refresh(session,school)
+    	return refresh(session, school)
 
     tree = html.fromstring(response.text)
 
@@ -197,10 +197,10 @@ def refresh(session, school):
     try:
     	response = session.current.post(constants.CUNY_FIRST_GRADES_URL, data=payload)
     except TimeoutError:
-    	return refresh(session,school)
+    	return refresh(session, school)
 
 
-    	
+
     tree = BeautifulSoup(response.text, 'lxml')
     good_html = tree.prettify()
     soup = BeautifulSoup(good_html, 'html.parser')
