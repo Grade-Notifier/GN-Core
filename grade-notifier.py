@@ -18,13 +18,13 @@ import helper
 from helper import State
 from helper import Message
 from helper import Session
+from cunylogin import login
 
 from constants import instance_path
 from constants import script_path
 
 import constants
 import helper
-import cunylogin
 
 ## Remote
 import requests
@@ -53,6 +53,8 @@ load_dotenv(dotenv_path)
 # Accessing variables.
 account_sid = os.getenv('TWILIO_SID')
 auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+
+session = None
 client = None
 state = None
 
@@ -88,11 +90,14 @@ class Class():
     Send Number: The number where the message should be sent
 '''
 def send_text(message, sendNumber):
-    client.messages.create(
-        from_= os.getenv('TWILIO_NUMBER'),
-        to=sendNumber,
-        body=message
-    )
+    if state == State.PROD:
+        client.messages.create(
+            from_= os.getenv('TWILIO_NUMBER'),
+            to=sendNumber,
+            body=message
+        )
+    else:
+        print("\n**********\nSENDING MESSAGE:\nFrom: 000-000-0000\nTo: {0}\nMessage: {1}\n".format(sendNumber, message))
 
 '''
     Converts a changelog array to a message
@@ -164,15 +169,18 @@ def find_changes(old, new):
 
 def create_instance(session, username, password, number, school_code):
     login(session, username, password)
-    start_notifier(session, number, school_code, username, password)
-
+    if session.is_logged_in():
+        start_notifier(session, number, school_code, username, password)
+    else:
+        ## Login failed
+        pass
 
 def refresh(session, school):
 
-    session.get(CUNY_FIRST_GRADES_URL)
+    session.current.get(constants.CUNY_FIRST_GRADES_URL)
 
     payload = {'ICACTION': 'DERIVED_SSS_SCT_SSS_TERM_LINK'}
-    response = session.post(CUNY_FIRST_GRADES_URL, data=payload)
+    response = session.current.post(constants.CUNY_FIRST_GRADES_URL, data=payload)
 
     tree = html.fromstring(response.text)
 
@@ -183,7 +191,7 @@ def refresh(session, school):
         payload_key: payload_value,
         'ICACTION': 'DERIVED_SSS_SCT_SSR_PB_GO'
     }
-    response = session.post(CUNY_FIRST_GRADES_URL, data=payload)
+    response = session.current.post(constants.CUNY_FIRST_GRADES_URL, data=payload)
 
     tree = BeautifulSoup(response.text, 'lxml')
     good_html = tree.prettify()
@@ -207,7 +215,7 @@ def refresh(session, school):
                 ), data[3].strip(), data[4].strip(), data[5].strip())
                 result.append(new_class)
     else:
-        print("Trouble parsing")
+        pass
     return result
 
 
@@ -215,23 +223,26 @@ def start_notifier(session, number, school, username, password):
     counter = 0
     old_result = []
     while counter < 844:
-        result = refresh(session, school)
-        if len(old_result) > len(result):
-            login(session, username, password)
+        if session.is_logged_in():
+            result = refresh(session, school)
+            if len(old_result) > len(result):
+                pass
+            else:
+                changelog = find_changes(old_result, result)
+                if changelog != None:
+                    message = create_text_message(changelog)
+                    send_text(message, number)
+                    old_result = result
+                time.sleep(5*60)  # 5 Min intervals
+                counter += 1
         else:
-            changelog = find_changes(old_result, result)
-            if changelog != None:
-                message = create_text_message(changelog)
-                send_text(message, number)
-                old_result = result
-            time.sleep(5*60)  # 5 Min intervals
-            counter += 1
+            login(session, username, password)
 
 
-def check_user_exists(user):
+def check_user_exists(username):
     file_path = instance_path(state)
     with open(file_path, 'r+') as file:
-        return re.search('^{0}'.format(re.escape(user)), file.read(), flags=re.M)
+        return re.search('^{0}'.format(re.escape(username)), file.read(), flags=re.M)
 
 def add_new_user_instance(username):
     file_path = instance_path(state)
@@ -257,11 +268,11 @@ def remove_user_instance(username):
 
 
 def exit_handler():
-    send_text(SESSION_ENDED_TEXT, number)
-    remove_user_instance(username)
+    send_text(constants.SESSION_ENDED_TEXT, session.get_number())
+    remove_user_instance(session.get_username())
 
 def already_in_session_message():
-    return ALREADY_IN_SESSION
+    return constants.ALREADY_IN_SESSION
 
 ###********* Tests *********###
 
@@ -331,9 +342,9 @@ def initialize_twilio():
     client = Client(account_sid, auth_token)
 
 def main():
+    global session
     args = parse()
     state = State.determine_state(args)
-
     try:
         if state == State.TEST:
             run_test(args)
@@ -344,13 +355,14 @@ def main():
             if state == State.PROD or args.enable_phone:
                 initialize_twilio()
 
-            session = requests.Session()
-            session.headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
+            s = requests.Session()
+            s.headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
             username = input("Enter username: ") if not args.username else args.username
             password = getpass.getpass("Enter password: ") if not args.password else args.password
             number = input("Enter phone number: ") if not args.phone else args.phone
 
             if add_new_user_instance(username):
+                session = Session(s, username, password, number)
                 atexit.register(exit_handler)
                 create_instance(session, username, password,
                                 number, args.school.upper())
