@@ -180,7 +180,10 @@ def refresh(session, school):
     session.current.get(constants.CUNY_FIRST_GRADES_URL)
 
     payload = {'ICACTION': 'DERIVED_SSS_SCT_SSS_TERM_LINK'}
-    response = session.current.post(constants.CUNY_FIRST_GRADES_URL, data=payload)
+    try:
+    	response = session.current.post(constants.CUNY_FIRST_GRADES_URL, data=payload)
+    except TimeoutError:
+    	return refresh(session,school)
 
     tree = html.fromstring(response.text)
 
@@ -191,8 +194,13 @@ def refresh(session, school):
         payload_key: payload_value,
         'ICACTION': 'DERIVED_SSS_SCT_SSR_PB_GO'
     }
-    response = session.current.post(constants.CUNY_FIRST_GRADES_URL, data=payload)
+    try:
+    	response = session.current.post(constants.CUNY_FIRST_GRADES_URL, data=payload)
+    except TimeoutError:
+    	return refresh(session,school)
 
+
+    	
     tree = BeautifulSoup(response.text, 'lxml')
     good_html = tree.prettify()
     soup = BeautifulSoup(good_html, 'html.parser')
