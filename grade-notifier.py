@@ -353,8 +353,11 @@ def initialize_twilio():
 
 def main():
     global session
+    global state
+    
     args = parse()
     state = State.determine_state(args)
+    print(state)
     try:
         if state == State.TEST:
             run_test(args)
