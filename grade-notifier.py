@@ -34,6 +34,7 @@ import argparse
 import os
 import atexit
 import fileinput
+import time
 
 from bs4 import BeautifulSoup
 from lxml import etree
@@ -249,6 +250,7 @@ def start_notifier(session, number, school, username, password):
 
 def check_user_exists(username):
     file_path = instance_path(state)
+    open(file_path,'a').close()
     with open(file_path, 'r+') as file:
         return re.search('^{0}'.format(re.escape(username)), file.read(), flags=re.M)
 
