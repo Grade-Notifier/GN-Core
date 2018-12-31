@@ -45,14 +45,13 @@ class Session():
         return self.number
 
     def refresh_state(self):
-        pass
-        # TODO
-        #  For Akiva
-        # .....
-        # state = SessionState.SIGNED_IN
-        # else ......
-        # state = SessionState.SIGNED_OUT
-        #
+        url = 'https://home.cunyfirst.cuny.edu/psp/cnyepprd/EMPLOYEE/EMPL/h/?tab=DEFAULT'
+        r = self.session.get(url,allow_redirects=False)
+        if r.status == 302:
+            self.state = SessionState.SIGNED_OUT
+        else:
+            self.state = SessionState.SIGNED_IN
+
 
     def is_logged_in(self):
         self.refresh_state()
