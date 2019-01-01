@@ -22,7 +22,14 @@ from lxml import html
 
 def logout(session):
     ##TODO
-    return True
+    try:
+        session.current.get(constants.CUNY_FIRST_LOGOUT_URL)
+        session.current.get(constants.CUNY_FIRST_LOGOUT_2_URL)
+        session.current.get(constants.CUNY_FIRST_LOGOUT_3_URL)
+        return True
+    except:
+        return False
+    
 
 def login(session, username, password):
     print('[**] Logging in...')
@@ -44,7 +51,7 @@ def login(session, username, password):
     try:
         encquery = tree.xpath('//*[@name="enc_post_data"]/@value')[0]
     except IndexError:
-        return None
+        return False
 
     data = {
         'enc_post_data': encquery
@@ -55,7 +62,7 @@ def login(session, username, password):
     try:
         encreply = tree.xpath('//*[@name="enc_post_data"]/@value')[0]
     except IndexError:
-        return None
+        return False
     data = {
         'enc_post_data': encreply
     }
@@ -63,4 +70,4 @@ def login(session, username, password):
 
     response = session.current.get(constants.CUNY_FIRST_SIGNED_IN_STUDENT_CENTER_URL)
     print('[**] Successfully logged in!')
-    return response
+    return True
