@@ -18,7 +18,7 @@ import helper
 from helper import State
 from helper import Message
 from helper import Session
-from cunylogin import login, logout
+from cunylogin import login
 
 from constants import instance_path
 from constants import script_path
@@ -35,7 +35,6 @@ import os
 import atexit
 import fileinput
 import time
-import logging
 
 from bs4 import BeautifulSoup
 from lxml import etree
@@ -171,7 +170,6 @@ def find_changes(old, new):
 
 def create_instance(session, username, password, number, school_code):
     login(session, username, password)
-
     if session.is_logged_in():
         start_notifier(session, number, school_code, username, password)
     else:
@@ -236,21 +234,17 @@ def start_notifier(session, number, school, username, password):
     while counter < 844:
         if session.is_logged_in():
             result = refresh(session, school)
-            print(result)
-            #if len(old_result) > len(result):
-            #    pass
-            #else:
-            changelog = find_changes(old_result, result)
-            print(changelog)
-            if changelog != None:
-                message = create_text_message(changelog)
-                send_text(message, number)
-                old_result = result
-            print('[DEBUG] Sleeping for 5 min...') 
-            time.sleep(5*60)  # 5 sec intervals
-            counter += 1
+            if len(old_result) > len(result):
+                pass
+            else:
+                changelog = find_changes(old_result, result)
+                if changelog != None:
+                    message = create_text_message(changelog)
+                    send_text(message, number)
+                    old_result = result
+                time.sleep(5*60)  # 5 Min intervals
+                counter += 1
         else:
-            session.current = requests.Session()	# make a new requests.Session object :)
             login(session, username, password)
 
 
