@@ -45,7 +45,7 @@
 		<input type="submit" name="submit">
 	</form>
  <h3>Made with ❤️  by Ehud Adler</h3>
- <h4>Big thanks to @ericsherman</h4>
+ <h4>Big thanks to @ericshermancs</h4>
 </body>
 <?php
 		function display(){
