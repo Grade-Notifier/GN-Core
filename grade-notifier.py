@@ -36,6 +36,7 @@ import atexit
 import fileinput
 import time
 import logging
+import datetime
 
 from bs4 import BeautifulSoup
 from lxml import etree
@@ -169,6 +170,22 @@ def find_changes(old, new):
 
 ###********* Main Program *********###
 
+
+def get_semester():
+	now = datetime.datetime.now()
+	today = (now.month,now.day)
+	if (1,15) <= today < (6,15):
+		return f'{now.year} Spring Term'
+	elif (6,15) <= today < (9,15):
+		return f'{now.year} Summer Term'
+	else:
+		if now.month == 1:
+			return f'{now.year-1} Fall Term'
+		else:
+			return f'{now.year} Fall Term'
+
+
+
 def create_instance(session, username, password, number, school_code):
     login(session, username, password)
 
@@ -177,6 +194,7 @@ def create_instance(session, username, password, number, school_code):
     else:
         ## Login failed
         pass
+
 
 def refresh(session, school):
 
@@ -189,9 +207,9 @@ def refresh(session, school):
     	return refresh(session, school)
 
     tree = html.fromstring(response.text)
-
-    payload_key = ''.join(tree.xpath('//span[text()="2018 Fall Term"]/parent::div/parent::td/preceding-sibling::td/div/input/@id'))
-    payload_value = ''.join(tree.xpath('//span[text()="2018 Fall Term"]/parent::div/parent::td/preceding-sibling::td/div/input/@value'))
+    term = get_semester()
+    payload_key = ''.join(tree.xpath(f'//span[text()="{term}"]/parent::div/parent::td/preceding-sibling::td/div/input/@id'))
+    payload_value = ''.join(tree.xpath(f'//span[text()="{term}"]/parent::div/parent::td/preceding-sibling::td/div/input/@value'))
 
     payload = {
         payload_key: payload_value,
