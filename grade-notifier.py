@@ -12,19 +12,16 @@ __status__      = "Production"
 ###********* Imports *********###
 
 ## Local
-import constants
-import helper
-
-from helper import State
-from helper import Message
-from helper import Session
+from session import Session, SessionState
+from loginState import LoginState
+from message import Message
 from cunylogin import login, logout
 
 from constants import instance_path
 from constants import script_path
 
 import constants
-import helper
+import fileManager
 
 ## Remote
 import requests
@@ -92,7 +89,7 @@ class Class():
     Send Number: The number where the message should be sent
 '''
 def send_text(message, sendNumber):
-    if state == State.PROD:
+    if state == LoginState.PROD:
         client.messages.create(
             from_= os.getenv('TWILIO_NUMBER'),
             to=sendNumber,
@@ -363,16 +360,16 @@ def main():
     global state
 
     args = parse()
-    state = State.determine_state(args)
+    state = LoginState.determine_state(args)
     print(state)
     try:
-        if state == State.TEST:
+        if state == LoginState.TEST:
             run_test(args)
         else:
 
             # Only initialize twilio in production 
             # or when specifically asked
-            if state == State.PROD or args.enable_phone:
+            if state == LoginState.PROD or args.enable_phone:
                 initialize_twilio()
 
             s = requests.Session()
