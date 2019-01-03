@@ -51,8 +51,8 @@
 		function display(){
 		echo 'Check your phone for a text!<br>The service will check for new grades every 5 min and text you when anything changes.<br>The service will continue for 5 days and then require you sign-in again.<br>Please only sign in once<br>Enjoy!<br>';
 		$logpath .=  '/home/fa18/313/adeh6562/public_html/grade-notifier/logs/'.$_POST["username"].time();
-		$cmd = 'echo "23416562" | su -c "nohup setsid python3 /home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/grade-notifier.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"].' --prod=true" - adeh6562 > /dev/null 2>&1 &';
-		$message = exec($cmd);
+		$cmd = 'echo "23416562" | su -c "python3 /home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/intializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"].' --prod=true" - adeh6562';
+		$message = exec($cmd,$arr);
 		?>
 		<?php
 	}
