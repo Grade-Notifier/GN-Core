@@ -65,7 +65,15 @@ CUNY_FIRST_LOGOUT_2_URL = 'https://home.cunyfirst.cuny.edu/sso/logout?end_url=ht
 CUNY_FIRST_LOGOUT_3_URL = 'https://ssologin.cuny.edu/oamsso-bin/logout.pl?end_url=https%3A%2F%2Fhome.cunyfirst.cuny.edu'
 
 LOG_PATH = "/home/fa18/313/adeh6562/public_html/grade-notifier/logs"
+LOG_PATH_DEV = "/home/fa18/313/adeh6562/public_html/grade-notifier/logs"
 
+
+
+def log_path(local=False):
+    if local:
+        return LOG_PATH_DEV
+    else:
+        return LOG_PATH
 
 def script_path(local=False):
     if local:
