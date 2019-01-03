@@ -9,7 +9,7 @@ __maintainer__  = "Ehud Adler & Akiva Sherman"
 __email__       = "self@ehudadler.com"
 __status__      = "Production"
 
-import argsparse
+import argparse
 import constants
 import time
 
