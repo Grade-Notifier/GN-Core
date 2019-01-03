@@ -1,3 +1,5 @@
 lxml
 beautifulsoup4
 twilio
+requests
+pylint
