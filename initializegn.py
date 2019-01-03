@@ -59,8 +59,8 @@ def main():
         number = input("Enter phone number: ") if not args.phone else args.phone
 
         session = Session(s, username, password, number)
-        did_log_ing = login(session, username, password)
-        if did_log_ing:
+        did_log_in = login(session, username, password)
+        if did_log_in:
             run(username, password, args.school.upper(), number)
         else:
             print("Invalid Credentials")
