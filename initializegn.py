@@ -16,6 +16,7 @@ import time
 from cunylogin import login, logout
 from os.path import join, dirname
 from dotenv import load_dotenv
+from constants import log_path
 
 
 # Create .env file path.
@@ -27,8 +28,8 @@ load_dotenv(dotenv_path)
 # Accessing variables.
 account_pass = os.getenv('ACCOUNT_PASSWORD')
 
-def run(username, password, school, phone):
-    log_path = f'{constants.LOG_PATH}/{username}{time.time()}'
+def run(username, password, school, phone, local):
+    log_path = f'{constants.log_path(local)}/{username}{time.time()}'
     os.system(f'echo "{account_pass}" | su -c "nohup setsid python3 /home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/grade-notifier.py --username={username} --password={password} --school={school} --phone={phone} --prod=true" - adeh6562 > {log_path} 2>&1 &')
 
 def parse():
@@ -66,7 +67,7 @@ def main():
         session = Session(s, username, password, number)
         did_log_in = login(session, username, password)
         if did_log_in:
-            run(username, password, args.school.upper(), number)
+            run(username, password, args.school.upper(), number, args.prod)
         else:
             print("Invalid Credentials")
  
