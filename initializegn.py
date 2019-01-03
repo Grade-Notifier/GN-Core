@@ -9,9 +9,14 @@ __maintainer__  = "Ehud Adler & Akiva Sherman"
 __email__       = "self@ehudadler.com"
 __status__      = "Production"
 
+import argsparse
+import constants
+import time
+
 from cunylogin import login, logout
 from os.path import join, dirname
 from dotenv import load_dotenv
+
 
 # Create .env file path.
 dotenv_path = join(dirname(__file__), '.env')
@@ -23,8 +28,8 @@ load_dotenv(dotenv_path)
 account_pass = os.getenv('ACCOUNT_PASSWORD')
 
 def run(username, password, school, phone):
-    os.system('echo "{0}" | su -c "nohup setsid python3 /home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/grade-notifier.py --username={1} --password={2} --school={3} --phone={4} --prod=true" - adeh6562 > {5} 2>&1 &'.format(account_pass, username, password, school, phone,log_path))
-
+    log_path = f'{constants.LOG_PATH}/{username}{time.time()}'
+    os.system(f'echo "{account_pass}" | su -c "nohup setsid python3 /home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/grade-notifier.py --username={username} --password={password} --school={school} --phone={phone} --prod=true" - adeh6562 > {log_path} 2>&1 &')
 
 def parse():
     parser = argparse.ArgumentParser(description='Specify commands for CUNY Grade Notifier Retriever v1.0')
