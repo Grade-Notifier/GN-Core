@@ -18,6 +18,7 @@ import helper
 from helper import State
 from helper import Message
 from helper import Session
+from helper import get_semester
 from cunylogin import login, logout
 
 from constants import instance_path
@@ -170,19 +171,6 @@ def find_changes(old, new):
 
 ###********* Main Program *********###
 
-
-def get_semester():
-	now = datetime.datetime.now()
-	today = (now.month,now.day)
-	if (1,15) <= today < (6,15):
-		return f'{now.year} Spring Term'
-	elif (6,15) <= today < (9,15):
-		return f'{now.year} Summer Term'
-	else:
-		if now.month == 1:
-			return f'{now.year-1} Fall Term'
-		else:
-			return f'{now.year} Fall Term'
 
 
 
