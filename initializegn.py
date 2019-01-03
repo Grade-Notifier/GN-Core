@@ -12,11 +12,15 @@ __status__      = "Production"
 import argparse
 import constants
 import time
+import os
+import requests
+import getpass
 
 from cunylogin import login, logout
 from os.path import join, dirname
 from dotenv import load_dotenv
 
+from helper import Session
 
 # Create .env file path.
 dotenv_path = join(dirname(__file__), '.env')
