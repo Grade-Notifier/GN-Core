@@ -15,6 +15,7 @@ import time
 import os
 import requests
 import getpass
+import subprocess
 
 from cunylogin import login, logout
 from os.path import join, dirname
@@ -36,10 +37,11 @@ def run(username, password, school, phone, local):
     log_path = f'{constants.log_path(local)}/{username}{time.time()}'
     create_dir(constants.log_path(local))
     if local:
-        print(f'python3 ./grade-notifier.py --username={username} --password={password} --school={school} --phone={phone} > {log_path}.txt 2>&1')
-        os.system(f'python3 ./grade-notifier.py --username={username} --password={password} --school={school} --phone={phone} > {log_path}.txt 2>&1')
+        with open(f"{log_path}.txt", "w+") as outfile:
+            subprocess.Popen(["nohup", "python3", "./grade-notifier.py", f"--username={username}", f"--password={password}", f"--school={school}", f"--phone={phone}"], stdout=outfile)
     else:
-        os.system(f'echo "{account_pass}" | su -c "nohup setsid python3 /home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/grade-notifier.py --username={username} --password={password} --school={school} --phone={phone} --prod=true" - adeh6562 > {log_path}.txt 2>&1 &')
+        with open(f"{log_path}.txt", "w+") as outfile:
+            subprocess.Popen(["echo", f"{account_pass}", "|", "su", "-c", "nohup", "setsid",  "python3", "home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/grade-notifier.py", f"--username={username}", f"--password={password}", f"--school={school}", f"--phone={phone}", "--prod=true" , "-" , "adeh6562"], stdout=outfile)
 
 def parse():
     parser = argparse.ArgumentParser(description='Specify commands for CUNY Grade Notifier Retriever v1.0')
