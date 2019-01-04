@@ -385,6 +385,8 @@ def main():
                 print(already_in_session_message())
 
     except Exception as e:
+        print("ERROR")
+        print(e)
         print(str(e))
 
 
