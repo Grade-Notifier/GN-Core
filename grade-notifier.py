@@ -114,7 +114,7 @@ def create_text_message(change_log):
     .add("New Grades have been posted for the following classes") \
     .newline() \
     .add("-------------") \
-    .newline()
+    .newline() 
 
     class_num = 1
     for elm in change_log:
@@ -206,7 +206,16 @@ def refresh(session, school):
     tree = BeautifulSoup(response.text, 'lxml')
     good_html = tree.prettify()
     soup = BeautifulSoup(good_html, 'html.parser')
-    table = soup.find('table', attrs={'class': "PSLEVEL1GRIDWBO"})
+
+    try:
+        table = soup.findAll('table', attrs={'class': "PSLEVEL1GRIDWBO"})[0]			# get term table
+    except:
+        table = None
+
+    try:
+        gpa_stats = soup.findAll('table', attrs={'class': "PSLEVEL1GRIDWBO"})[1]		# get gpa table
+    except:
+       	gpa_stats = None
 
     result = []
     if table is not None:
@@ -224,8 +233,13 @@ def refresh(session, school):
                 new_class = Class(data[0].strip(), data[1].strip(), data[2].strip(
                 ), data[3].strip(), data[4].strip(), data[5].strip())
                 result.append(new_class)
-    else:
-        pass
+
+    if gpa_stats is not None:
+    	last_row = gpa_stats.find_all('tr')
+    	term_gpa = last_row.find_all('td')[1].get_text()
+    	cumulative_gpa = last_row.find_all('td')[-1].get_text()
+
+
     return result
 
 
