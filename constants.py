@@ -9,7 +9,7 @@ __maintainer__  = "Ehud Adler & Akiva Sherman"
 __email__       = "self@ehudadler.com"
 __status__      = "Production"
 
-from helper import State
+from loginState import LoginState
 
 
 # College names and codes pulled from the CunyFirst website
@@ -65,7 +65,15 @@ CUNY_FIRST_LOGOUT_2_URL = 'https://home.cunyfirst.cuny.edu/sso/logout?end_url=ht
 CUNY_FIRST_LOGOUT_3_URL = 'https://ssologin.cuny.edu/oamsso-bin/logout.pl?end_url=https%3A%2F%2Fhome.cunyfirst.cuny.edu'
 
 LOG_PATH = "/home/fa18/313/adeh6562/public_html/grade-notifier/logs"
+LOG_PATH_DEV = "./logs"
 
+
+
+def log_path(local=False):
+    if local:
+        return LOG_PATH_DEV
+    else:
+        return LOG_PATH
 
 def script_path(local=False):
     if local:
@@ -74,10 +82,10 @@ def script_path(local=False):
         return SCRIPT_PATH
 
 
-def instance_path(state=State.DEV):
-    if state == State.PROD:
+def instance_path(state=LoginState.DEV):
+    if state == LoginState.PROD:
         return INSTANCE_ABS_PATH
-    elif state == State.TEST:
+    elif state == LoginState.TEST:
         return INSTANCE_ABS_PATH_TEST
     else:
         return INSTANCE_ABS_PATH_DEV
