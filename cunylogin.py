@@ -15,7 +15,9 @@ __status__      = "Production"
 
 ## Local
 import constants
-import helper
+import fileManager
+
+from session import Session, SessionState
 
 
 from lxml import html
