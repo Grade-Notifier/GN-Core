@@ -142,8 +142,8 @@ def create_text_message(change_log):
             .add("{0}: {1} (Grade) -- {2} (Grade Points)".format(
                 elm['name'], elm['grade'], elm['gradepts'])) \
             .newline()
-            
-    if gpa.get_term_gpa >= 0:
+
+    if gpa.get_term_gpa() >= 0:
 
         new_message.add("----------------------------") \
         .newline() \
