@@ -118,6 +118,10 @@ def create_text_message(change_log):
     .newline() 
 
     class_num = 1
+
+    gpa = change_log[-1]
+    change_log = change_log[:-1]
+
     for elm in change_log:
         if len(elm['grade']) != 0:
             new_message \
@@ -139,6 +143,13 @@ def create_text_message(change_log):
                 elm['name'], elm['grade'], elm['gradepts'])) \
             .newline()
 
+    new_message.add("----------------------------") \
+    .newline() \
+    .add(f"Your term GPA is: {gpa.get_term_gpa()}") \
+    .newline() \
+    .add(f"Your cumulative GPA is: {gpa.get_cumulative_gpa()}") \
+    .newline()
+
     # Sign the message
     new_message.sign()
 
@@ -151,6 +162,11 @@ def create_text_message(change_log):
     New: New Classes
 '''
 def find_changes(old, new):
+    new_gpa = new[-1]	# extract the new GPA. we never need the old one, so dont extract it, just truncate the array
+
+    old = old[:-1]		# remove from arrays
+    new = new[:-1]
+
 
     changelog = []
     for i in range(0, len(new)):
@@ -164,7 +180,8 @@ def find_changes(old, new):
                 changelog.append(
                     {'name': class2.name, 'grade': class2.grade, 'gradepts': class2.gradepts})
 
-    return None if len(changelog) == 0 else changelog
+
+    return None if len(changelog) == 0 else changelog + [new_gpa]	# always add gpa to the list 
 
 
 ###********* Main Program *********###
@@ -213,10 +230,8 @@ def refresh(session, school):
     except:
         table = None
 
-    try:
-        gpa_stats = soup.findAll('table', attrs={'class': "PSLEVEL1GRIDWBO"})[1]		# get gpa table
-    except:
-       	gpa_stats = None
+        
+
 
     result = []
     if table is not None:
@@ -235,12 +250,13 @@ def refresh(session, school):
                 ), data[3].strip(), data[4].strip(), data[5].strip())
                 result.append(new_class)
 
-    if gpa_stats is not None:
-    	last_row = gpa_stats.find_all('tr')
-    	term_gpa = last_row.find_all('td')[1].get_text()
-    	cumulative_gpa = last_row.find_all('td')[-1].get_text()
+        gpa_stats = soup.findAll('table', attrs={'class': "PSLEVEL1GRIDWBO"})[1]		# get gpa table
 
-    	result.append(GPA(term_gpa,cumulative_gpa))
+        last_row = gpa_stats.find_all('tr')[-1]
+        term_gpa = float(last_row.find_all('td')[1].get_text())
+        cumulative_gpa = float(last_row.find_all('td')[-1].get_text())
+
+        result.append(GPA(term_gpa, cumulative_gpa))
 
     return result
 
@@ -251,12 +267,12 @@ def start_notifier(session, number, school, username, password):
     while counter < 844:
         if session.is_logged_in():
             result = refresh(session, school)
-            print(result)
+            print('RESULT:', result)
             #if len(old_result) > len(result):
             #    pass
             #else:
             changelog = find_changes(old_result, result)
-            print(changelog)
+            print('CHANGELOG', changelog)
             if changelog != None:
                 message = create_text_message(changelog)
                 send_text(message, number)
