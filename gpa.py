@@ -25,6 +25,19 @@ class GPA():
     def get_term_gpa(self):
         return self._term_gpa
 
+    @staticmethod
+    def get_letter_grade(gpa):
+        return {
+            'term_gpa' : convert_float(gpa.get_term_gpa()),
+            'cumulative_gpa' : convert_float(gpa.get_cumulative_gpa())
+        }
+       
+    @staticmethod
+    def get_number_grade(gpa):
+        return {
+            'term_gpa' : convert_letter(convert_float(gpa.get_term_gpa())),
+            'cumulative_gpa' : convert_letter(convert_float(gpa.get_cumulative_gpa()))
+        }
 
 def convert_float(f):
     if 0 <= f < 1:
@@ -51,33 +64,24 @@ def convert_float(f):
         return 'A'
 
 def convert_letter(l):
-	scale = {
-		'A+' : '97 - 100',
-		'A' : '93 - 96',
-		'A-' : '90 - 92',
-		'B+' : '87 - 89',
-		'B' : '83 - 86',
-		'B-' : '80 - 82',
-		'C+' : '77 - 79',
-		'C' : '73 - 76',
-		'C-' : '70 - 72',
-		'D+' : '67 - 69',
-		'D' : '65 - 66',
-		'F' : '0'
-	}
-	return scale[l]
-
-
-
-
-def get_letter_grade(gpa):
-    return {
-    	'term_gpa' : convert_float(gpa.get_term_gpa()),
-    	'cumulative_gpa' : convert_float(gpa.get_cumulative_gpa())
+    scale = {
+        'A+' : '97 - 100',
+        'A' : '93 - 96',
+        'A-' : '90 - 92',
+        'B+' : '87 - 89',
+        'B' : '83 - 86',
+        'B-' : '80 - 82',
+        'C+' : '77 - 79',
+        'C' : '73 - 76',
+        'C-' : '70 - 72',
+        'D+' : '67 - 69',
+        'D' : '65 - 66',
+        'F' : '0'
     }
+    return scale[l]
 
-def get_number_grade(gpa):
-	return {
-		'term_gpa' : convert_letter(convert_float(gpa.get_term_gpa())),
-		'cumulative_gpa' : convert_letter(convert_float(gpa.get_cumulative_gpa()))
-	}
+
+
+
+
+
