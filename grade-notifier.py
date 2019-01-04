@@ -249,7 +249,7 @@ def refresh(session, school):
                 new_class = Class(data[0].strip(), data[1].strip(), data[2].strip(
                 ), data[3].strip(), data[4].strip(), data[5].strip())
                 result.append(new_class)
-
+                
         gpa_stats = soup.findAll('table', attrs={'class': "PSLEVEL1GRIDWBO"})[1]		# get gpa table
 
         last_row = gpa_stats.find_all('tr')[-1]
@@ -257,7 +257,6 @@ def refresh(session, school):
         cumulative_gpa = float(last_row.find_all('td')[-1].get_text())
 
         result.append(GPA(term_gpa, cumulative_gpa))
-
     return result
 
 
@@ -421,6 +420,8 @@ def main():
                 print(already_in_session_message())
 
     except Exception as e:
+        print("ERROR")
+        print(e)
         print(str(e))
 
 
