@@ -13,10 +13,10 @@ Great question! Let me highlight a few of our strengths:
 |🚨| Get Notifier when a new grade is posted |
 |<img src=./Assets/CUNY-Logo.png width=30>| Available to all CUNY schools |
 |📧| Works with email |
-|📱| Works with Phone |
-|⏳| Save Time|
-|😰| Reduce Stress|
-|👨‍👩‍👧‍👦| Open Source|
+|📱| Works with phone |
+|⏳| Save time|
+|😰| Reduce stress|
+|👨‍👩‍👧‍👦| Open source|
 
 We aim to allow students to enjoy their vacation instead of checking every minute to see if theor grades were released. We check every 5 minutes for you and notifiy you in case of a grade change. 
 
