@@ -16,6 +16,7 @@ from session import Session, SessionState
 from loginState import LoginState
 from message import Message
 from cunylogin import login, logout
+from gpa import GPA
 
 from constants import instance_path
 from constants import script_path
@@ -239,6 +240,7 @@ def refresh(session, school):
     	term_gpa = last_row.find_all('td')[1].get_text()
     	cumulative_gpa = last_row.find_all('td')[-1].get_text()
 
+    	result.append(GPA(term_gpa,cumulative_gpa))
 
     return result
 
