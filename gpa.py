@@ -12,6 +12,7 @@ __status__      = "Production"
 
 class GPA():
     _term_gpa = 0
+    
     _cumulative_gpa = 0
 
     def __init__(self,term_gpa = 0, cumulative_gpa = 0):
