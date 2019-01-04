@@ -23,6 +23,8 @@ from constants import script_path
 import constants
 import fileManager
 
+import helper
+
 ## Remote
 import requests
 import getpass
@@ -186,9 +188,9 @@ def refresh(session, school):
     	return refresh(session, school)
 
     tree = html.fromstring(response.text)
-
-    payload_key = ''.join(tree.xpath('//span[text()="2018 Fall Term"]/parent::div/parent::td/preceding-sibling::td/div/input/@id'))
-    payload_value = ''.join(tree.xpath('//span[text()="2018 Fall Term"]/parent::div/parent::td/preceding-sibling::td/div/input/@value'))
+    term = helper.get_semester()
+    payload_key = ''.join(tree.xpath(f'//span[text()="{term}"]/parent::div/parent::td/preceding-sibling::td/div/input/@id'))
+    payload_value = ''.join(tree.xpath(f'//span[text()="{term}"]/parent::div/parent::td/preceding-sibling::td/div/input/@value'))
 
     payload = {
         payload_key: payload_value,
