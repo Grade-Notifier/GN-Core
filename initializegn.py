@@ -41,7 +41,7 @@ def run(username, password, school, phone, local):
             subprocess.Popen(["nohup", "python3", "./grade-notifier.py", f"--username={username}", f"--password={password}", f"--school={school}", f"--phone={phone}"], stdout=outfile)
     else:
         with open(f"{log_path}.txt", "w+") as outfile:
-            subprocess.Popen(["echo", f"{account_pass}", "|", "su", "-c", "nohup", "setsid",  "python3", "home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/grade-notifier.py", f"--username={username}", f"--password={password}", f"--school={school}", f"--phone={phone}", "--prod=true" , "-" , "adeh6562"], stdout=outfile)
+            subprocess.Popen(["echo", f"{account_pass}", "|", "su", "-c", "nohup", "setsid",  "python3", "home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/grade-notifier.py", f"--username={username}", f"--password={password}", f"--school={school}", f"--phone={phone}", "--prod=true", "-", "adeh6562"], stdout=outfile)
 
 def parse():
     parser = argparse.ArgumentParser(description='Specify commands for CUNY Grade Notifier Retriever v1.0')
