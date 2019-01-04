@@ -67,7 +67,7 @@ A: Wait a few more minutes sometimes the system are overloaded and the message t
 
 ---
 
-### Check out the contributors section to see all the amazing people who have helped maitain and grow this project!
+### Check out the contributors section to see all the amazing people who have helped maintain and grow this project!
 
 
 Made with ❤️ by Ehud Adler & Akiva Sherman.
