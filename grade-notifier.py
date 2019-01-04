@@ -222,8 +222,6 @@ def refresh(session, school):
                 new_class = Class(data[0].strip(), data[1].strip(), data[2].strip(
                 ), data[3].strip(), data[4].strip(), data[5].strip())
                 result.append(new_class)
-    else:
-        pass
     return result
 
 
