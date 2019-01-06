@@ -1,5 +1,7 @@
-from constants import instance_path
-from constants import script_path
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+from helper.constants import script_path, instance_path
 import argparse
 import os
 """Test-Grade-Notifier

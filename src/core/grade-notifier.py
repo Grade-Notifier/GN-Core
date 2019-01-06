@@ -11,21 +11,6 @@ __status__ = "Production"
 
 ###********* Imports *********###
 
-# Local
-from session import Session, SessionState
-from loginState import LoginState
-from message import Message
-from cunylogin import login, logout
-from gpa import GPA
-
-from constants import instance_path
-from constants import script_path
-
-import constants
-import fileManager
-
-import helper
-
 # Remote
 import requests
 import getpass
@@ -42,7 +27,22 @@ from lxml import etree
 from twilio.rest import Client
 from lxml import html
 from os.path import join, dirname
+from os import sys, path
 from dotenv import load_dotenv
+
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+# Local
+from helper.session import Session, SessionState
+from login_flow.loginState import LoginState
+from helper.message import Message
+from login_flow.cunylogin import login, logout
+from helper.gpa import GPA
+from helper.constants import instance_path, script_path
+
+import helper.constants
+import helper.fileManager
+import helper.helper
 
 ###********* GLOBALS *********###
 

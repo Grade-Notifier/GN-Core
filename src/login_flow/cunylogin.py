@@ -11,15 +11,15 @@ __email__ = "self@ehudadler.com"
 __status__ = "Production"
 
 ###********* Imports *********###
+from os import sys, path
+from lxml import html
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 # Local
-import constants
-import fileManager
+import helper.constants
+import helper.fileManager
 
-from session import Session, SessionState
-
-from lxml import html
-
+from helper.session import Session, SessionState
 
 def logout(session):
     # TODO
