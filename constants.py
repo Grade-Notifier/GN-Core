@@ -1,16 +1,15 @@
 """Constants
 """
 
-__author__      = "Ehud Adler & Akiva Sherman"
-__copyright__   = "Copyright 2018, The Punk Kids"
-__license__     = "MIT"
-__version__     = "1.0.0"
-__maintainer__  = "Ehud Adler & Akiva Sherman"
-__email__       = "self@ehudadler.com"
-__status__      = "Production"
+__author__ = "Ehud Adler & Akiva Sherman"
+__copyright__ = "Copyright 2018, The Punk Kids"
+__license__ = "MIT"
+__version__ = "1.0.0"
+__maintainer__ = "Ehud Adler & Akiva Sherman"
+__email__ = "self@ehudadler.com"
+__status__ = "Production"
 
 from loginState import LoginState
-
 
 # College names and codes pulled from the CunyFirst website
 college_codes = {
@@ -50,7 +49,7 @@ INSTANCE_ABS_PATH_DEV = "./instances.txt"
 SCRIPT_PATH = "/home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/"
 SCRIPT_PATH_DEV = "./"
 
-CUNY_FIRST_HOME_URL= "https://home.cunyfirst.cuny.edu"
+CUNY_FIRST_HOME_URL = "https://home.cunyfirst.cuny.edu"
 CUNY_FIRST_AUTH_SUBMIT_URL = "https://ssologin.cuny.edu/oam/server/auth_cred_submit"
 CUNY_FIRST_STUDENT_CENTER_URL = "https://hrsa.cunyfirst.cuny.edu/psc/cnyhcprd/EMPLOYEE/HRMS/c/SA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL?FolderPath=PORTAL_ROOT_OBJECT.HC_SSS_STUDENT_CENTER&IsFolder=false&IgnoreParamTempl=FolderPath%2cIsFolder&PortalActualURL=https%3a%2f%2fhrsa.cunyfirst.cuny.edu%2fpsc%2fcnyhcprd%2fEMPLOYEE%2fHRMS%2fc%2fSA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL&PortalContentURL=https%3a%2f%2fhrsa.cunyfirst.cuny.edu%2fpsc%2fcnyhcprd%2fEMPLOYEE%2fHRMS%2fc%2fSA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL&PortalContentProvider=HRMS&PortalCRefLabel=Student%20Center&PortalRegistryName=EMPLOYEE&PortalServletURI=https%3a%2f%2fhome.cunyfirst.cuny.edu%2fpsp%2fcnyepprd%2f&PortalURI=https%3a%2f%2fhome.cunyfirst.cuny.edu%2fpsc%2fcnyepprd%2f&PortalHostNode=EMPL&NoCrumbs=yes&PortalKeyStruct=yes"
 CUNY_FIRST_LOGIN_URL = "https://ssologin.cuny.edu/obrareq.cgi"
@@ -68,12 +67,12 @@ LOG_PATH = "/home/fa18/313/adeh6562/public_html/grade-notifier/logs"
 LOG_PATH_DEV = "./logs"
 
 
-
 def log_path(local=False):
     if local:
         return LOG_PATH_DEV
     else:
         return LOG_PATH
+
 
 def script_path(local=False):
     if local:
@@ -89,9 +88,3 @@ def instance_path(state=LoginState.DEV):
         return INSTANCE_ABS_PATH_TEST
     else:
         return INSTANCE_ABS_PATH_DEV
-
-
-
-
-
-
