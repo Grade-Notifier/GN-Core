@@ -1,17 +1,18 @@
 """Login State
 """
 
-__author__      = "Ehud Adler & Akiva Sherman"
-__copyright__   = "Copyright 2018, The Punk Kids"
-__license__     = "MIT"
-__version__     = "1.0.0"
-__maintainer__  = "Ehud Adler & Akiva Sherman"
-__email__       = "self@ehudadler.com"
-__status__      = "Production"
+__author__ = "Ehud Adler & Akiva Sherman"
+__copyright__ = "Copyright 2018, The Punk Kids"
+__license__ = "MIT"
+__version__ = "1.0.0"
+__maintainer__ = "Ehud Adler & Akiva Sherman"
+__email__ = "self@ehudadler.com"
+__status__ = "Production"
+
 
 class LoginState():
     TEST = 0
-    DEV  = 1
+    DEV = 1
     PROD = 2
 
     @staticmethod
