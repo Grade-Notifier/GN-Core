@@ -37,7 +37,7 @@ There are currenly 3 main ways you can help contribute:
 2. Building out the script
 3. DevOps, making sure the project doesn't hiccup
 
-Check out the contributing guide for a more thorough 
+Check out the [contributing guide](https://github.com/Huddie/Grade-Notifier/blob/master/CONTRIBUTING.md).
 
 ## FAQ
 
