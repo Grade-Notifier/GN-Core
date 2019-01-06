@@ -34,3 +34,11 @@ pep8.count_errors
 
 # todoist.message = "Please fix all TODOS"
 # todoist.warn_for_todos
+
+if github.pr_title.include? "[WIP]"
+    auto_label.wip=(github.pr_json["number"])
+  else
+    auto_label.remove("WIP")
+    # If you want to delete label
+    # auto_label.delete("WIP")
+end
