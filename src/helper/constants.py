@@ -9,7 +9,10 @@ __maintainer__ = "Ehud Adler & Akiva Sherman"
 __email__ = "self@ehudadler.com"
 __status__ = "Production"
 
-from ..login_flow.loginState import LoginState
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+from login_flow.loginState import LoginState
 
 # College names and codes pulled from the CunyFirst website
 college_codes = {
