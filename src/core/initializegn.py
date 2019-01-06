@@ -17,12 +17,12 @@ import requests
 import getpass
 import subprocess
 
-from cunylogin import login, logout
+from ..login_flow.cunylogin import login, logout
 from os.path import join, dirname
 from dotenv import load_dotenv
-from constants import log_path
-from session import Session
-from fileManager import create_dir
+from ..helper.constants import log_path
+from ..helper.session import Session
+from ..helper.fileManager import create_dir
 
 # Create .env file path.
 dotenv_path = join(dirname(__file__), '.env')

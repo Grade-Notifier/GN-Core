@@ -12,19 +12,16 @@ __status__ = "Production"
 ###********* Imports *********###
 
 # Local
-from session import Session, SessionState
-from loginState import LoginState
-from message import Message
-from cunylogin import login, logout
-from gpa import GPA
+from ..helper.session import Session, SessionState
+from ..helper.loginState import LoginState
+from ..helper.message import Message
+from ..login_flow.cunylogin import login, logout
+from ..helper.gpa import GPA
+from ..helper.constants import instance_path, script_path
 
-from constants import instance_path
-from constants import script_path
-
-import constants
-import fileManager
-
-import helper
+import ..helper.constants
+import ..helper.fileManager
+import ..helper.helper
 
 # Remote
 import requests

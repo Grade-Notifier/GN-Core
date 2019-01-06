@@ -9,7 +9,7 @@ __maintainer__ = "Ehud Adler & Akiva Sherman"
 __email__ = "self@ehudadler.com"
 __status__ = "Production"
 
-from loginState import LoginState
+from ..login_flow.loginState import LoginState
 
 # College names and codes pulled from the CunyFirst website
 college_codes = {
