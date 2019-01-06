@@ -128,4 +128,3 @@ def instance_path(state=LoginState.DEV):
         return INSTANCE_ABS_PATH_TEST
     else:
         return INSTANCE_ABS_PATH_DEV
-g
