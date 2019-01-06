@@ -1,4 +1,4 @@
-"""Grade-Notifier               
+"""Grade-Notifier
 """
 
 __author__ = "Ehud Adler & Akiva Sherman"
@@ -11,7 +11,7 @@ __status__ = "Production"
 
 ###********* Imports *********###
 
-## Local
+# Local
 from session import Session, SessionState
 from loginState import LoginState
 from message import Message
@@ -26,7 +26,7 @@ import fileManager
 
 import helper
 
-## Remote
+# Remote
 import requests
 import getpass
 import re
@@ -65,7 +65,7 @@ state = None
     Holds details for a class to be compared later
 
     Name: Short class name
-    Description: Long class name 
+    Description: Long class name
     Units: Number of credits its worth
     Grading: Undergraduate vs Graduate
     Grade: Letter Grade
@@ -84,7 +84,7 @@ class Class():
 
     def __eq__(self, other):
         return self.grade == other.grade \
-                and self.gradepts == other.gradepts
+            and self.gradepts == other.gradepts
 
 
 '''
@@ -118,10 +118,10 @@ def create_text_message(change_log):
     new_message = Message()
 
     new_message \
-    .add("New Grades have been posted for the following classes") \
-    .newline() \
-    .add("-------------") \
-    .newline()
+        .add("New Grades have been posted for the following classes") \
+        .newline() \
+        .add("-------------") \
+        .newline()
 
     class_num = 1
 
@@ -131,32 +131,31 @@ def create_text_message(change_log):
     for elm in change_log:
         if len(elm['grade']) != 0:
             new_message \
-            .add("{0}. {1}".format(class_num, elm['name'])) \
-            .newline()
+                .add("{0}. {1}".format(class_num, elm['name'])) \
+                .newline()
             class_num += 1
 
     new_message \
-    .newline() \
-    .add("Grade for those classes are:") \
-    .newline() \
-    .add("----------------------------") \
-    .newline()
+        .newline() \
+        .add("Grade for those classes are:") \
+        .newline() \
+        .add("----------------------------") \
+        .newline()
 
     for elm in change_log:
         if len(elm['grade']) != 0:
             new_message \
-            .add("{0}: {1} (Grade) -- {2} (Grade Points)".format(
-                elm['name'], elm['grade'], elm['gradepts'])) \
-            .newline()
+                .add("{0}: {1} (Grade) -- {2} (Grade Points)".format(
+                    elm['name'], elm['grade'], elm['gradepts'])) \
+                .newline()
 
     if gpa.get_term_gpa() >= 0:
 
-        new_message.add("----------------------------") \
-        .newline() \
-        .add("Your term GPA is: {0}".format(gpa.get_term_gpa())) \
-        .newline() \
-        .add("Your cumulative GPA is: {0}".format(gpa.get_cumulative_gpa())) \
-        .newline()
+        new_message.add("----------------------------") .newline() .add(
+            "Your term GPA is: {0}".format(
+                gpa.get_term_gpa())) .newline() .add(
+            "Your cumulative GPA is: {0}".format(
+                gpa.get_cumulative_gpa())) .newline()
 
         # Sign the message
         new_message.sign()
@@ -173,8 +172,9 @@ def create_text_message(change_log):
 
 
 def find_changes(old, new):
-    new_gpa = new[
-        -1]  # extract the new GPA. we never need the old one, so dont extract it, just truncate the array
+    # extract the new GPA. we never need the old one, so dont extract it, just
+    # truncate the array
+    new_gpa = new[-1]
 
     old = old[:-1]  # remove from arrays
     new = new[:-1]
@@ -211,7 +211,7 @@ def create_instance(session, username, password, number, school_code):
     if session.is_logged_in():
         start_notifier(session, number, school_code, username, password)
     else:
-        ## Login failed
+        # Login failed
         pass
 
 
@@ -254,7 +254,7 @@ def refresh(session, school):
     try:
         table = soup.findAll(
             'table', attrs={'class': "PSLEVEL1GRIDWBO"})[0]  # get term table
-    except:
+    except BaseException:
         table = None
 
     result = []
@@ -293,12 +293,12 @@ def start_notifier(session, number, school, username, password):
         if session.is_logged_in():
             result = refresh(session, school)
             print('RESULT:', result)
-            #if len(old_result) > len(result):
+            # if len(old_result) > len(result):
             #    pass
-            #else:
+            # else:
             changelog = find_changes(old_result, result)
             print('CHANGELOG', changelog)
-            if changelog != None:
+            if changelog is not None:
                 message = create_text_message(changelog)
                 send_text(message, number)
                 old_result = result
@@ -375,7 +375,7 @@ def test_message_constructions():
         'grade': "4",
         'gradepts': "5"
     },
-          GPA()]
+        GPA()]
     message = create_text_message(l1)
     return message == '''
 
@@ -437,13 +437,13 @@ def parse():
     parser.add_argument('--phone')
     parser.add_argument('--filename')
 
-    ## Production
+    # Production
     parser.add_argument('--prod')
 
-    ## Development
+    # Development
     parser.add_argument('--enable_phone')
 
-    ## Testing
+    # Testing
     parser.add_argument('--test')
     parser.add_argument('--test_diff')
     parser.add_argument('--test_add_remove_instance')

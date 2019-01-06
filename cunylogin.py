@@ -1,5 +1,5 @@
 """login
-All login flow happens here          
+All login flow happens here
 """
 
 __author__ = "Ehud Adler & Akiva Sherman"
@@ -12,7 +12,7 @@ __status__ = "Production"
 
 ###********* Imports *********###
 
-## Local
+# Local
 import constants
 import fileManager
 
@@ -22,13 +22,13 @@ from lxml import html
 
 
 def logout(session):
-    ##TODO
+    # TODO
     try:
         session.current.get(constants.CUNY_FIRST_LOGOUT_URL)
         session.current.get(constants.CUNY_FIRST_LOGOUT_2_URL)
         session.current.get(constants.CUNY_FIRST_LOGOUT_3_URL)
         return True
-    except:
+    except BaseException:
         return False
 
 
@@ -37,7 +37,7 @@ def login(session, username, password):
 
     session.current.get(constants.CUNY_FIRST_HOME_URL)
 
-    ## AUTH LOGIN
+    # AUTH LOGIN
     data = {
         'usernameH': '{0}@login.cuny.edu'.format(username),
         'username': username,
@@ -46,7 +46,7 @@ def login(session, username, password):
     }
     session.current.post(constants.CUNY_FIRST_AUTH_SUBMIT_URL, data=data)
 
-    ## STUDENT CENTER
+    # STUDENT CENTER
     response = session.current.get(constants.CUNY_FIRST_STUDENT_CENTER_URL)
     tree = html.fromstring(response.text)
     try:
