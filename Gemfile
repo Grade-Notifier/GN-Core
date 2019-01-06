@@ -8,5 +8,5 @@ gem 'danger'
 gem 'danger-pep8'
 gem 'danger-welcome_message'
 gem 'danger-commit_lint'
-gem install danger-auto_label
+gem 'danger-auto_label'
 # gem 'danger-todoist'
