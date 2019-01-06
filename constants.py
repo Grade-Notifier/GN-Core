@@ -73,7 +73,6 @@ def log_path(local=False):
     else:
         return LOG_PATH
 
-
 def script_path(local=False):
     if local:
         return SCRIPT_PATH_DEV
