@@ -37,19 +37,7 @@ There are currenly 3 main ways you can help contribute:
 2. Building out the script
 3. DevOps, making sure the project doesn't hiccup
 
-### Getting started
-
-**Step 1** is setting up your personal forked version of the repository. To do this click the word "fork" at the top right of the screen<br>
-**Step 2** is cloning from your remote repository to your local machine. To do this, follow githubs guide: [How to clone](https://help.github.com/articles/cloning-a-repository/)
-
-**Step 3:** Now its time to find an issue you want to help with. Head over to the [issues section](https://github.com/Huddie/Grade-Notifier/issues) of this repo to find one. If your a beginner we suggest finding one marked with the ["good-first-issue"](https://github.com/Huddie/Grade-Notifier/labels/good%20first%20issue) tag. 
-
-Don't hesitate to reach out for help. Simply comment on the issue and someone will help you out.
-
-**Step 4:** Once you think you've solved the issue and are ready to have your changes incorperated into the master, check out the [Pull Request guide]().
-
-Again, if you have any question, feel free to reach out!
-
+Check out the contributing guide for a more thorough 
 
 ## FAQ
 
