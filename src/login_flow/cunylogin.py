@@ -13,10 +13,10 @@ __status__ = "Production"
 ###********* Imports *********###
 
 # Local
-import constants
-import fileManager
+import ..helper.constants
+import ..helper.fileManager
 
-from session import Session, SessionState
+from ..helper.session import Session, SessionState
 
 from lxml import html
 
