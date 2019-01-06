@@ -44,7 +44,7 @@ college_codes = {
 
 INSTANCE_ABS_PATH = "/home/fa18/313/adeh6562/public_html/grade-notifier/instances.txt"
 
-INSTANCE_ABS_PATH_TEST = "/home/fa18/313/adeh6562/public_html/grade-notifier"\
+INSTANCE_ABS_PATH_TEST = "/home/fa18/313/adeh6562/public_html/grade-notifier" \
     + "/test-instances.txt"
 
 INSTANCE_ABS_PATH_DEV = "./instances.txt"
@@ -79,7 +79,7 @@ CUNY_FIRST_SIGNED_IN_STUDENT_CENTER_URL = "https://hrsa.cunyfirst.cuny.edu/psc" 
     + "=PORTAL_ROOT_OBJECT.HC_SSS_STUDENT_CENTER&IsFolder" \
     + "=false&IgnoreParamTempl=FolderPath%2cIsFolder&PortalActualURL" \
     + "=https%3a%2f%2fhrsa.cunyfirst.cuny.edu%2fpsc%2fcnyhcprd" \
-    + "%2fEMPLOYEE%2fHRMS%2fc%2fSA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL&"
+    + "%2fEMPLOYEE%2fHRMS%2fc%2fSA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL&" \
     + "PortalContentURL=https%3a%2f%2fhrsa.cunyfirst.cuny.edu" \
     + "%2fpsc%2fcnyhcprd%2fEMPLOYEE%2fHRMS%2fc%2fSA_LEARNER_SERVICES." \
     + "SSS_STUDENT_CENTER.GBL&PortalContentProvider=HRMS&PortalCRefLabel" \
