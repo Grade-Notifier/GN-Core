@@ -47,8 +47,10 @@ def run_test(args):
     os.system('rm {0}'.format(instancepath))
 
     print("\n4. Testing Message Construction")
-    os.system('python3 {0}grade-notifier.py --test=true --test_message_contruction=true'.format(scriptpath))
+    os.system('python3 {0}grade-notifier.py --test=true --test_message_construction=true'.format(scriptpath))
 
+    print('\n5. Testing GPA Class')
+    os.system('python3 {0}grade-notifier.py --test=true --test_gpa_class=true'.format(scriptpath))
 
 
 def main():

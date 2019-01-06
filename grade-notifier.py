@@ -16,6 +16,7 @@ from session import Session, SessionState
 from loginState import LoginState
 from message import Message
 from cunylogin import login, logout
+from gpa import GPA
 
 from constants import instance_path
 from constants import script_path
@@ -114,9 +115,13 @@ def create_text_message(change_log):
     .add("New Grades have been posted for the following classes") \
     .newline() \
     .add("-------------") \
-    .newline()
+    .newline() 
 
     class_num = 1
+
+    gpa = change_log[-1]
+    change_log = change_log[:-1]
+
     for elm in change_log:
         if len(elm['grade']) != 0:
             new_message \
@@ -138,8 +143,17 @@ def create_text_message(change_log):
                 elm['name'], elm['grade'], elm['gradepts'])) \
             .newline()
 
-    # Sign the message
-    new_message.sign()
+    if gpa.get_term_gpa() >= 0:
+
+        new_message.add("----------------------------") \
+        .newline() \
+        .add(f"Your term GPA is: {gpa.get_term_gpa()}") \
+        .newline() \
+        .add(f"Your cumulative GPA is: {gpa.get_cumulative_gpa()}") \
+        .newline()
+
+        # Sign the message
+        new_message.sign()
 
     return new_message.message()
 
@@ -150,6 +164,11 @@ def create_text_message(change_log):
     New: New Classes
 '''
 def find_changes(old, new):
+    new_gpa = new[-1]    # extract the new GPA. we never need the old one, so dont extract it, just truncate the array
+
+    old = old[:-1]        # remove from arrays
+    new = new[:-1]
+
 
     changelog = []
     for i in range(0, len(new)):
@@ -163,7 +182,8 @@ def find_changes(old, new):
                 changelog.append(
                     {'name': class2.name, 'grade': class2.grade, 'gradepts': class2.gradepts})
 
-    return None if len(changelog) == 0 else changelog
+
+    return None if len(changelog) == 0 else changelog + [new_gpa]    # always add gpa to the list 
 
 
 ###********* Main Program *********###
@@ -183,9 +203,9 @@ def refresh(session, school):
 
     payload = {'ICACTION': 'DERIVED_SSS_SCT_SSS_TERM_LINK'}
     try:
-    	response = session.current.post(constants.CUNY_FIRST_GRADES_URL, data=payload)
+        response = session.current.post(constants.CUNY_FIRST_GRADES_URL, data=payload)
     except TimeoutError:
-    	return refresh(session, school)
+        return refresh(session, school)
 
     tree = html.fromstring(response.text)
     term = helper.get_semester()
@@ -197,16 +217,23 @@ def refresh(session, school):
         'ICACTION': 'DERIVED_SSS_SCT_SSR_PB_GO'
     }
     try:
-    	response = session.current.post(constants.CUNY_FIRST_GRADES_URL, data=payload)
+        response = session.current.post(constants.CUNY_FIRST_GRADES_URL, data=payload)
     except TimeoutError:
-    	return refresh(session, school)
+        return refresh(session, school)
 
 
 
     tree = BeautifulSoup(response.text, 'lxml')
     good_html = tree.prettify()
     soup = BeautifulSoup(good_html, 'html.parser')
-    table = soup.find('table', attrs={'class': "PSLEVEL1GRIDWBO"})
+
+    try:
+        table = soup.findAll('table', attrs={'class': "PSLEVEL1GRIDWBO"})[0]            # get term table
+    except:
+        table = None
+
+        
+
 
     result = []
     if table is not None:
@@ -224,6 +251,14 @@ def refresh(session, school):
                 new_class = Class(data[0].strip(), data[1].strip(), data[2].strip(
                 ), data[3].strip(), data[4].strip(), data[5].strip())
                 result.append(new_class)
+                
+        gpa_stats = soup.findAll('table', attrs={'class': "PSLEVEL1GRIDWBO"})[1]        # get gpa table
+
+        last_row = gpa_stats.find_all('tr')[-1]
+        term_gpa = float(last_row.find_all('td')[1].get_text())
+        cumulative_gpa = float(last_row.find_all('td')[-1].get_text())
+
+        result.append(GPA(term_gpa, cumulative_gpa))
     return result
 
 
@@ -233,12 +268,12 @@ def start_notifier(session, number, school, username, password):
     while counter < 844:
         if session.is_logged_in():
             result = refresh(session, school)
-            print(result)
+            print('RESULT:', result)
             #if len(old_result) > len(result):
             #    pass
             #else:
             changelog = find_changes(old_result, result)
-            print(changelog)
+            print('CHANGELOG', changelog)
             if changelog != None:
                 message = create_text_message(changelog)
                 send_text(message, number)
@@ -247,7 +282,7 @@ def start_notifier(session, number, school, username, password):
             time.sleep(5*60)  # 5 sec intervals
             counter += 1
         else:
-            session.current = requests.Session()	# make a new requests.Session object :)
+            session.current = requests.Session()    # make a new requests.Session object :)
             login(session, username, password)
 
 
@@ -297,8 +332,8 @@ def test_add_remove():
     user_removed = check_user_exists(username.lower())
     return user_exists and not user_removed
 
-def test_message_contructions():
-    l1 = [{'name': "0", 'grade': "5", 'gradepts': "5"}, {'name': "3", 'grade': "4", 'gradepts': "5"}]
+def test_message_constructions():
+    l1 = [{'name': "0", 'grade': "5", 'gradepts': "5"}, {'name': "3", 'grade': "4", 'gradepts': "5"}, GPA()]
     message = create_text_message(l1)
     return message == '''
 
@@ -309,6 +344,29 @@ def test_diff():
     l2 = [Class("0","1","2","4","5","5"), Class("2","1","2","3","4","5"), Class("3","1","2","3","4","5")]
     l3 = find_changes(l1, l2)
     return l3 == [{'name': "0", 'grade': "5", 'gradepts': "5"}, {'name': "3", 'grade': "4", 'gradepts': "5"}]
+
+def test_gpa_class():
+    
+    correct_letter_answers = {
+        0 : 'F',
+        1 : 'D',
+        1.5 : 'D+',
+        2 : 'C',
+        2.5 : 'C+',
+        3 : 'B',
+        3.5 : 'B+',
+        4 : 'A' 
+    }
+    for num in correct_letter_answers.keys():
+        g = GPA(num,num)
+        grades = GPA.get_letter_grade(g)
+        if grades['term_gpa'] != correct_letter_answers[num]:
+            return False
+        if grades['cumulative_gpa'] != correct_letter_answers[num]:
+            return False    
+
+    return True
+
 
 def parse():
     parser = argparse.ArgumentParser(description='Specify commands for CUNY Grade Notifier Retriever v1.0')
@@ -329,7 +387,8 @@ def parse():
     parser.add_argument('--test')
     parser.add_argument('--test_diff')
     parser.add_argument('--test_add_remove_instance')
-    parser.add_argument('--test_message_contruction')
+    parser.add_argument('--test_message_construction')
+    parser.add_argument('--test_gpa_class')
     return parser.parse_args()
 
 
@@ -341,8 +400,10 @@ def run_test(args):
         passed_test = test_diff()
     elif args.test_add_remove_instance:
         passed_test = test_add_remove()
-    elif args.test_message_contruction:
-        passed_test = test_message_contructions()
+    elif args.test_message_construction:
+        passed_test = test_message_constructions()
+    elif args.test_gpa_class:
+        passed_test = test_gpa_class()
     else:
         print("This test does not exists")
     
