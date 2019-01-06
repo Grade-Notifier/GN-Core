@@ -1,13 +1,14 @@
 """Message Class
 """
 
-__author__      = "Ehud Adler & Akiva Sherman"
-__copyright__   = "Copyright 2018, The Punk Kids"
-__license__     = "MIT"
-__version__     = "1.0.0"
-__maintainer__  = "Ehud Adler & Akiva Sherman"
-__email__       = "self@ehudadler.com"
-__status__      = "Production"
+__author__ = "Ehud Adler & Akiva Sherman"
+__copyright__ = "Copyright 2018, The Punk Kids"
+__license__ = "MIT"
+__version__ = "1.0.0"
+__maintainer__ = "Ehud Adler & Akiva Sherman"
+__email__ = "self@ehudadler.com"
+__status__ = "Production"
+
 
 class Message():
     _message = ""
@@ -25,7 +26,7 @@ class Message():
     def add(self, text):
         self._message += text
         return self
-    
+
     def sign(self):
-         self._message += "\nHope you did well! -- Ehud & Akiva"
-         return self
+        self._message += "\nHope you did well! -- Ehud & Akiva"
+        return self
