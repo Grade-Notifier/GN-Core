@@ -47,7 +47,12 @@ end
 ## Unit Tests
 system("python3 ./src/tests/tests.py 2> log.txt")
 unit_text = File.read("./log.txt")
-warn(unit_text)
+if not unit_text.include?('OK')
+	fail(unit_text)
+else
+	puts("All Unit Test Passed! 🤟")
+end
+
 
 
 
