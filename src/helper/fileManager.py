@@ -15,7 +15,6 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 import helper.constants
 
-
 def create_dir(dir_path):
     try:
         os.makedirs(dir_path)
