@@ -50,7 +50,7 @@ unit_text = File.read("./log.txt")
 if not unit_text.include?('OK')
 	fail(unit_text)
 else
-	puts("All Unit Test Passed! 🤟")
+	message("All Unit Test Passed! 🤟")
 end
 
 
