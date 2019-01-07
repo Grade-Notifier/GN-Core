@@ -38,7 +38,7 @@ from login_flow.loginState import LoginState
 from helper.message import Message
 from login_flow.cunylogin import login, logout
 from helper.gpa import GPA
-from helper.constants import instance_path, script_path
+from helper.constants import instance_path
 
 import helper.constants
 import helper.fileManager

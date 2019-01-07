@@ -10,6 +10,7 @@ __email__ = "self@ehudadler.com"
 __status__ = "Production"
 
 from os import sys, path
+import socket
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from login_flow.loginState import LoginState
@@ -112,14 +113,14 @@ CUNY_FIRST_LOGOUT_3_URL = 'https://ssologin.cuny.edu/oamsso-bin/logout.pl?end_ur
 LOG_PATH = "/home/fa18/313/adeh6562/public_html/grade-notifier/logs"
 LOG_PATH_DEV = "./logs"
 
-def log_path(local=False):
-    if local:
+def log_path():
+    if socket.gethostname() == 'mars' or socket.gethostname() == 'venus':
         return LOG_PATH_DEV
     else:
         return LOG_PATH
 
-def script_path(local=False):
-    if local:
+def script_path():
+    if socket.gethostname() == 'mars' or socket.gethostname() == 'venus':
         return SCRIPT_PATH_DEV
     else:
         return SCRIPT_PATH

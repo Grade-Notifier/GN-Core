@@ -110,36 +110,20 @@ class TestDiffMethod(unittest.TestCase):
 #         self.assertFalse(not user_exists)
 #         self.assertFalse(user_removed)
 
-def parse():
-    parser = argparse.ArgumentParser(
-        description='Specify commands for CUNY Grade Notifier Retriever v1.0')
 
-    # Development
-    parser.add_argument('--local')
-    return parser.parse_args()
-
-
-def run_test(args):
-
-    scriptpath = script_path(args.local)
-    instancepath = instance_path(args.local)
+def run_test():
+    scriptpath = script_path()
+    instancepath = instance_path()
 
     if os.path.isfile(instancepath):
         os.system('rm {0}'.format(instancepath))
 
     os.system('touch {0}'.format(instancepath))
-    os.system(
-        'python3 {0}grade-notifier.py --test=true --test_add_remove_instance=true'
-        .format(scriptpath)
-    )
     unittest.main()
     os.system('rm {0}'.format(instancepath))
 
-
 def main():
-    args = parse()
-    run_test(args)
-
+    run_test()
 
 if __name__ == '__main__':
     main()

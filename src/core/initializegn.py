@@ -40,10 +40,10 @@ load_dotenv(dotenv_path)
 account_pass = os.getenv('ACCOUNT_PASSWORD')
 
 
-def run(username, password, school, phone, local):
+def run(username, password, school, phone):
     log_path = '{0}/{1}{2}'.format(
-        constants.log_path(local), username, time.time())
-    create_dir(constants.log_path(local))
+        constants.log_path(), username, time.time())
+    create_dir(constants.log_path())
     if local:
         with open("{0}.txt".format(log_path), "w+") as outfile:
             subprocess.Popen(["nohup",
@@ -92,14 +92,7 @@ def parse():
 
     # Development
     parser.add_argument('--enable_phone')
-
-    # Testing
-    parser.add_argument('--test')
-    parser.add_argument('--test_diff')
-    parser.add_argument('--test_add_remove_instance')
-    parser.add_argument('--test_message_contruction')
     return parser.parse_args()
-
 
 def main():
     args = parse()
