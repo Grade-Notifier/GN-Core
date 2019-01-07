@@ -42,3 +42,11 @@ if github.pr_title.include? "[WIP]"
     # If you want to delete label
     # auto_label.delete("WIP")
 end
+
+
+## Unit Tests
+system("python3 ./src/tests/tests.py 2> log.txt")
+
+
+
+
