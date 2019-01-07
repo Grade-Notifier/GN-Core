@@ -46,7 +46,7 @@ end
 
 ## Unit Tests
 system("python3 ./src/tests/tests.py 2> log.txt")
-unit_text = File.read(./log.txt)
+unit_text = File.read("./log.txt")
 warn(unit_text)
 
 
