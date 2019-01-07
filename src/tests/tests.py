@@ -1,16 +1,16 @@
-import unittest
-import os
-import argparse
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+from helper.constants import script_path, instance_path
+from helper.message import Message
+from helper.gpa import GPA
 from core.grade_notifier import Class, find_changes, \
     create_text_message, add_new_user_instance, \
     check_user_exists, remove_user_instance, \
     RefreshResult, Changelog
-from helper.gpa import GPA
-from helper.message import Message
-from helper.constants import script_path, instance_path
-from os import sys, path
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
+import unittest
+import os
+import argparse
 
 """Test-Grade-Notifier
 """

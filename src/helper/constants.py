@@ -1,3 +1,7 @@
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+import socket
 from login_flow.loginState import LoginState
 """Constants
 """
@@ -10,9 +14,7 @@ __maintainer__ = "Ehud Adler & Akiva Sherman"
 __email__ = "self@ehudadler.com"
 __status__ = "Production"
 
-from os import sys, path
-import socket
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
 
 
 # College names and codes pulled from the CunyFirst website

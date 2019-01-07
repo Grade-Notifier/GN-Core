@@ -1,26 +1,16 @@
-import helper.helper
-import helper.fileManager
-import helper.constants
-from helper.constants import instance_path
-from helper.gpa import GPA
-from login_flow.cunylogin import login, logout
-from helper.message import Message
-from login_flow.loginState import LoginState
-from helper.session import Session, SessionState
-"""Grade-Notifier
-"""
-
-__author__ = "Ehud Adler & Akiva Sherman"
-__copyright__ = "Copyright 2018, The Punk Kids"
-__license__ = "MIT"
-__version__ = "1.0.0"
-__maintainer__ = "Ehud Adler & Akiva Sherman"
-__email__ = "self@ehudadler.com"
-__status__ = "Production"
-
 ###********* Imports *********###
-
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 # Remote
+from helper.session import Session, SessionState
+from login_flow.loginState import LoginState
+from helper.message import Message
+from login_flow.cunylogin import login, logout
+from helper.gpa import GPA
+from helper.constants import instance_path
+import helper.constants
+import helper.fileManager
+import helper.helper
 import requests
 import getpass
 import re
@@ -36,12 +26,19 @@ from lxml import etree
 from twilio.rest import Client
 from lxml import html
 from os.path import join, dirname
-from os import sys, path
 from dotenv import load_dotenv
 
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-# Local
+"""Grade-Notifier
+"""
+
+__author__ = "Ehud Adler & Akiva Sherman"
+__copyright__ = "Copyright 2018, The Punk Kids"
+__license__ = "MIT"
+__version__ = "1.0.0"
+__maintainer__ = "Ehud Adler & Akiva Sherman"
+__email__ = "self@ehudadler.com"
+__status__ = "Production"
 
 
 ###********* GLOBALS *********###

@@ -1,6 +1,12 @@
+###********* Imports *********###
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+from lxml import html
 from helper.session import Session, SessionState
 import helper.fileManager
 import helper.constants
+
 """login
 All login flow happens here
 """
@@ -13,10 +19,8 @@ __maintainer__ = "Ehud Adler & Akiva Sherman"
 __email__ = "self@ehudadler.com"
 __status__ = "Production"
 
-###********* Imports *********###
-from os import sys, path
-from lxml import html
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+
 
 # Local
 

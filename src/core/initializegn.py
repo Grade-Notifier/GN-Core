@@ -1,9 +1,21 @@
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+import argparse
+import constants
+import time
+import os
+import requests
+import getpass
+import subprocess
+from lxml import html
 from helper.fileManager import create_dir
 from helper.session import Session
 from helper.constants import log_path
 from login_flow.cunylogin import login, logout
 from dotenv import load_dotenv
 from os.path import join, dirname
+
 """Initialize Grade-Notifier
 """
 
@@ -14,20 +26,6 @@ __version__ = "1.0.0"
 __maintainer__ = "Ehud Adler & Akiva Sherman"
 __email__ = "self@ehudadler.com"
 __status__ = "Production"
-
-import argparse
-import constants
-import time
-import os
-import requests
-import getpass
-import subprocess
-
-from lxml import html
-from os import sys, path
-
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
 
 # Create .env file path.
 dotenv_path = join(dirname(__file__), '.env')
