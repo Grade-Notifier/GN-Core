@@ -18,7 +18,7 @@ Great question! Let me highlight a few of our strengths:
 |😰| Reduce stress|
 |👨‍👩‍👧‍👦| Open source|
 
-We aim to allow students to enjoy their vacation instead of checking every minute to see if theor grades were released. We check every 5 minutes for you and notifiy you in case of a grade change. 
+We aim to allow students to enjoy their vacation instead of checking every minute to see if their grades were released. We check every 5 minutes for you and notify you in case of a grade change. 
 
  
 ## How do I use Grade Notifier?
@@ -29,9 +29,9 @@ The guide on the site should help you get started!
 
 ## Contributing
 
-Hey! Your looking to contribute to Grade-Notifier? That's Awesome!! This is a college project so the hope is that students over the years will help maintain it. If your interested the community thanks you!
+Hey! You're looking to contribute to Grade-Notifier? That's awesome!! This is a college project so the hope is that students over the years will help maintain it. If you're interested, the community thanks you!
 
-There are currenly 3 main ways you can help contribute:
+There are currently 3 main ways you can help contribute:
 
 1. Improving the website
 2. Building out the script
