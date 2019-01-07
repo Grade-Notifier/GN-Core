@@ -1,3 +1,12 @@
+import helper.helper
+import helper.fileManager
+import helper.constants
+from helper.constants import instance_path
+from helper.gpa import GPA
+from login_flow.cunylogin import login, logout
+from helper.message import Message
+from login_flow.loginState import LoginState
+from helper.session import Session, SessionState
 """Grade-Notifier
 """
 
@@ -33,16 +42,7 @@ from dotenv import load_dotenv
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 # Local
-from helper.session import Session, SessionState
-from login_flow.loginState import LoginState
-from helper.message import Message
-from login_flow.cunylogin import login, logout
-from helper.gpa import GPA
-from helper.constants import instance_path
 
-import helper.constants
-import helper.fileManager
-import helper.helper
 
 ###********* GLOBALS *********###
 
@@ -73,7 +73,6 @@ state = None
 '''
 
 
-
 class Changelog():
     def __init__(self, classes, gpa):
         self.classes = classes
@@ -82,11 +81,13 @@ class Changelog():
     def __eq__(self, other):
         return self.classes == other.classes \
             and self.gpa == other.gpa
-        
+
+
 class RefreshResult():
     def __init__(self, classes, gpa):
         self.classes = classes
         self.gpa = gpa
+
 
 class Class():
     def __init__(self, name, description, units, grading, grade, gradepts):
@@ -208,7 +209,8 @@ def find_changes(old, new):
                     'gradepts': class2.gradepts
                 })
 
-    return None if len(changelog) == 0 else Changelog(changelog, new_gpa)  # always add gpa to the list
+    return None if len(changelog) == 0 else Changelog(
+        changelog, new_gpa)  # always add gpa to the list
 
 
 ###********* Main Program *********###
@@ -314,7 +316,8 @@ def start_notifier(session, number, school, username, password):
             time.sleep(5 * 60)  # 5 sec intervals
             counter += 1
         else:
-            session.current = requests.Session()  # make a new requests.Session object :)
+            # make a new requests.Session object :)
+            session.current = requests.Session()
             login(session, username, password)
 
 
@@ -375,9 +378,8 @@ def parse():
 
     # Development
     parser.add_argument('--enable_phone')
-    
-    return parser.parse_args()
 
+    return parser.parse_args()
 
 
 def initialize_twilio():
@@ -393,7 +395,7 @@ def main():
     state = LoginState.determine_state(args)
 
     try:
-        
+
         # Only initialize twilio in production
         # or when specifically asked
         if state == LoginState.PROD or args.enable_phone:

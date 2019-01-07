@@ -1,3 +1,9 @@
+from helper.fileManager import create_dir
+from helper.session import Session
+from helper.constants import log_path
+from login_flow.cunylogin import login, logout
+from dotenv import load_dotenv
+from os.path import join, dirname
 """Initialize Grade-Notifier
 """
 
@@ -22,13 +28,6 @@ from os import sys, path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from os.path import join, dirname
-from dotenv import load_dotenv
-
-from login_flow.cunylogin import login, logout
-from helper.constants import log_path
-from helper.session import Session
-from helper.fileManager import create_dir
 
 # Create .env file path.
 dotenv_path = join(dirname(__file__), '.env')
@@ -93,6 +92,7 @@ def parse():
     # Development
     parser.add_argument('--enable_phone')
     return parser.parse_args()
+
 
 def main():
     args = parse()

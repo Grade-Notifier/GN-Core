@@ -1,3 +1,6 @@
+from helper.session import Session, SessionState
+import helper.fileManager
+import helper.constants
 """login
 All login flow happens here
 """
@@ -16,10 +19,7 @@ from lxml import html
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 # Local
-import helper.constants
-import helper.fileManager
 
-from helper.session import Session, SessionState
 
 def logout(session):
     # TODO

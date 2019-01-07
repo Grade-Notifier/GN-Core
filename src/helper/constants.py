@@ -1,3 +1,4 @@
+from login_flow.loginState import LoginState
 """Constants
 """
 
@@ -13,7 +14,6 @@ from os import sys, path
 import socket
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from login_flow.loginState import LoginState
 
 # College names and codes pulled from the CunyFirst website
 college_codes = {
@@ -108,10 +108,11 @@ CUNY_FIRST_HOME_URL_TEST = 'https://home.cunyfirst.cuny.edu/psp/cnyepprd/EMPLOYE
 CUNY_FIRST_LOGOUT_URL = 'https://home.cunyfirst.cuny.edu/psp/cnyepprd/EMPLOYEE/EMPL/?cmd=logout'
 CUNY_FIRST_LOGOUT_2_URL = 'https://home.cunyfirst.cuny.edu/sso/logout?end_url=https://home.cunyfirst.cuny.edu'
 CUNY_FIRST_LOGOUT_3_URL = 'https://ssologin.cuny.edu/oamsso-bin/logout.pl?end_url=https%3A' \
-+ '%2F%2Fhome.cunyfirst.cuny.edu'
+    + '%2F%2Fhome.cunyfirst.cuny.edu'
 
 LOG_PATH = "/home/fa18/313/adeh6562/public_html/grade-notifier/logs"
 LOG_PATH_DEV = "./logs"
+
 
 def log_path():
     if socket.gethostname() == 'mars' or socket.gethostname() == 'venus':
@@ -119,11 +120,13 @@ def log_path():
     else:
         return LOG_PATH
 
+
 def script_path():
     if socket.gethostname() == 'mars' or socket.gethostname() == 'venus':
         return SCRIPT_PATH_DEV
     else:
         return SCRIPT_PATH
+
 
 def instance_path(state=LoginState.DEV):
     if state == LoginState.PROD:

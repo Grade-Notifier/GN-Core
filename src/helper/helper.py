@@ -1,5 +1,6 @@
 import datetime
 
+
 def get_semester():
     now = datetime.datetime.now()
     today = (now.month, now.day)

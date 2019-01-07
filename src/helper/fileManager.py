@@ -1,3 +1,4 @@
+import helper.constants
 """File Manager
 helps with file managment
 """
@@ -12,8 +13,6 @@ __status__ = "Production"
 
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
-import helper.constants
 
 
 def create_dir(dir_path):
