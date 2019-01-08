@@ -29,7 +29,7 @@ __email__ = "self@ehudadler.com"
 __status__ = "Production"
 
 # Create .env file path.
-dotenv_path = join(dirname(constants.abs_repo_path()), '.env')
+dotenv_path = join(constants.abs_repo_path(), '.env')
 
 # Load file from the path.
 load_dotenv(dotenv_path)
@@ -56,11 +56,6 @@ def run(username, password, school, phone):
         with open("{0}.txt".format(log_path), "w+") as outfile:
             subprocess.Popen(
                 [
-                    "echo",
-                    f"{account_pass}",
-                    "|",
-                    "su",
-                    "-c",
                     "nohup",
                     "setsid",
                     "python3",
@@ -69,9 +64,7 @@ def run(username, password, school, phone):
                     f"--password={password}",
                     f"--school={school}",
                     f"--phone={phone}",
-                    "--prod=true",
-                    "-",
-                    "adeh6562"],
+                    "--prod=true"],
                 stdout=outfile)
 
 
