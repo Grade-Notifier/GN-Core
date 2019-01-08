@@ -27,7 +27,7 @@ end
 declared_trivial = (github.pr_title + github.pr_body).include?("#trivial") || !has_app_changes
 
 # Formatting
-pep8.lint(use_inline_comments=true)
+# pep8.lint(use_inline_comments=true)
 pep8.count_errors
 
 # todoist.message = "Please fix all TODOS"
