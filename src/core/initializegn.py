@@ -54,24 +54,42 @@ def run(username, password, school, phone):
                              stdout=outfile)
     else:
         with open("{0}.txt".format(log_path), "w+") as outfile:
-            subprocess.Popen(
-                [
-                    "echo",
-                    f"{account_pass}",
-                    "|",
-                    "su",
-                    "-c",
-                    "nohup",
-                    "setsid",
-                    "python3",
-                    f"{constants.script_path()}/grade_notifier.py",
-                    f"--username={username}",
-                    f"--password={password}",
-                    f"--school={school}",
-                    f"--phone={phone}",
-                    "--prod=true",
-                    "-",
-                    "adeh6562"])
+
+        try:
+            child = pexpect.spawn("su")
+        expect:
+            print "Unable to login as root. Consult the Software Engineer."
+            sys.exit()
+
+        i = child.expect([pexpect.TIMEOUT, "Password:"])
+
+        if i == 0
+            print "Timed out when logging into root. Consult the Software Engineer."
+            sys.exit()
+        if i == 1
+            child.sendline(f"{password}"")
+            print "Logged in as root"
+            sys.exit()
+
+
+            # subprocess.Popen(
+            #     [
+            #         "echo",
+            #         f"{account_pass}",
+            #         "|",
+            #         "su",
+            #         "-c",
+            #         "nohup",
+            #         "setsid",
+            #         "python3",
+            #         f"{constants.script_path()}/grade_notifier.py",
+            #         f"--username={username}",
+            #         f"--password={password}",
+            #         f"--school={school}",
+            #         f"--phone={phone}",
+            #         "--prod=true",
+            #         "-",
+            #         "adeh6562"])
 
 
 def parse():
