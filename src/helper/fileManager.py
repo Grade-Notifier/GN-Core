@@ -1,7 +1,8 @@
 from os import sys, path
+import os
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-import helper.constants
+from helper import constants
 """File Manager
 helps with file managment
 """

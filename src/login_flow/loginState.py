@@ -17,10 +17,7 @@ class LoginState():
 
     @staticmethod
     def determine_state(args):
-        if args.test:
-            print("Running in test mode.....")
-            return LoginState.TEST
-        elif args.prod:
+        if args.prod:
             return LoginState.PROD
         else:
             # The default is development

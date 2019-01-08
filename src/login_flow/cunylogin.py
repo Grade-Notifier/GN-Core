@@ -1,11 +1,12 @@
 ###********* Imports *********###
 from os import sys, path
+import os
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from lxml import html
 from helper.session import Session, SessionState
-import helper.fileManager
-import helper.constants
+from helper import fileManager
+from helper import constants
 
 """login
 All login flow happens here
@@ -18,11 +19,6 @@ __version__ = "1.0.0"
 __maintainer__ = "Ehud Adler & Akiva Sherman"
 __email__ = "self@ehudadler.com"
 __status__ = "Production"
-
-
-
-
-# Local
 
 
 def logout(session):

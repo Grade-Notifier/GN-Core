@@ -56,7 +56,7 @@ INSTANCE_ABS_PATH_TEST = "/home/fa18/313/adeh6562/public_html/grade-notifier" \
 INSTANCE_ABS_PATH_DEV = "./instances.txt"
 
 SCRIPT_PATH = "/home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/src/core"
-SCRIPT_PATH_DEV = "./"
+SCRIPT_PATH_DEV = "./src/core"
 
 CUNY_FIRST_HOME_URL = "https://home.cunyfirst.cuny.edu"
 CUNY_FIRST_AUTH_SUBMIT_URL = "https://ssologin.cuny.edu/oam/server/auth_cred_submit"
@@ -116,19 +116,20 @@ LOG_PATH = "/home/fa18/313/adeh6562/public_html/grade-notifier/logs"
 LOG_PATH_DEV = "./logs"
 
 
+
+def is_local():
+    return not (socket.gethostname() == 'mars' or socket.gethostname() == 'venus')
 def log_path():
-    if socket.gethostname() == 'mars' or socket.gethostname() == 'venus':
+    if is_local():
         return LOG_PATH_DEV
     else:
         return LOG_PATH
 
-
 def script_path():
-    if socket.gethostname() == 'mars' or socket.gethostname() == 'venus':
+    if is_local():
         return SCRIPT_PATH_DEV
     else:
         return SCRIPT_PATH
-
 
 def instance_path(state=LoginState.DEV):
     if state == LoginState.PROD:
