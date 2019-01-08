@@ -1,8 +1,9 @@
 <img src=./Assets/GN-Logo.png height=300>
 
 
-
-# Welcome! 👋
+# Welcome! 👋 
+<img src="https://app.bitrise.io/app/10f8c1cfb4609be1/status.svg?token=mAJgbWR42h_4_8wJkSiF1g&branch=master"
+             alt="Build Status">
 
 ## What is Grade Notifier?
 
