@@ -39,6 +39,17 @@ There are currently 3 main ways you can help contribute:
 
 Check out the [contributing guide](https://github.com/Huddie/Grade-Notifier/blob/master/CONTRIBUTING.md).
 
+## Open Source & Copying
+
+We open source this repository for 2 main reasons:
+
+1) We hope that a project like this will excite fellow students and give them a project to work on. We know getting started on projects can be tough and we hope this helps get you coding!
+
+2) This project is susceptible to breakage at any point. Being that it relies on CUNYFirsts website the code and URL's are subject to changes and not in our control. For that reason, constent maintainence and updates could be necessary. As much fun as we had building this, we can't keep ontop of it. 
+
+We have chosen to use the MIT License to allow students to make use of the code inside the project but **do not distribute this software commercially** paid or free.  
+
+
 ## FAQ
 
 **Q: Do you store passwords?**<br>
