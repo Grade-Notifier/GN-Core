@@ -25,13 +25,12 @@ workflows:
         - content: |-
             #!/bin/bash
             set -ex
-
             bundle install
-
             # Running Danger
             bundle exec danger
         title: Danger
     - script@1.1.5:
+        run_if: ".IsPR"
         inputs:
         - content: |-
             #!/usr/bin/env bash
