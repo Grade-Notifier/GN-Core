@@ -2,7 +2,6 @@ from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 import argparse
-import pexpect
 import time
 import os
 import requests
@@ -60,9 +59,8 @@ def run(username, password, school, phone):
                     "echo",
                     f"{account_pass}",
                     "|",
-                    "sudo",
-                    "-u",
-                    "adeh6562",
+                    "su",
+                    "-c",
                     "nohup",
                     "setsid",
                     "python3",
@@ -71,8 +69,10 @@ def run(username, password, school, phone):
                     f"--password={password}",
                     f"--school={school}",
                     f"--phone={phone}",
-                    "--prod=true"],
-                stdout=outfile)
+                    "--prod=true",
+                    "-",
+                    "adeh6562"])
+
 
 def parse():
     parser = argparse.ArgumentParser(
