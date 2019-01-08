@@ -1,3 +1,8 @@
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+import socket
+from login_flow.loginState import LoginState
 """Constants
 """
 
@@ -9,10 +14,8 @@ __maintainer__ = "Ehud Adler & Akiva Sherman"
 __email__ = "self@ehudadler.com"
 __status__ = "Production"
 
-from os import sys, path
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from login_flow.loginState import LoginState
+
 
 # College names and codes pulled from the CunyFirst website
 college_codes = {
@@ -52,7 +55,7 @@ INSTANCE_ABS_PATH_TEST = "/home/fa18/313/adeh6562/public_html/grade-notifier" \
 
 INSTANCE_ABS_PATH_DEV = "./instances.txt"
 
-SCRIPT_PATH = "/home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/"
+SCRIPT_PATH = "/home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/src/core"
 SCRIPT_PATH_DEV = "./"
 
 CUNY_FIRST_HOME_URL = "https://home.cunyfirst.cuny.edu"
@@ -107,22 +110,25 @@ CUNY_FIRST_HOME_URL_TEST = 'https://home.cunyfirst.cuny.edu/psp/cnyepprd/EMPLOYE
 CUNY_FIRST_LOGOUT_URL = 'https://home.cunyfirst.cuny.edu/psp/cnyepprd/EMPLOYEE/EMPL/?cmd=logout'
 CUNY_FIRST_LOGOUT_2_URL = 'https://home.cunyfirst.cuny.edu/sso/logout?end_url=https://home.cunyfirst.cuny.edu'
 CUNY_FIRST_LOGOUT_3_URL = 'https://ssologin.cuny.edu/oamsso-bin/logout.pl?end_url=https%3A' \
-+ '%2F%2Fhome.cunyfirst.cuny.edu'
+    + '%2F%2Fhome.cunyfirst.cuny.edu'
 
 LOG_PATH = "/home/fa18/313/adeh6562/public_html/grade-notifier/logs"
 LOG_PATH_DEV = "./logs"
 
-def log_path(local=False):
-    if local:
+
+def log_path():
+    if socket.gethostname() == 'mars' or socket.gethostname() == 'venus':
         return LOG_PATH_DEV
     else:
         return LOG_PATH
 
-def script_path(local=False):
-    if local:
+
+def script_path():
+    if socket.gethostname() == 'mars' or socket.gethostname() == 'venus':
         return SCRIPT_PATH_DEV
     else:
         return SCRIPT_PATH
+
 
 def instance_path(state=LoginState.DEV):
     if state == LoginState.PROD:

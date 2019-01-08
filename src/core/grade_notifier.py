@@ -1,17 +1,16 @@
-"""Grade-Notifier
-"""
-
-__author__ = "Ehud Adler & Akiva Sherman"
-__copyright__ = "Copyright 2018, The Punk Kids"
-__license__ = "MIT"
-__version__ = "1.0.0"
-__maintainer__ = "Ehud Adler & Akiva Sherman"
-__email__ = "self@ehudadler.com"
-__status__ = "Production"
-
 ###********* Imports *********###
-
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 # Remote
+from helper.session import Session, SessionState
+from login_flow.loginState import LoginState
+from helper.message import Message
+from login_flow.cunylogin import login, logout
+from helper.gpa import GPA
+from helper.constants import instance_path
+import helper.constants
+import helper.fileManager
+import helper.helper
 import requests
 import getpass
 import re
@@ -27,22 +26,20 @@ from lxml import etree
 from twilio.rest import Client
 from lxml import html
 from os.path import join, dirname
-from os import sys, path
 from dotenv import load_dotenv
 
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-# Local
-from helper.session import Session, SessionState
-from login_flow.loginState import LoginState
-from helper.message import Message
-from login_flow.cunylogin import login, logout
-from helper.gpa import GPA
-from helper.constants import instance_path, script_path
+"""Grade-Notifier
+"""
 
-import helper.constants
-import helper.fileManager
-import helper.helper
+__author__ = "Ehud Adler & Akiva Sherman"
+__copyright__ = "Copyright 2018, The Punk Kids"
+__license__ = "MIT"
+__version__ = "1.0.0"
+__maintainer__ = "Ehud Adler & Akiva Sherman"
+__email__ = "self@ehudadler.com"
+__status__ = "Production"
+
 
 ###********* GLOBALS *********###
 
@@ -71,6 +68,22 @@ state = None
     Grade: Letter Grade
     Grade Points: Units * Letter grade value
 '''
+
+
+class Changelog():
+    def __init__(self, classes, gpa):
+        self.classes = classes
+        self.gpa = gpa
+
+    def __eq__(self, other):
+        return self.classes == other.classes \
+            and self.gpa == other.gpa
+
+
+class RefreshResult():
+    def __init__(self, classes, gpa):
+        self.classes = classes
+        self.gpa = gpa
 
 
 class Class():
@@ -125,10 +138,9 @@ def create_text_message(change_log):
 
     class_num = 1
 
-    gpa = change_log[-1]
-    change_log = change_log[:-1]
+    gpa = change_log.gpa
 
-    for elm in change_log:
+    for elm in change_log.classes:
         if len(elm['grade']) != 0:
             new_message \
                 .add("{0}. {1}".format(class_num, elm['name'])) \
@@ -142,7 +154,7 @@ def create_text_message(change_log):
         .add("----------------------------") \
         .newline()
 
-    for elm in change_log:
+    for elm in change_log.classes:
         if len(elm['grade']) != 0:
             new_message \
                 .add("{0}: {1} (Grade) -- {2} (Grade Points)".format(
@@ -174,22 +186,19 @@ def create_text_message(change_log):
 def find_changes(old, new):
     # extract the new GPA. we never need the old one, so dont extract it, just
     # truncate the array
-    new_gpa = new[-1]
-
-    old = old[:-1]  # remove from arrays
-    new = new[:-1]
+    new_gpa = new.gpa
 
     changelog = []
-    for i in range(0, len(new)):
-        class2 = new[i]
-        if i >= len(old):
+    for i in range(0, len(new.classes)):
+        class2 = new.classes[i]
+        if i >= len(old.classes):
             changelog.append({
                 'name': class2.name,
                 'grade': class2.grade,
                 'gradepts': class2.gradepts
             })
         else:
-            class1 = old[i]
+            class1 = old.classes[i]
             if class1.name == class2.name and class1 != class2:
                 changelog.append({
                     'name': class2.name,
@@ -197,9 +206,8 @@ def find_changes(old, new):
                     'gradepts': class2.gradepts
                 })
 
-    return None if len(changelog) == 0 else changelog + [
-        new_gpa
-    ]  # always add gpa to the list
+    return None if len(changelog) == 0 else Changelog(
+        changelog, new_gpa)  # always add gpa to the list
 
 
 ###********* Main Program *********###
@@ -258,6 +266,7 @@ def refresh(session, school):
         table = None
 
     result = []
+    refresh_result = None
     if table is not None:
         row_marker = 0
         for row in table.find_all('tr'):
@@ -282,8 +291,9 @@ def refresh(session, school):
         term_gpa = float(last_row.find_all('td')[1].get_text())
         cumulative_gpa = float(last_row.find_all('td')[-1].get_text())
 
-        result.append(GPA(term_gpa, cumulative_gpa))
-    return result
+        refresh_result = RefreshResult(result, GPA(term_gpa, cumulative_gpa))
+
+    return refresh_result
 
 
 def start_notifier(session, number, school, username, password):
@@ -293,21 +303,18 @@ def start_notifier(session, number, school, username, password):
         if session.is_logged_in():
             result = refresh(session, school)
             print('RESULT:', result)
-            # if len(old_result) > len(result):
-            #    pass
-            # else:
             changelog = find_changes(old_result, result)
             print('CHANGELOG', changelog)
             if changelog is not None:
                 message = create_text_message(changelog)
                 send_text(message, number)
                 old_result = result
-            print('[DEBUG] Sleeping for 5 min...')
+            print('[**] Sleeping for 5 min...')
             time.sleep(5 * 60)  # 5 sec intervals
             counter += 1
         else:
-            session.current = requests.Session(
-            )  # make a new requests.Session object :)
+            # make a new requests.Session object :)
+            session.current = requests.Session()
             login(session, username, password)
 
 
@@ -353,80 +360,6 @@ def already_in_session_message():
     return constants.ALREADY_IN_SESSION
 
 
-###********* Tests *********###
-
-
-def test_add_remove():
-    username = "FOO-BAR"
-    add_new_user_instance(username)
-    user_exists = check_user_exists(username.lower())
-    remove_user_instance(username)
-    user_removed = check_user_exists(username.lower())
-    return user_exists and not user_removed
-
-
-def test_message_constructions():
-    l1 = [{
-        'name': "0",
-        'grade': "5",
-        'gradepts': "5"
-    }, {
-        'name': "3",
-        'grade': "4",
-        'gradepts': "5"
-    },
-        GPA()]
-    message = create_text_message(l1)
-    return message == '''
-
-    '''
-
-
-def test_diff():
-    l1 = [
-        Class("0", "1", "2", "3", "4", "5"),
-        Class("2", "1", "2", "3", "4", "5")
-    ]
-    l2 = [
-        Class("0", "1", "2", "4", "5", "5"),
-        Class("2", "1", "2", "3", "4", "5"),
-        Class("3", "1", "2", "3", "4", "5")
-    ]
-    l3 = find_changes(l1, l2)
-    return l3 == [{
-        'name': "0",
-        'grade': "5",
-        'gradepts': "5"
-    }, {
-        'name': "3",
-        'grade': "4",
-        'gradepts': "5"
-    }]
-
-
-def test_gpa_class():
-
-    correct_letter_answers = {
-        0: 'F',
-        1: 'D',
-        1.5: 'D+',
-        2: 'C',
-        2.5: 'C+',
-        3: 'B',
-        3.5: 'B+',
-        4: 'A'
-    }
-    for num in correct_letter_answers.keys():
-        g = GPA(num, num)
-        grades = GPA.get_letter_grade(g)
-        if grades['term_gpa'] != correct_letter_answers[num]:
-            return False
-        if grades['cumulative_gpa'] != correct_letter_answers[num]:
-            return False
-
-    return True
-
-
 def parse():
     parser = argparse.ArgumentParser(
         description='Specify commands for CUNY Grade Notifier Retriever v1.0')
@@ -443,34 +376,7 @@ def parse():
     # Development
     parser.add_argument('--enable_phone')
 
-    # Testing
-    parser.add_argument('--test')
-    parser.add_argument('--test_diff')
-    parser.add_argument('--test_add_remove_instance')
-    parser.add_argument('--test_message_construction')
-    parser.add_argument('--test_gpa_class')
     return parser.parse_args()
-
-
-def run_test(args):
-
-    passed_test = True
-
-    if args.test_diff:
-        passed_test = test_diff()
-    elif args.test_add_remove_instance:
-        passed_test = test_add_remove()
-    elif args.test_message_construction:
-        passed_test = test_message_constructions()
-    elif args.test_gpa_class:
-        passed_test = test_gpa_class()
-    else:
-        print("This test does not exists")
-
-    if passed_test:
-        print("Test Passed")
-    else:
-        print("Test Failed")
 
 
 def initialize_twilio():
@@ -484,37 +390,34 @@ def main():
 
     args = parse()
     state = LoginState.determine_state(args)
-    print(state)
+
     try:
-        if state == LoginState.TEST:
-            run_test(args)
+
+        # Only initialize twilio in production
+        # or when specifically asked
+        if state == LoginState.PROD or args.enable_phone:
+            initialize_twilio()
+
+        s = requests.Session()
+        s.headers = {
+            'User-Agent':
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 '
+            + '(KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
+        }
+        username = input(
+            "Enter username: ") if not args.username else args.username
+        password = getpass.getpass(
+            "Enter password: ") if not args.password else args.password
+        number = input(
+            "Enter phone number: ") if not args.phone else args.phone
+
+        if add_new_user_instance(username):
+            session = Session(s, username, password, number)
+            atexit.register(exit_handler)
+            create_instance(session, username, password, number,
+                            args.school.upper())
         else:
-
-            # Only initialize twilio in production
-            # or when specifically asked
-            if state == LoginState.PROD or args.enable_phone:
-                initialize_twilio()
-
-            s = requests.Session()
-            s.headers = {
-                'User-Agent':
-                'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 '
-                + '(KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
-            }
-            username = input(
-                "Enter username: ") if not args.username else args.username
-            password = getpass.getpass(
-                "Enter password: ") if not args.password else args.password
-            number = input(
-                "Enter phone number: ") if not args.phone else args.phone
-
-            if add_new_user_instance(username):
-                session = Session(s, username, password, number)
-                atexit.register(exit_handler)
-                create_instance(session, username, password, number,
-                                args.school.upper())
-            else:
-                print(already_in_session_message())
+            print(already_in_session_message())
 
     except Exception as e:
         print("ERROR")

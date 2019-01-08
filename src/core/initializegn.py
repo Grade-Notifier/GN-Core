@@ -1,3 +1,21 @@
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+import argparse
+import constants
+import time
+import os
+import requests
+import getpass
+import subprocess
+from lxml import html
+from helper.fileManager import create_dir
+from helper.session import Session
+from helper.constants import log_path
+from login_flow.cunylogin import login, logout
+from dotenv import load_dotenv
+from os.path import join, dirname
+
 """Initialize Grade-Notifier
 """
 
@@ -9,27 +27,6 @@ __maintainer__ = "Ehud Adler & Akiva Sherman"
 __email__ = "self@ehudadler.com"
 __status__ = "Production"
 
-import argparse
-import constants
-import time
-import os
-import requests
-import getpass
-import subprocess
-
-from lxml import html
-from os import sys, path
-
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
-from os.path import join, dirname
-from dotenv import load_dotenv
-
-from login_flow.cunylogin import login, logout
-from helper.constants import log_path
-from helper.session import Session
-from helper.fileManager import create_dir
-
 # Create .env file path.
 dotenv_path = join(dirname(__file__), '.env')
 
@@ -40,10 +37,10 @@ load_dotenv(dotenv_path)
 account_pass = os.getenv('ACCOUNT_PASSWORD')
 
 
-def run(username, password, school, phone, local):
+def run(username, password, school, phone):
     log_path = '{0}/{1}{2}'.format(
-        constants.log_path(local), username, time.time())
-    create_dir(constants.log_path(local))
+        constants.log_path(), username, time.time())
+    create_dir(constants.log_path())
     if local:
         with open("{0}.txt".format(log_path), "w+") as outfile:
             subprocess.Popen(["nohup",
@@ -92,12 +89,6 @@ def parse():
 
     # Development
     parser.add_argument('--enable_phone')
-
-    # Testing
-    parser.add_argument('--test')
-    parser.add_argument('--test_diff')
-    parser.add_argument('--test_add_remove_instance')
-    parser.add_argument('--test_message_contruction')
     return parser.parse_args()
 
 

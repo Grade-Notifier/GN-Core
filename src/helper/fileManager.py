@@ -1,3 +1,7 @@
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+import helper.constants
 """File Manager
 helps with file managment
 """
@@ -9,11 +13,6 @@ __version__ = "1.0.0"
 __maintainer__ = "Ehud Adler & Akiva Sherman"
 __email__ = "self@ehudadler.com"
 __status__ = "Production"
-
-from os import sys, path
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
-import helper.constants
 
 
 def create_dir(dir_path):
