@@ -27,7 +27,7 @@ end
 declared_trivial = (github.pr_title + github.pr_body).include?("#trivial") || !has_app_changes
 
 # Formatting
-pep8.lint(use_inline_comments=true)
+# pep8.lint(use_inline_comments=true)
 pep8.count_errors
 
 # todoist.message = "Please fix all TODOS"
@@ -42,8 +42,8 @@ if github.pr_title.include? "[WIP]"
 end
 
 
-test_added = !git.modified_files.grep(%r{tests.py}).empty?
-if !test_added and not declared_trivial
+forgot_tests = git.modified_files.grep(%r{tests.py}).empty?
+if forgot_tests and not declared_trivial
 	warn("It appears that you forgot to add a Unit Test to the test file.\n Please add a test and upload the new version.\n The test file can currently be found at: ./src/tests/test/.py")
 end
 

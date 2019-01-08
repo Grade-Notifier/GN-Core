@@ -303,14 +303,11 @@ def start_notifier(session, number, school, username, password):
     while counter < 844:
         if session.is_logged_in():
             result = refresh(session, school)
-            print('RESULT:', result)
             changelog = find_changes(old_result, result)
-            print('CHANGELOG', changelog)
             if changelog is not None:
                 message = create_text_message(changelog)
                 send_text(message, number)
                 old_result = result
-                print('[**] Sleeping for 5 min...')
                 time.sleep(5 * 60)  # 5 sec intervals
                 counter += 1
         else:

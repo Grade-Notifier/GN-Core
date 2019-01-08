@@ -18,10 +18,13 @@ First off, thanks!
 
 ### Getting started
 
-**Step 1** is setting up your personal forked version of the repository. To do this click the word "fork" at the top right of the screen<br>
+**Step 1** is setting up your personal forked version of the repository. To do this click the word "fork" at the top right of the screen
+
 **Step 2** is cloning from your remote repository to your local machine. To do this, follow githubs guide: [How to clone](https://help.github.com/articles/cloning-a-repository/)
 
-**Step 3:** Now its time to find an issue you want to help with. Head over to the [issues section](https://github.com/Huddie/Grade-Notifier/issues) of this repo to find one. If your a beginner we suggest finding one marked with the ["good-first-issue"](https://github.com/Huddie/Grade-Notifier/labels/good%20first%20issue) tag. 
+**Step 3:** The project is now setup on your machine but you need to install the dependencies. While inside the Grade-Notifier directory execute `bash Depfiles/depinstall.sh` .his should take care of installing all necessary dependencies for you. To check everything worked well try running the Unit Test suite. Again, while in the Grade-Notifier directory execute `python3 src/tests/tests.py`. If everything passes you should be good to go!
+
+**Step 4:** Now its time to find an issue you want to help with. Head over to the [issues section](https://github.com/Huddie/Grade-Notifier/issues) of this repo to find one. If your a beginner we suggest finding one marked with the ["good-first-issue"](https://github.com/Huddie/Grade-Notifier/labels/good%20first%20issue) tag. 
 
 Don't hesitate to reach out for help. Simply comment on the issue and someone will help you out.
 
@@ -37,8 +40,3 @@ Generally try to follow the following format:
  - Commit messages should be informative
 
 Our danger file has a few commit rules that will get Cuny-Bot to yell at you. Don't worry if he does, he gets upset by accedent sometimes. 
-
-The current commit rules are:
-
-- Start all commit messages with a Capital (Failure to do so results in a CUNY-Bot warning you, not a big deal if you slip up!)
-- Keep commits messages short
