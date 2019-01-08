@@ -59,7 +59,7 @@ def run(username, password, school, phone):
             child.expect ('Password:')
             child.sendline(account_pass)
             child.expect('\$') # waits for prompt
-            child.sendline(f'nohup setsid python3 {constants.script_path()}/grade_notifier.py --username={username} --password={password} --school={school} --phone={phone} --prod=true > {log_path} 2>&1') # execute command
+            child.sendline(f'nohup setsid python3 {constants.script_path()}/grade_notifier.py --username={username} --password={password} --school={school} --phone={phone} --prod=true > {log_path}.txt 2>&1') # execute command
 
             # subprocess.Popen(
             #     [
