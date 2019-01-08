@@ -55,8 +55,6 @@ def run(username, password, school, phone):
                              stdout=outfile)
     else:
         with open("{0}.txt".format(log_path), "w+") as outfile:
-
-            process 
             subprocess.Popen(
                 [
                     "echo",
