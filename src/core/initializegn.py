@@ -29,7 +29,7 @@ __email__ = "self@ehudadler.com"
 __status__ = "Production"
 
 # Create .env file path.
-dotenv_path = join(dirname(constants.abs_repo_path()), '.env')
+dotenv_path = join(constants.abs_repo_path(), '.env')
 
 # Load file from the path.
 load_dotenv(dotenv_path)

@@ -46,7 +46,7 @@ __status__ = "Production"
 ###********* GLOBALS *********###
 
 # Create .env file path.
-dotenv_path = join(dirname(constants.abs_repo_path()), '.env')
+dotenv_path = join(constants.abs_repo_path(), '.env')
 
 # Load file from the path.
 load_dotenv(dotenv_path)
