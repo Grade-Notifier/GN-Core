@@ -7,7 +7,7 @@ from login_flow.loginState import LoginState
 from helper.message import Message
 from login_flow.cunylogin import login, logout
 from helper.gpa import GPA
-from helper.constants import instance_path
+from helper.constants import instance_path, abs_repo_path
 from helper import constants
 from helper.helper import get_semester
 from helper import fileManager
@@ -46,7 +46,7 @@ __status__ = "Production"
 ###********* GLOBALS *********###
 
 # Create .env file path.
-dotenv_path = join(dirname(__file__), '.env')
+dotenv_path = join(dirname(constants.abs_repo_path()), '.env')
 
 # Load file from the path.
 load_dotenv(dotenv_path)

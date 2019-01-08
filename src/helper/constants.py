@@ -61,6 +61,8 @@ SCRIPT_PATH_DEV = "./src/core"
 CUNY_FIRST_HOME_URL = "https://home.cunyfirst.cuny.edu"
 CUNY_FIRST_AUTH_SUBMIT_URL = "https://ssologin.cuny.edu/oam/server/auth_cred_submit"
 
+REPO_ABS_DIRECTORY_PATH = "home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier"
+
 CUNY_FIRST_STUDENT_CENTER_URL = "https://hrsa.cunyfirst.cuny.edu/psc/cnyhcprd/EMPLOYEE" \
     + "/HRMS/c/SA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL?FolderPath" \
     + "=PORTAL_ROOT_OBJECT.HC_SSS_STUDENT_CENTER&IsFolder" \
@@ -117,8 +119,12 @@ LOG_PATH_DEV = "./logs"
 
 
 
+def abs_repo_path():
+    return REPO_ABS_DIRECTORY_PATH
+    
 def is_local():
-    return not (socket.gethostname() == 'mars' or socket.gethostname() == 'venus')
+    return not ((socket.gethostname() == 'mars' or socket.gethostname() == 'venus'))
+
 def log_path():
     if is_local():
         return LOG_PATH_DEV
