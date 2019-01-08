@@ -1,1 +1,5 @@
 .env
+./logs
+./instances.txt
+./test-instances.txt
+./__pycache__
