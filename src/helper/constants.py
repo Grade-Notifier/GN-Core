@@ -55,7 +55,7 @@ INSTANCE_ABS_PATH_TEST = "/home/fa18/313/adeh6562/public_html/grade-notifier" \
 
 INSTANCE_ABS_PATH_DEV = "./instances.txt"
 
-SCRIPT_PATH = "/home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/"
+SCRIPT_PATH = "/home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/src/core"
 SCRIPT_PATH_DEV = "./"
 
 CUNY_FIRST_HOME_URL = "https://home.cunyfirst.cuny.edu"
