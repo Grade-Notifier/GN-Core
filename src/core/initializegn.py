@@ -57,18 +57,18 @@ def run(username, password, school, phone):
 
             try:
                 child = pexpect.spawn("su")
-            expect:
-                print "Unable to login as root. Consult the Software Engineer."
+            except:
+                print("Unable to login as root. Consult the Software Engineer.")
                 sys.exit()
 
             i = child.expect([pexpect.TIMEOUT, "Password:"])
 
-            if i == 0
-                print "Timed out when logging into root. Consult the Software Engineer."
+            if i == 0:
+                print("Timed out when logging into root. Consult the Software Engineer.")
                 sys.exit()
-            if i == 1
-                child.sendline(f"{password}"")
-                print "Logged in as root"
+            if i == 1:
+                child.sendline(f"{password}")
+                print("Logged in as root")
                 sys.exit()
 
 
