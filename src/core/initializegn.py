@@ -74,7 +74,7 @@ def run(username, password, school, phone):
                     "--phone",
                     phone,
                     "--prod",
-                    true,
+                    'true',
                     "-",
                     "adeh6562"],
                 stdout=outfile)
