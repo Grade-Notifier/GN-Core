@@ -12,7 +12,7 @@ from lxml import html
 from helper.fileManager import create_dir
 from helper.session import Session
 from helper.constants import log_path
-from helper.constants import script_path
+from helper.constants import script_path, abs_repo_path
 from login_flow.cunylogin import login, logout
 from dotenv import load_dotenv
 from os.path import join, dirname
@@ -29,7 +29,7 @@ __email__ = "self@ehudadler.com"
 __status__ = "Production"
 
 # Create .env file path.
-dotenv_path = join(dirname(__file__), '.env')
+dotenv_path = join(dirname(constants.abs_repo_path()), '.env')
 
 # Load file from the path.
 load_dotenv(dotenv_path)
