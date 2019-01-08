@@ -2,12 +2,12 @@ from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 import argparse
-import constants
 import time
 import os
 import requests
 import getpass
 import subprocess
+import helper.constants
 from lxml import html
 from helper.fileManager import create_dir
 from helper.session import Session
