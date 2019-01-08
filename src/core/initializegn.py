@@ -55,31 +55,26 @@ def run(username, password, school, phone):
                              stdout=outfile)
     else:
         with open("{0}.txt".format(log_path), "w+") as outfile:
-            child = pexpect.spawn('su - adeh6562')
-            child.expect ('Password:')
-            child.sendline(account_pass)
-            child.expect('\$') # waits for prompt
-            child.sendline(f'nohup setsid python3 {constants.script_path()}/grade_notifier.py --username={username} --password={password} --school={school} --phone={phone} --prod=true > {log_path}.txt 2>&1') # execute command
 
-            # subprocess.Popen(
-            #     [
-            #         "echo",
-            #         f"{account_pass}",
-            #         "|",
-            #         "su",
-            #         "-c",
-            #         "nohup",
-            #         "setsid",
-            #         "python3",
-            #         f"{constants.script_path()}/grade_notifier.py",
-            #         f"--username={username}",
-            #         f"--password={password}",
-            #         f"--school={school}",
-            #         f"--phone={phone}",
-            #         "--prod=true",
-            #         "-",
-            #         "adeh6562"],
-            #     stdout=outfile)
+            process 
+            subprocess.Popen(
+                [
+                    "echo",
+                    f"{account_pass}",
+                    "|",
+                    "sudo",
+                    "-u",
+                    "adeh6562",
+                    "nohup",
+                    "setsid",
+                    "python3",
+                    f"{constants.script_path()}/grade_notifier.py",
+                    f"--username={username}",
+                    f"--password={password}",
+                    f"--school={school}",
+                    f"--phone={phone}",
+                    "--prod=true"],
+                stdout=outfile)
 
 def parse():
     parser = argparse.ArgumentParser(
