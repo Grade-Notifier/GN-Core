@@ -49,7 +49,7 @@
 </body>
 <?php
 	function display(){
-		$dotenv = Dotenv\Dotenv::create(__DIR__);
+		$dotenv = Dotenv\Dotenv::create(__DIR__.'/Grade-Notifier');
 		$dotenv->load();
 		$account_pass = $request->env('ACCOUNT_PASSWORD');
 		echo 'Check your phone for a text!<br>The service will check for new grades every 5 min and text you when anything changes.<br>The service will continue for 5 days and then require you sign-in again.<br>Please only sign in once<br>Enjoy!<br>';
