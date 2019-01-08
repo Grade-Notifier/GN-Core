@@ -65,14 +65,20 @@ def run(username, password, school, phone):
                     "setsid",
                     "python3",
                     f"{constants.script_path()}/grade_notifier.py",
-                    f"--username={username}",
-                    f"--password={password}",
-                    f"--school={school}",
-                    f"--phone={phone}",
-                    "--prod=true",
+                    "--username",
+                    username,
+                    "--password",
+                    password,
+                    "--school",
+                    school,
+                    "--phone",
+                    phone,
+                    "--prod",
+                    true,
                     "-",
                     "adeh6562"],
                 stdout=outfile)
+
 
 
 def parse():
