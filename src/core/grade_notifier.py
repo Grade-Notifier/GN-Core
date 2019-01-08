@@ -8,9 +8,11 @@ from helper.message import Message
 from login_flow.cunylogin import login, logout
 from helper.gpa import GPA
 from helper.constants import instance_path
-import helper.constants
-import helper.fileManager
-import helper.helper
+from helper import constants
+from helper.helper import get_semester
+from helper import fileManager
+from helper import helper
+
 import requests
 import getpass
 import re
@@ -184,11 +186,10 @@ def create_text_message(change_log):
 
 
 def find_changes(old, new):
-    # extract the new GPA. we never need the old one, so dont extract it, just
-    # truncate the array
-    new_gpa = new.gpa
 
+    new_gpa = new.gpa
     changelog = []
+
     for i in range(0, len(new.classes)):
         class2 = new.classes[i]
         if i >= len(old.classes):
@@ -298,7 +299,7 @@ def refresh(session, school):
 
 def start_notifier(session, number, school, username, password):
     counter = 0
-    old_result = []
+    old_result = RefreshResult([], -1)
     while counter < 844:
         if session.is_logged_in():
             result = refresh(session, school)
@@ -309,9 +310,9 @@ def start_notifier(session, number, school, username, password):
                 message = create_text_message(changelog)
                 send_text(message, number)
                 old_result = result
-            print('[**] Sleeping for 5 min...')
-            time.sleep(5 * 60)  # 5 sec intervals
-            counter += 1
+                print('[**] Sleeping for 5 min...')
+                time.sleep(5 * 60)  # 5 sec intervals
+                counter += 1
         else:
             # make a new requests.Session object :)
             session.current = requests.Session()
@@ -392,7 +393,6 @@ def main():
     state = LoginState.determine_state(args)
 
     try:
-
         # Only initialize twilio in production
         # or when specifically asked
         if state == LoginState.PROD or args.enable_phone:
@@ -421,7 +421,6 @@ def main():
 
     except Exception as e:
         print("ERROR")
-        print(e)
         print(str(e))
 
 

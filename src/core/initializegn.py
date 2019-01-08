@@ -7,11 +7,12 @@ import os
 import requests
 import getpass
 import subprocess
-import helper.constants
+from helper import constants
 from lxml import html
 from helper.fileManager import create_dir
 from helper.session import Session
 from helper.constants import log_path
+from helper.constants import script_path
 from login_flow.cunylogin import login, logout
 from dotenv import load_dotenv
 from os.path import join, dirname
@@ -41,11 +42,11 @@ def run(username, password, school, phone):
     log_path = '{0}/{1}{2}'.format(
         constants.log_path(), username, time.time())
     create_dir(constants.log_path())
-    if local:
+    if constants.is_local():
         with open("{0}.txt".format(log_path), "w+") as outfile:
             subprocess.Popen(["nohup",
                               "python3",
-                              "./grade-notifier.py",
+                              f"{constants.script_path()}/grade_notifier.py",
                               f"--username={username}",
                               f"--password={password}",
                               f"--school={school}",
@@ -63,7 +64,7 @@ def run(username, password, school, phone):
                     "nohup",
                     "setsid",
                     "python3",
-                    "home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/grade-notifier.py",
+                    f"{constants.script_path()}/grade_notifier.py",
                     f"--username={username}",
                     f"--password={password}",
                     f"--school={school}",
@@ -111,7 +112,7 @@ def main():
         session = Session(s, username, password, number)
         did_log_in = login(session, username, password)
         if did_log_in:
-            run(username, password, args.school.upper(), number, not prod)
+            run(username, password, args.school.upper(), number)
         else:
             print("Invalid Credentials")
 
