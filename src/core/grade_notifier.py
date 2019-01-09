@@ -22,6 +22,7 @@ import atexit
 import fileinput
 import time
 import logging
+import traceback
 
 from bs4 import BeautifulSoup
 from lxml import etree
@@ -418,7 +419,8 @@ def main():
 
     except Exception as e:
         print("ERROR")
-        print(str(e))
+        traceback.print_exc()
+        # adding comment bc cant push
 
 
 if __name__ == '__main__':
