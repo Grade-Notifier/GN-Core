@@ -42,11 +42,10 @@ workflows:
             if ! [[ $file == *"$GIT_CLONE_COMMIT_AUTHOR_NAME"* ]]; then
                echo "NEW CONTRIBUTOR!";
                echo "| $GIT_CLONE_COMMIT_AUTHOR_NAME | $d |" >> CONTRIBUTORS.md;
+               git add CONTRIBUTORS.md
+               git commit -m "Added $GIT_CLONE_COMMIT_AUTHOR_NAME to contributors list"
+               git push "https://Huddie:$GH_PASSWORD@github.com/Huddie/Grade-Notifier.git" "HEAD:$BITRISE_GIT_BRANCH"
             fi
-
-            git add CONTRIBUTORS.md
-            git commit -m "Added $GIT_CLONE_COMMIT_AUTHOR_NAME to contributors list"
-            git push "https://Huddie:$GH_PASSWORD@github.com/Huddie/Grade-Notifier.git" "HEAD:$BITRISE_GIT_BRANCH"
         title: Add Contributor
     - deploy-to-bitrise-io@1.3.19: {}
   production:
