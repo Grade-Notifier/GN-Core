@@ -24,7 +24,6 @@ def parse():
 
 def getpid(username):
     file_path = instance_path(state)
-    file = ""
 
     if not os.path.isfile(file_path):
         return
