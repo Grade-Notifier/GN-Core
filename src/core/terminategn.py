@@ -34,9 +34,11 @@ def getpid(username):
             if username.lower() in line:
                 return line.split(':')[1].strip()
 
+
 def kill(username):
     pid = getpid(username)
-    subprocess.run(['kill','-SIGINT',pid])
+    if pid:
+    	subprocess.run(['kill','-SIGINT',pid])
 
 
 
