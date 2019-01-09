@@ -32,7 +32,7 @@ def logout(session):
         return False
 
 
-def login(session, username, password):
+def login(session):
     print('[**] Logging in...')
 
     session.current.get(constants.CUNY_FIRST_HOME_URL)
@@ -40,8 +40,8 @@ def login(session, username, password):
     # AUTH LOGIN
     data = {
         'usernameH': '{0}@login.cuny.edu'.format(username),
-        'username': username,
-        'password': password,
+        'username': session.current.username,
+        'password': session.current.password,
         'submit': ''
     }
     session.current.post(constants.CUNY_FIRST_AUTH_SUBMIT_URL, data=data)

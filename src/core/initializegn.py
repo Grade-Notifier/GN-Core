@@ -103,7 +103,7 @@ def main():
             "Enter phone number: ") if not args.phone else args.phone
         prod = False if not args.prod else True
         session = Session(s, username, password, number)
-        did_log_in = login(session, username, password)
+        did_log_in = login(session)
         if did_log_in:
             run(username, password, args.school.upper(), number)
         else:

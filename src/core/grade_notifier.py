@@ -84,8 +84,6 @@ def send_text(message, sendNumber):
 
     Changelog: The list of classes which have had grade changes
 '''
-
-
 def create_text_message(change_log):
 
     # Message header
@@ -173,11 +171,10 @@ def find_changes(old, new):
 ###********* Main Program *********###
 
 
-def create_instance(session, username, password, number, school_code):
-    login(session, username, password)
-
+def create_instance(session, number, school_code):
+    login(session)
     if session.is_logged_in():
-        start_notifier(session, number, school_code, username, password)
+        start_notifier(session, number, school_code)
     else:
         # Login failed
         pass
@@ -257,7 +254,7 @@ def refresh(session, school):
     return refresh_result
 
 
-def start_notifier(session, number, school, username, password):
+def start_notifier(session, number, school):
     counter = 0
     old_result = RefreshResult([], -1)
     while counter < 844:
@@ -277,7 +274,7 @@ def start_notifier(session, number, school, username, password):
         else:
             # make a new requests.Session object :)
             session.current = requests.Session()
-            login(session, username, password)
+            login(session)
 
 
 def check_user_exists(username):
@@ -375,8 +372,7 @@ def main():
         if add_new_user_instance(username):
             session = Session(s, username, password, number)
             atexit.register(exit_handler)
-            create_instance(session, username, password, number,
-                            args.school.upper())
+            create_instance(session, number, args.school.upper())
         else:
             print(already_in_session_message())
 
