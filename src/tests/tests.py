@@ -110,26 +110,26 @@ class TestAddRemoveNewUserMethod(unittest.TestCase):
     def test_add_remove(self):
         username = "FOO-BAR1"
         add_new_user_instance(username)
-        pids = [os.getpid()]            # import our own pid
-        pid.append(terminate_get_pid(username))
+        pids = [str(os.getpid())]            # import our own pid
+        pids.append(terminate_get_pid(username))
 
         remove_user_instance(username)
 
         username = "FOO-BAR2"
         add_new_user_instance(username)
         #pids = [os.getpid()]            # import our own pid
-        pid.append(terminate_get_pid(username))
+        pids.append(terminate_get_pid(username))
 
         remove_user_instance
 
         username = "FOO-BAR3"
         add_new_user_instance(username)
         #pids = [os.getpid()]            # import our own pid
-        pid.append(terminate_get_pid(username))
+        pids.append(terminate_get_pid(username))
 
         remove_user_instance(username)
-
-        passed = all(pid == os.getpid() for pid in pids)
+        print(pids)
+        passed = all(pid == str(os.getpid()) for pid in pids)
 
         self.assertTrue(passed)
         
