@@ -120,7 +120,7 @@ class TestAddRemoveNewUserMethod(unittest.TestCase):
         #pids = [os.getpid()]            # import our own pid
         pids.append(terminate_get_pid(username))
 
-        remove_user_instance
+        remove_user_instance(username)
 
         username = "FOO-BAR3"
         add_new_user_instance(username)
