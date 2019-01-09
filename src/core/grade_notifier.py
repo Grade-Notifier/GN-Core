@@ -13,6 +13,10 @@ from helper.helper import get_semester
 from helper import fileManager
 from helper import helper
 
+from helper.changelog import Changelog
+from helper.refresh_result import RefreshResult
+from helper.school_class import Class
+
 import requests
 import getpass
 import re
@@ -43,7 +47,6 @@ __maintainer__ = "Ehud Adler & Akiva Sherman"
 __email__ = "self@ehudadler.com"
 __status__ = "Production"
 
-
 ###********* GLOBALS *********###
 
 # Create .env file path.
@@ -60,57 +63,12 @@ session = None
 client = None
 state = None
 
-###********* Helper Methods *********###
-'''
-    Holds details for a class to be compared later
-
-    Name: Short class name
-    Description: Long class name
-    Units: Number of credits its worth
-    Grading: Undergraduate vs Graduate
-    Grade: Letter Grade
-    Grade Points: Units * Letter grade value
-'''
-
-
-class Changelog():
-    def __init__(self, classes, gpa):
-        self.classes = classes
-        self.gpa = gpa
-
-    def __eq__(self, other):
-        return self.classes == other.classes \
-            and self.gpa == other.gpa
-
-
-class RefreshResult():
-    def __init__(self, classes, gpa):
-        self.classes = classes
-        self.gpa = gpa
-
-
-class Class():
-    def __init__(self, name, description, units, grading, grade, gradepts):
-        self.name = name
-        self.description = description
-        self.units = units
-        self.grading = grading
-        self.grade = grade
-        self.gradepts = gradepts
-
-    def __eq__(self, other):
-        return self.grade == other.grade \
-            and self.gradepts == other.gradepts
-
-
 '''
     Sends a text message via Twilio
 
     Message: The body of the message
     Send Number: The number where the message should be sent
 '''
-
-
 def send_text(message, sendNumber):
     if state == LoginState.PROD:
         client.messages.create(
@@ -269,6 +227,7 @@ def refresh(session, school):
 
     result = []
     refresh_result = None
+
     if table is not None:
         row_marker = 0
         for row in table.find_all('tr'):
@@ -304,7 +263,11 @@ def start_notifier(session, number, school, username, password):
     while counter < 844:
         if session.is_logged_in():
             result = refresh(session, school)
-            changelog = find_changes(old_result, result)
+            
+            changelog = find_changes(old_result, result) \
+                if result != None \
+                else None
+
             if changelog is not None:
                 message = create_text_message(changelog)
                 send_text(message, number)
