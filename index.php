@@ -56,9 +56,11 @@
      $cmd = 'echo "'.$account_pass.'" | su -c "python3 /home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"].' --prod=true" - adeh6562';
      $arr = array();
      $message = exec($cmd,$arr);
-     for($x = 0; $x < count($arr); $x++) {
-		echo htmlspecialchars($arr[$x]);
-		echo "<br>";
+     for($x = 0; $x < count($arr); $x++) {}
+		if (strpos($arr[$x], 'RENDER') !== false) {
+	    	echo htmlspecialchars(str_replace("RENDER", "", $arr[$x]));
+			echo "<br>";
+		}
 	}
 		?>
 		<?php
