@@ -17,6 +17,8 @@ from helper.changelog import Changelog
 from helper.refresh_result import RefreshResult
 from helper.school_class import Class
 
+from core.cuny_navigator import CunyNavigator
+
 import requests
 import getpass
 import re
@@ -59,6 +61,7 @@ load_dotenv(dotenv_path)
 account_sid = os.getenv('TWILIO_SID')
 auth_token = os.getenv('TWILIO_AUTH_TOKEN')
 
+cunyNavigator = None
 session = None
 client = None
 state = None
@@ -172,7 +175,7 @@ def find_changes(old, new):
 
 
 def create_instance(session, number, school_code):
-    login(session)
+    cunyNavigator.login()
     if session.is_logged_in():
         start_notifier(session, number, school_code)
     else:
@@ -182,34 +185,10 @@ def create_instance(session, number, school_code):
 
 def refresh(session, school):
 
-    session.current.get(constants.CUNY_FIRST_GRADES_URL)
-
-    payload = {'ICACTION': 'DERIVED_SSS_SCT_SSS_TERM_LINK'}
-    try:
-        response = session.current.post(
-            constants.CUNY_FIRST_GRADES_URL, data=payload)
-    except TimeoutError:
-        return refresh(session, school)
-
-    tree = html.fromstring(response.text)
     term = helper.get_semester()
-    payload_key = ''.join(
-        tree.xpath(
-            '//span[text()="{0}"]/parent::div/parent::td/preceding-sibling::td/div/input/@id'
-            .format(term)))
-    payload_value = ''.join(
-        tree.xpath(
-            '//span[text()="{0}"]/parent::div/parent::td/preceding-sibling::td/div/input/@value'
-            .format(term)))
+    response = cunyNavigator.to_current_term_grades(term)
 
-    payload = {
-        payload_key: payload_value,
-        'ICACTION': 'DERIVED_SSS_SCT_SSR_PB_GO'
-    }
-    try:
-        response = session.current.post(
-            constants.CUNY_FIRST_GRADES_URL, data=payload)
-    except TimeoutError:
+    if response == None:
         return refresh(session, school)
 
     tree = BeautifulSoup(response.text, 'lxml')
@@ -274,7 +253,7 @@ def start_notifier(session, number, school):
         else:
             # make a new requests.Session object :)
             session.current = requests.Session()
-            login(session)
+            cunyNavigator.login()
 
 
 def check_user_exists(username):
@@ -346,6 +325,7 @@ def initialize_twilio():
 def main():
     global session
     global state
+    global cunyNavigator
 
     args = parse()
     state = LoginState.determine_state(args)
@@ -357,6 +337,8 @@ def main():
             initialize_twilio()
 
         s = requests.Session()
+        cunyNavigator = CunyNavigator(s)
+
         s.headers = {
             'User-Agent':
             'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 '
