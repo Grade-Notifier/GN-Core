@@ -1,4 +1,4 @@
-import sys
+import io, sys
 
 class STDOutOptions:
     ERROR = 0
@@ -7,12 +7,11 @@ class STDOutOptions:
 class RedactedPrint:
 
     def __init__(self, option, redacted_list):
-        self.func = None
         self.origOut = None
         self.option = option
         self.redacted_list = redacted_list
 
-    def enable(self, func=None):
+    def enable(self):
 
             if self.option == STDOutOptions.STDOUT:
                 sys.stdout = self
@@ -30,13 +29,12 @@ class RedactedPrint:
         sys.stderr = sys.__stderr__
 
     def write(self, text):
-        if text.split() == []:
-            self.origOut.write(text)
         for word in self.redacted_list:
             text = text.replace(word, "REDACTED")
         self.origOut.write(text)
-             
+        return text
     #pass all other methods to __stdout__ so that we don't have to override them
     def __getattr__(self, name):
-        return self.origOut.__getattr__(name)
+        return self.origOut.__getattribute__(name)
+
     

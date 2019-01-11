@@ -16,7 +16,7 @@ from helper import helper
 from helper.changelog import Changelog
 from helper.refresh_result import RefreshResult
 from helper.school_class import Class
-from helper.redactedstdout import RedactedPrint, STDOutOptions
+from helper.redacted_stdout import RedactedPrint, STDOutOptions
 
 import requests
 import getpass
@@ -384,7 +384,7 @@ def main():
         redacted_print_err = RedactedPrint(STDOutOptions.ERROR, redacted_list)
         redacted_print_std.enable()
         redacted_print_err.enable()
-        
+
         if add_new_user_instance(username):
             session = Session(s, username, password, number)
             atexit.register(exit_handler)

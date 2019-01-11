@@ -4,6 +4,8 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from helper.constants import script_path, instance_path
 from helper.message import Message
 from helper.gpa import GPA
+from helper.redacted_stdout import RedactedPrint, \
+    STDOutOptions
 from core.grade_notifier import Class, find_changes, \
     create_text_message, add_new_user_instance, \
     check_user_exists, remove_user_instance, \
@@ -105,16 +107,38 @@ class TestDiffMethod(unittest.TestCase):
 
         self.assertEqual(cl1, cl2)
 
-# class TestAddRemoveNewUserMethod(unittest.TestCase):
-#     def test_add_remove(self):
-#         username = "FOO-BAR"
-#         add_new_user_instance(username)
-#         user_exists = check_user_exists(username.lower())
-#         remove_user_instance(username)
-#         user_removed = check_user_exists(username.lower())
-#         self.assertFalse(not user_exists)
-#         self.assertFalse(user_removed)
 
+class TestRedactPrint(unittest.TestCase):
+    def test_redact(self):
+        username = "Foo"
+        password = "Bar"
+        redacted = "REDACTED"
+
+        print_statment = f"{username}'s password is {password}," \
+            + "don't tell anyone. Food though is yummy."
+
+        redacted_print = f"{redacted}'s password is {redacted}," \
+            + "don't tell anyone. Food though is yummy."
+
+        outcome = None
+
+        redacted_list = [username, password]
+        redacted_print_std = RedactedPrint(
+            STDOutOptions.STDOUT, 
+            redacted_list
+        )
+
+        redacted_print_std.enable()
+
+        file_path = "./TEST_REDACT.txt"
+        with open(file_path, "w+") as content_file:
+            content_file.write(print_statment)
+
+        with open(file_path, 'r') as content_file:
+            outcome = content_file.read()
+
+        os.remove(file_path)
+        self.assertEqual(redacted_print, outcome)
 
 def run_test():
     scriptpath = script_path()
