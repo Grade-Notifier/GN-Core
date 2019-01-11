@@ -42,11 +42,11 @@ There are currently 3 main ways you can help contribute:
 
 If your looking to get going quickly checkout our Setup file. It can be downloaded here: [Grade-Notifier Setup file](https://gist.github.com/Huddie/e7e19d4f84a4e531944c25d6751cfe39/archive/2b05185d410c409162f7f3e2218ca44913f25be6.zip)
 
-1. Make sure you have the pkg-maintainer installed (This requires ruby gems) `gem install pkg-maintainer`
+1. Make sure you have the pkg-maintainer installed (This requires ruby gems) `gem install jump-starter`
 
 2. Have your Github username and password on hand. 
 
-3. Simply drag the Setup file (that you just downloaded) into the folder of your choice and run `maintain setup` in your terminal (make sure your in the proper directory). 
+3. Simply drag the Setup file (that you just downloaded) into the folder of your choice and run `jumpstart start` in your terminal (make sure your in the proper directory). 
 
 Thats it! Your good to go!
 
