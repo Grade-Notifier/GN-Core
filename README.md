@@ -38,7 +38,19 @@ There are currently 3 main ways you can help contribute:
 2. Building out the script
 3. DevOps, making sure the project doesn't hiccup
 
-Check out the [contributing guide](https://github.com/Huddie/Grade-Notifier/blob/master/CONTRIBUTING.md).
+### Quickstart
+
+If your looking to get going quickly checkout our Setup file. It can be downloaded here: [Grade-Notifier Setup file](https://gist.github.com/Huddie/e7e19d4f84a4e531944c25d6751cfe39/archive/2b05185d410c409162f7f3e2218ca44913f25be6.zip)
+
+1. Make sure you have the pkg-maintainer installed (This requires ruby gems) `gem install pkg-maintainer`
+
+2. Have your Github username and password on hand. 
+
+3. Simply drag the Setup file (that you just downloaded) into the folder of your choice and run `maintain setup` in your terminal (make sure your in the proper directory). 
+
+Thats it! Your good to go!
+
+For a walkthrough of the non-quickstart approach check out the [contributing guide](https://github.com/Huddie/Grade-Notifier/blob/master/CONTRIBUTING.md).
 
 ## Open Source & Copying
 
