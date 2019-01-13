@@ -13,6 +13,7 @@ from core.grade_notifier import Class, find_changes, \
 import unittest
 import os
 import argparse
+from core.terminategn import getpid as terminate_get_pid
 
 """Test-Grade-Notifier
 """
@@ -107,6 +108,32 @@ class TestDiffMethod(unittest.TestCase):
 
         self.assertEqual(cl1, cl2)
 
+class TestAddRemoveNewUserMethod(unittest.TestCase):
+    def test_add_remove(self):
+        username = "FOO-BAR1"
+        add_new_user_instance(username)
+        pids = [str(os.getpid())]            # import our own pid
+        pids.append(terminate_get_pid(username))
+
+        remove_user_instance(username)
+
+        username = "FOO-BAR2"
+        add_new_user_instance(username)
+        #pids = [os.getpid()]            # import our own pid
+        pids.append(terminate_get_pid(username))
+
+        remove_user_instance(username)
+
+        username = "FOO-BAR3"
+        add_new_user_instance(username)
+        #pids = [os.getpid()]            # import our own pid
+        pids.append(terminate_get_pid(username))
+
+        remove_user_instance(username)
+        print(pids)
+        passed = all(pid == str(os.getpid()) for pid in pids)
+
+        self.assertTrue(passed)
 
 class TestRedactPrint(unittest.TestCase):
     def test_redact(self):
