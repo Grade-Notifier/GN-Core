@@ -16,6 +16,7 @@ from helper import helper
 from helper.changelog import Changelog
 from helper.refresh_result import RefreshResult
 from helper.school_class import Class
+from helper.redacted_stdout import RedactedPrint, STDOutOptions
 
 import requests
 import getpass
@@ -59,6 +60,8 @@ load_dotenv(dotenv_path)
 account_sid = os.getenv('TWILIO_SID')
 auth_token = os.getenv('TWILIO_AUTH_TOKEN')
 
+redacted_print_std = None
+redacted_print_err = None
 session = None
 client = None
 state = None
@@ -349,6 +352,9 @@ def initialize_twilio():
 def main():
     global session
     global state
+    global redacted_print_std
+    global redacted_print_err
+
 
     args = parse()
     state = LoginState.determine_state(args)
@@ -371,6 +377,13 @@ def main():
             "Enter password: ") if not args.password else args.password
         number = input(
             "Enter phone number: ") if not args.phone else args.phone
+
+        ## Monkey Patching stdout to remove any sens. data
+        redacted_list = [username, password]
+        redacted_print_std = RedactedPrint(STDOutOptions.STDOUT, redacted_list)
+        redacted_print_err = RedactedPrint(STDOutOptions.ERROR, redacted_list)
+        redacted_print_std.enable()
+        redacted_print_err.enable()
 
         if add_new_user_instance(username):
             session = Session(s, username, password, number)
