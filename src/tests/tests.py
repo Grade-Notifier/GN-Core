@@ -5,7 +5,7 @@ from helper.constants import script_path, instance_path
 from helper.message import Message
 from helper.gpa import GPA
 from helper.redacted_stdout import RedactedPrint, \
-    STDOutOptions
+    STDOutOptions, RedactedFile
 from core.grade_notifier import Class, find_changes, \
     create_text_message, add_new_user_instance, \
     check_user_exists, remove_user_instance, \
@@ -115,10 +115,10 @@ class TestRedactPrint(unittest.TestCase):
         redacted = "REDACTED"
 
         print_statment = f"{username}'s password is {password}," \
-            + "don't tell anyone. Food though is yummy."
+            + "don't tell anyone"
 
         redacted_print = f"{redacted}'s password is {redacted}," \
-            + "don't tell anyone. Food though is yummy."
+            + "don't tell anyone"
 
         outcome = None
 
@@ -132,6 +132,10 @@ class TestRedactPrint(unittest.TestCase):
 
         file_path = "./TEST_REDACT.txt"
         with open(file_path, "w+") as content_file:
+            content_file = RedactedFile(
+                content_file, 
+                redacted_list
+            )
             content_file.write(print_statment)
 
         with open(file_path, 'r') as content_file:
