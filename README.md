@@ -43,8 +43,7 @@ There are currently 3 main ways you can help contribute:
 If your looking to get going quickly checkout our Starter file. It can be downloaded here: [Grade-Notifier Starter file](https://gist.github.com/Huddie/e7e19d4f84a4e531944c25d6751cfe39/archive/74c20cbbcce73b44848b75a2a90bd1632abacc8b.zip)
 
 
-
-1. Make sure you have the pkg-maintainer installed (This requires ruby gems) `gem install jump-starter`
+1. Make sure you have jumpstarter installed (This requires ruby gems) `gem install jump-starter`
 
 2. Have your Github username and password on hand. 
 
