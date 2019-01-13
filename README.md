@@ -40,7 +40,7 @@ There are currently 3 main ways you can help contribute:
 
 ### Quickstart
 
-If your looking to get going quickly checkout our Setup file. It can be downloaded here: [Grade-Notifier Setup file](https://gist.github.com/Huddie/e7e19d4f84a4e531944c25d6751cfe39/archive/7ebc4b122c1f06547073e42c7b033b0988926ab9.zip)
+If your looking to get going quickly checkout our Starter file. It can be downloaded here: [Grade-Notifier Starter file](https://gist.github.com/Huddie/e7e19d4f84a4e531944c25d6751cfe39/archive/74c20cbbcce73b44848b75a2a90bd1632abacc8b.zip)
 
 
 
