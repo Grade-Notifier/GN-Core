@@ -1,0 +1,4 @@
+git fork Huddie/Grade-Notifier
+git clone Grade-Notifier
+cd Grade-Notifier
+bash run ./Depfiles/depinstall.sh
