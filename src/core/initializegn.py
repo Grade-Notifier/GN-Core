@@ -106,9 +106,14 @@ def main():
         did_log_in = login(session, username, password)
         if did_log_in:
             run(username, password, args.school.upper(), number)
-            print("RENDERCheck your phone for a text!\nThe service will check for new grades every 5 min and text you when anything changes.\nThe service will continue for 5 days and then require you to sign-in again.\nPlease only sign in once.\nEnjoy!")
+            print("RENDER::Check your phone for a text!\n" \
+            + "The service will check for new grades every 5 min and text you when anything changes.\n" \
+            + "The service will continue for 5 days and then require you to sign-in again.\n" \
+            + "Please only sign in once.\n" \
+            + "Enjoy!")
         else:
-            print("RENDERThe username/passowrd combination you entered seems to be invalid. Please try again.")
+            print("RENDER::The username/password combination you entered seems to be invalid.\n" \
+                + "Please try again.")
 
     except Exception as e:
         print(str(e))
