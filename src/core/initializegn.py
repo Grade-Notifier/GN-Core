@@ -37,6 +37,9 @@ load_dotenv(dotenv_path)
 # Accessing variables.
 account_pass = os.getenv('ACCOUNT_PASSWORD')
 
+def print_to_screen(text):
+    print("RENDER::" + text)
+
 
 def run(username, password, school, phone):
     log_path = '{0}/{1}{2}'.format(
@@ -106,13 +109,14 @@ def main():
         did_log_in = login(session, username, password)
         if did_log_in:
             run(username, password, args.school.upper(), number)
-            print("RENDER::Check your phone for a text!\n" \
+
+            print_to_screen("Check your phone for a text!\n" \
             + "The service will check for new grades every 5 min and text you when anything changes.\n" \
             + "The service will continue for 5 days and then require you to sign-in again.\n" \
             + "Please only sign in once.\n" \
             + "Enjoy!")
         else:
-            print("RENDER::The username/password combination you entered seems to be invalid.\n" \
+            print_to_screen("The username/password combination you entered seems to be invalid.\n" \
                 + "Please try again.")
 
     except Exception as e:
