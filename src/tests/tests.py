@@ -1,6 +1,9 @@
 from os import sys, path
+import io
+
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
+from helper.helper import print_to_screen
 from helper.constants import script_path, instance_path
 from helper.message import Message
 from helper.gpa import GPA
@@ -170,6 +173,17 @@ class TestRedactPrint(unittest.TestCase):
 
         os.remove(file_path)
         self.assertEqual(redacted_print, outcome)
+
+class TestPrintToScreenMethod(unittest.TestCase):
+    def test_print_to_screen(self):
+        old_stdout = sys.stdout # Memorize the default stdout stream
+        sys.stdout = buffer = io.StringIO()
+        string_to_print = "This text should be displayed!"
+        print_to_screen(string_to_print)
+        sys.stdout = old_stdout # Put the old stream back in place
+        expected = "RENDER::" + string_to_print + "\n"
+        actual = buffer.getvalue()
+        self.assertEqual(expected, actual)
 
 def run_test():
     scriptpath = script_path()

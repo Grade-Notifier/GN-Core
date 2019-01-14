@@ -13,6 +13,7 @@ from helper.fileManager import create_dir
 from helper.session import Session
 from helper.constants import log_path
 from helper.constants import script_path, abs_repo_path
+from helper.helper import print_to_screen
 from login_flow.cunylogin import login, logout
 from dotenv import load_dotenv
 from os.path import join, dirname
@@ -36,6 +37,7 @@ load_dotenv(dotenv_path)
 
 # Accessing variables.
 account_pass = os.getenv('ACCOUNT_PASSWORD')
+
 
 
 def run(username, password, school, phone):
@@ -106,8 +108,15 @@ def main():
         did_log_in = login(session, username, password)
         if did_log_in:
             run(username, password, args.school.upper(), number)
+
+            print_to_screen("Check your phone for a text!\n" \
+            + "The service will check for new grades every 5 min and text you when anything changes.\n" \
+            + "The service will continue for 5 days and then require you to sign-in again.\n" \
+            + "Please only sign in once.\n" \
+            + "Enjoy!")
         else:
-            print("Invalid Credentials")
+            print_to_screen("The username/password combination you entered seems to be invalid.\n" \
+                + "Please try again.")
 
     except Exception as e:
         print(str(e))
