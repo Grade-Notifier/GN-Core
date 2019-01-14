@@ -1,6 +1,6 @@
-./logs
-./instances.txt
-./test-instances.txt
+logs
+instances.txt
+test-instances.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
