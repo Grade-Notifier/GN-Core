@@ -12,3 +12,6 @@ def get_semester():
             return f'{now.year-1} Fall Term'
         else:
             return f'{now.year} Fall Term'
+
+def print_to_screen(text):
+    print("RENDER::" + text)

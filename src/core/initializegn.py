@@ -13,6 +13,7 @@ from helper.fileManager import create_dir
 from helper.session import Session
 from helper.constants import log_path
 from helper.constants import script_path, abs_repo_path
+from helper.helper import print_to_screen
 from login_flow.cunylogin import login, logout
 from dotenv import load_dotenv
 from os.path import join, dirname
@@ -37,8 +38,6 @@ load_dotenv(dotenv_path)
 # Accessing variables.
 account_pass = os.getenv('ACCOUNT_PASSWORD')
 
-def print_to_screen(text):
-    print("RENDER::" + text)
 
 
 def run(username, password, school, phone):
