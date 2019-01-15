@@ -49,19 +49,25 @@
 </body>
 <?php
 	function display(){
-     require_once 'vendor/autoload.php';
-     $dotenv = Dotenv\Dotenv::create(__DIR__);
-     $dotenv->load();
-     $account_pass = getenv('ACCOUNT_PASSWORD');
-     $cmd = 'echo "'.$account_pass.'" | su -c "python3 /home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"].' --prod=true" - adeh6562';
      $arr = array();
+     $cmd = '';
+     if (gethostname() == "venus" || gethostname() == "mars") {
+         require_once 'vendor/autoload.php';
+         $dotenv = Dotenv\Dotenv::create(__DIR__);
+         $dotenv->load();
+         $account_pass = getenv('ACCOUNT_PASSWORD');
+         $cmd = 'echo "'.$account_pass.'" | su -c "python3 /home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"].' --prod=true" - adeh6562';
+     } else {
+         echo '********************\nRunning Local....\n********************\n';
+         $cmd = 'python3 src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"];
+     }
      $message = exec($cmd, $arr);
      for($x = 0; $x < count($arr); $x++) {
-		if (strpos($arr[$x], 'RENDER::') !== false) {
-	    	echo htmlspecialchars(str_replace("RENDER::", "", $arr[$x]));
-			echo "<br>";
-		}
-	}
+         if (strpos($arr[$x], 'RENDER::') !== false) {
+             echo htmlspecialchars(str_replace("RENDER::", "", $arr[$x]));
+             echo "<br>";
+         }
+     }
 		?>
 		<?php
 	}
