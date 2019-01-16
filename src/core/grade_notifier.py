@@ -17,7 +17,6 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from helper.userdata import User
 from login_flow.loginState import LoginState
 from helper.message import Message
-from login_flow.cunylogin import login, logout
 from helper.gpa import GPA
 from helper.constants import instance_path, abs_repo_path
 from helper import constants
