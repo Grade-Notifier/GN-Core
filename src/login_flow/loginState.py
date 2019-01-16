@@ -1,14 +1,14 @@
-"""Login State
-"""
-
-__author__ = "Ehud Adler & Akiva Sherman"
-__copyright__ = "Copyright 2018, The Punk Kids"
-__license__ = "MIT"
-__version__ = "1.0.0"
-__maintainer__ = "Ehud Adler & Akiva Sherman"
-__email__ = "self@ehudadler.com"
-__status__ = "Production"
-
+###***********************************###
+'''
+Grade Notifier
+File: loginState.py
+Author: Ehud Adler
+Core Maintainers: Ehud Adler, Akiva Sherman, 
+Yehuda Moskovits
+Copyright: Copyright 2019, Ehud Adler
+License: MIT
+'''
+###***********************************###
 
 class LoginState():
     TEST = 0

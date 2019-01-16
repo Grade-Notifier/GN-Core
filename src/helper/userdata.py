@@ -1,3 +1,15 @@
+###***********************************###
+'''
+Grade Notifier
+File: userdata.py
+Author: Ehud Adler
+Core Maintainers: Ehud Adler, Akiva Sherman, 
+Yehuda Moskovits
+Copyright: Copyright 2019, Ehud Adler
+License: MIT
+'''
+###***********************************###
+
 class User():
     def __init__(self, username, password, number, school_code = None):
         self._username = username
