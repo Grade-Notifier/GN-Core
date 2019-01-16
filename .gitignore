@@ -1,6 +1,6 @@
-logs
-instances.txt
-test-instances.txt
+**/logs
+**/instances.txt
+**/test-instances.txt
 **/.DS_Store
 **/__pycache__/
 

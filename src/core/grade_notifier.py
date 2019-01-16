@@ -2,7 +2,7 @@
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 # Remote
-from helper.session import Session, SessionState
+from helper.userdata import User
 from login_flow.loginState import LoginState
 from helper.message import Message
 from login_flow.cunylogin import login, logout
@@ -28,17 +28,13 @@ import fileinput
 import time
 import logging
 import traceback
-
+import cunyfirstapi
 from bs4 import BeautifulSoup
 from lxml import etree
 from twilio.rest import Client
 from lxml import html
 from os.path import join, dirname
 from dotenv import load_dotenv
-
-
-"""Grade-Notifier
-"""
 
 __author__ = "Ehud Adler & Akiva Sherman"
 __copyright__ = "Copyright 2018, The Punk Kids"
@@ -62,8 +58,9 @@ auth_token = os.getenv('TWILIO_AUTH_TOKEN')
 
 redacted_print_std = None
 redacted_print_err = None
-session = None
+user = None
 client = None
+api = None
 state = None
 
 '''
@@ -87,8 +84,6 @@ def send_text(message, sendNumber):
 
     Changelog: The list of classes which have had grade changes
 '''
-
-
 def create_text_message(change_log):
 
     # Message header
@@ -101,7 +96,6 @@ def create_text_message(change_log):
         .newline()
 
     class_num = 1
-
     gpa = change_log.gpa
 
     for elm in change_log.classes:
@@ -145,8 +139,6 @@ def create_text_message(change_log):
     Old: Old Classes
     New: New Classes
 '''
-
-
 def find_changes(old, new):
 
     new_gpa = new.gpa
@@ -175,49 +167,14 @@ def find_changes(old, new):
 
 ###********* Main Program *********###
 
+def create_instance():
+    api.login()
+    start_notifier()
 
-def create_instance(session, username, password, number, school_code):
-    login(session, username, password)
+def refresh():
 
-    if session.is_logged_in():
-        start_notifier(session, number, school_code, username, password)
-    else:
-        # Login failed
-        pass
-
-
-def refresh(session, school):
-
-    session.current.get(constants.CUNY_FIRST_GRADES_URL)
-
-    payload = {'ICACTION': 'DERIVED_SSS_SCT_SSS_TERM_LINK'}
-    try:
-        response = session.current.post(
-            constants.CUNY_FIRST_GRADES_URL, data=payload)
-    except TimeoutError:
-        return refresh(session, school)
-
-    tree = html.fromstring(response.text)
     term = helper.get_semester()
-    payload_key = ''.join(
-        tree.xpath(
-            '//span[text()="{0}"]/parent::div/parent::td/preceding-sibling::td/div/input/@id'
-            .format(term)))
-    payload_value = ''.join(
-        tree.xpath(
-            '//span[text()="{0}"]/parent::div/parent::td/preceding-sibling::td/div/input/@value'
-            .format(term)))
-
-    payload = {
-        payload_key: payload_value,
-        'ICACTION': 'DERIVED_SSS_SCT_SSR_PB_GO'
-    }
-    try:
-        response = session.current.post(
-            constants.CUNY_FIRST_GRADES_URL, data=payload)
-    except TimeoutError:
-        return refresh(session, school)
-
+    response = api.to_current_term_grades(term)
     tree = BeautifulSoup(response.text, 'lxml')
     good_html = tree.prettify()
     soup = BeautifulSoup(good_html, 'html.parser')
@@ -260,27 +217,21 @@ def refresh(session, school):
     return refresh_result
 
 
-def start_notifier(session, number, school, username, password):
+def start_notifier():
     counter = 0
     old_result = RefreshResult([], -1)
     while counter < 844:
-        if session.is_logged_in():
-            result = refresh(session, school)
-            
-            changelog = find_changes(old_result, result) \
-                if result != None \
-                else None
+        result = refresh()
+        changelog = find_changes(old_result, result) \
+            if result != None \
+            else None
 
-            if changelog is not None:
-                message = create_text_message(changelog)
-                send_text(message, number)
-                old_result = result
-                time.sleep(5 * 60)  # 5 sec intervals
-                counter += 1
-        else:
-            # make a new requests.Session object :)
-            session.current = requests.Session()
-            login(session, username, password)
+        if changelog is not None:
+            message = create_text_message(changelog)
+            send_text(message, number)
+            old_result = result
+            time.sleep(5 * 60)  # 5 sec intervals
+            counter += 1
 
 
 def check_user_exists(username):
@@ -317,8 +268,8 @@ def remove_user_instance(username):
 
 
 def exit_handler():
-    send_text(constants.SESSION_ENDED_TEXT, session.get_number())
-    remove_user_instance(session.get_username())
+    send_text(constants.SESSION_ENDED_TEXT, user.get_number())
+    remove_user_instance(user.get_username())
 
 
 def already_in_session_message():
@@ -350,11 +301,11 @@ def initialize_twilio():
 
 
 def main():
-    global session
+    global user
     global state
+    global api
     global redacted_print_std
     global redacted_print_err
-
 
     args = parse()
     state = LoginState.determine_state(args)
@@ -364,13 +315,7 @@ def main():
         # or when specifically asked
         if state == LoginState.PROD or args.enable_phone:
             initialize_twilio()
-
-        s = requests.Session()
-        s.headers = {
-            'User-Agent':
-            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 '
-            + '(KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
-        }
+        
         username = input(
             "Enter username: ") if not args.username else args.username
         password = getpass.getpass(
@@ -386,10 +331,10 @@ def main():
         redacted_print_err.enable()
 
         if add_new_user_instance(username):
-            session = Session(s, username, password, number)
+            api = cunyfirstapi.CUNYFirstAPI(username, password)
+            user = User(username, password, number, args.school.upper())
             atexit.register(exit_handler)
-            create_instance(session, username, password, number,
-                            args.school.upper())
+            create_instance()
         else:
             print(already_in_session_message())
 
