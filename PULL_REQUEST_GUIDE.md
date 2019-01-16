@@ -21,6 +21,25 @@ Before making a Pull request try to make sure you've checked off the quick check
 * If you've added a new remote import (not builtin) you've included that import in its proper dependencies file (example: dependencies.pip)
 
 
+## Adding a new file
+If your PR requires a new file to be added please make sure it begins with the header
+
+Don't forget to update the filename
+
+```python
+###***********************************###
+'''
+Grade Notifier
+File: <filename>.py
+Author: Ehud Adler
+Core Maintainers: Ehud Adler, Akiva Sherman, 
+Yehuda Moskovits
+Copyright: Copyright 2019, Ehud Adler
+License: MIT
+'''
+###***********************************###
+```
+
 ## Making the Pull Request 
 
 When you make your pull request you must give the pull request a summary. Make sure the summary is informative and explains what is being fixed. If your PR is fixing an issue make sure it label that issue as follows:
