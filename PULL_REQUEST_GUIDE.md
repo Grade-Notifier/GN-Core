@@ -19,9 +19,9 @@ Before making a Pull request try to make sure you've checked off the quick check
 * You didn't forget a #TODO inside your code
 * You followed the [PEP8](https://www.python.org/dev/peps/pep-0008) or equivalent for the language your programming in styleguide
 * Your code passes the unit tests
+* Test your code locally (See below)
 * Your code contains a new unit test (for your new addition) that passes
 * If you've added a new remote import (not builtin) you've included that import in its proper dependencies file (example: dependencies.pip)
-
 
 ## Adding a new file
 If your PR requires a new file to be added please make sure it begins with the header
@@ -41,6 +41,13 @@ License: MIT
 '''
 ###***********************************###
 ```
+
+## Testing code locally
+To test the website locally navigate into the top-level directory
+
+Then run `bash ./src/tests/run-local.sh`
+
+Once the localhost server is running visit `http://localhost:8000` to view the website.
 
 ## Making the Pull Request 
 
