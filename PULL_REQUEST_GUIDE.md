@@ -2,7 +2,7 @@
 
 <img src=https://camo.githubusercontent.com/98ac5a9047bbf6a063e667a933cc056ea3e627a6/68747470733a2f2f6d617863646e2e69636f6e73382e636f6d2f416e64726f69645f4c2f504e472f3531322f50726f6772616d6d696e672f70756c6c5f726571756573742d3531322e706e67 width=50>
 <br>
-<font size="8" color="black">Pull Request Guide</font>
+<h1 align="center">Pull Request Guide</h1>
 </p>
 <br>
 
