@@ -29,6 +29,7 @@ __maintainer__ = "Ehud Adler & Akiva Sherman"
 __email__ = "self@ehudadler.com"
 __status__ = "Production"
 
+
 class TestMessageClass(unittest.TestCase):
 
     def test_construction(self):
