@@ -43,7 +43,7 @@ end
 
 forgot_tests = !git.modified_files.include?("/src/tests/tests.py")
 
-if forgot_tests and not declared_trivial
+if forgot_tests
 	warn("It appears that you forgot to add a Unit Test to the test file.\n Please add a test and upload the new version.\n The test file can currently be found at: ./src/tests/test/.py")
 end
 
@@ -55,9 +55,3 @@ if not unit_text.include?('OK')
 else
 	message("All Unit Test Passed! 🤟")
 end
-
-
-
-
-
-
