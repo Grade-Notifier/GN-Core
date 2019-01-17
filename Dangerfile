@@ -42,6 +42,11 @@ if github.pr_title.include? "[WIP]"
 end
 
 forgot_tests = !git.modified_files.include?("/src/tests/tests.py")
+forgot_tests2 = !git.modified_files.include?("src/tests/tests.py")
+
+message(forgot_tests)
+message(forgot_tests2)
+
 git.modified_files.each do |f|
 	message(f)
 end
