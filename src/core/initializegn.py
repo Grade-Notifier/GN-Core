@@ -23,7 +23,6 @@ import cunyfirstapi
 from helper import constants
 from lxml import html
 from helper.fileManager import create_dir
-from helper.session import Session
 from helper.constants import log_path
 from helper.constants import script_path, abs_repo_path
 from helper.helper import print_to_screen
