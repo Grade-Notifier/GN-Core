@@ -252,7 +252,12 @@ def refresh(session, school):
             'table', attrs={'class': "PSLEVEL1GRIDWBO"})[1]  # get gpa table
 
         last_row = gpa_stats.find_all('tr')[-1]
-        term_gpa = float(last_row.find_all('td')[1].get_text())
+        print(last_row.find_all('td')[1].get_text())
+        term_gpa_text = last_row.find_all('td')[1].get_text().strip()
+        if not term_gpa_text:
+            term_gpa_text = '-1'
+
+        term_gpa = float(term_gpa_text)
         cumulative_gpa = float(last_row.find_all('td')[-1].get_text())
 
         refresh_result = RefreshResult(result, GPA(term_gpa, cumulative_gpa))
