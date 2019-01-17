@@ -44,8 +44,12 @@ end
 forgot_tests = !git.modified_files.include?("/src/tests/tests.py")
 forgot_tests2 = !git.modified_files.include?("src/tests/tests.py")
 
-message(forgot_tests)
-message(forgot_tests2)
+if forgot_tests
+	message("1")
+end
+if forgot_tests2
+	message("2")
+end
 
 git.modified_files.each do |f|
 	message(f)
