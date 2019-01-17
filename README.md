@@ -38,6 +38,10 @@ There are currently 3 main ways you can help contribute:
 2. Building out the script
 3. DevOps, making sure the project doesn't hiccup
 
+### I want to contribute but...
+
+Reach out cunybot1@gmail.com or ehud.adler62@qmail.cuny.edu. We're happy to walk you through how git works, how the project is structured or anything else.
+
 ### Quickstart
 
 If your looking to get going quickly checkout our Starter file. It can be downloaded here: [Grade-Notifier Starter file](https://gist.github.com/Huddie/e7e19d4f84a4e531944c25d6751cfe39/archive/74c20cbbcce73b44848b75a2a90bd1632abacc8b.zip)

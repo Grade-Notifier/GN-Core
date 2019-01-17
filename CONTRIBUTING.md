@@ -28,7 +28,7 @@ First off, thanks!
 
 Don't hesitate to reach out for help. Simply comment on the issue and someone will help you out.
 
-**Step 4:** Once you think you've solved the issue and are ready to have your changes incorperated into the master, check out the [Pull Request guide]().
+**Step 4:** Once you think you've solved the issue and are ready to have your changes incorperated into the master, check out the [Pull Request guide](https://github.com/Huddie/Grade-Notifier/blob/master/PULL_REQUEST_GUIDE.md).
 
 Again, if you have any question, feel free to reach out and thanks for your future contributions!
 
