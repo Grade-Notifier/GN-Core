@@ -3,7 +3,7 @@
 
 <img src=http://icons.iconarchive.com/icons/icons8/windows-8/512/Files-Add-File-icon.png width=50>
 <br>
-<font size="8" color="black">Contributing Guide</font>
+<h1 align="center">Contributing Guide</h1>
 </p>
 <br>
 
