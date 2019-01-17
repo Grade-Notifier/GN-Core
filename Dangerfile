@@ -41,7 +41,6 @@ if github.pr_title.include? "[WIP]"
     # auto_label.delete("WIP")
 end
 
-
 forgot_tests = !git.modified_files.include?("/src/tests/tests.py")
 
 if forgot_tests and not declared_trivial
