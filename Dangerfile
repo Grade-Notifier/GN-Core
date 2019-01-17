@@ -41,19 +41,7 @@ if github.pr_title.include? "[WIP]"
     # auto_label.delete("WIP")
 end
 
-forgot_tests = !git.modified_files.include?("/src/tests/tests.py")
-forgot_tests2 = !git.modified_files.include?("src/tests/tests.py")
-
-if forgot_tests
-	message("1")
-end
-if forgot_tests2
-	message("2")
-end
-
-git.modified_files.each do |f|
-	message(f)
-end
+forgot_tests = git.modified_files.include?("/src/tests/tests.py")
 
 if forgot_tests and not declared_trivial
 	warn("It appears that you forgot to add a Unit Test to the test file.\n Please add a test and upload the new version.\n The test file can currently be found at: ./src/tests/test/.py")
