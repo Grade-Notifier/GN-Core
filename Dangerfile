@@ -41,14 +41,7 @@ if github.pr_title.include? "[WIP]"
     # auto_label.delete("WIP")
 end
 
-forgot_tests = !git.modified_files.include?("tests.py")
-
-git.modified_files.each do |f|
-	message(f)
-	if f == "src/tests/tests.py" or f == "test"
-		message("NICE!")
-	end
-end
+forgot_tests = !git.modified_files.include?("src/tests/tests.py")
 
 if !forgot_tests
 	message("Thanks for remembering the tests")
