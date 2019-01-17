@@ -39,7 +39,7 @@ import fileinput
 import time
 import logging
 import traceback
-import cunyfirstapi
+from cunyfirstapi import CUNYFirstAPI
 from bs4 import BeautifulSoup
 from lxml import etree
 from twilio.rest import Client
@@ -339,7 +339,7 @@ def main():
         redacted_print_err.enable()
 
         if add_new_user_instance(username):
-            api = cunyfirstapi.CUNYFirstAPI(username, password)
+            api = CUNYFirstAPI(username, password)
             user = User(username, password, number, args.school.upper())
             atexit.register(exit_handler)
             create_instance()
