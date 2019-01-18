@@ -13,7 +13,7 @@ Great question! Let me highlight a few of our strengths:
 |---|---|
 |🚨| Get Notifier when a new grade is posted |
 |<img src=./Assets/CUNY-Logo.png width=30>| Available to all CUNY schools |
-|📧| Works with email |
+|📧| Works with email (coming soon...) |
 |📱| Works with phone |
 |⏳| Save time|
 |😰| Reduce stress|
