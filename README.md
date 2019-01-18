@@ -44,6 +44,11 @@ Reach out cunybot1@gmail.com or ehud.adler62@qmail.cuny.edu. We're happy to walk
 
 ### Quickstart
 
+> Requirements:
+> - macOS/Linux
+> - git installed
+> - ruby installed (should come preloaded on those 2 OS)
+
 If your looking to get going quickly checkout our Starter file. It can be downloaded here: [Grade-Notifier Starter file](https://gist.github.com/Huddie/e7e19d4f84a4e531944c25d6751cfe39/archive/1d7e2228b50c9875d61af5f248efadfd2e7458f7.zip)
 
 
