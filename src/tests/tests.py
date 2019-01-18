@@ -1,3 +1,15 @@
+###***********************************###
+'''
+Grade Notifier
+File: tests.py
+Author: Ehud Adler
+Core Maintainers: Ehud Adler, Akiva Sherman, 
+Yehuda Moskovits
+Copyright: Copyright 2019, Ehud Adler
+License: MIT
+'''
+###***********************************###
+
 from os import sys, path
 import io
 
@@ -16,19 +28,8 @@ from core.grade_notifier import Class, find_changes, \
 import unittest
 import os
 import argparse
+import cunyfirstapi
 from core.terminategn import getpid as terminate_get_pid
-
-"""Test-Grade-Notifier
-"""
-
-__author__ = "Ehud Adler & Akiva Sherman"
-__copyright__ = "Copyright 2018, The Punk Kids"
-__license__ = "MIT"
-__version__ = "1.0.0"
-__maintainer__ = "Ehud Adler & Akiva Sherman"
-__email__ = "self@ehudadler.com"
-__status__ = "Production"
-
 
 class TestMessageClass(unittest.TestCase):
 
@@ -133,7 +134,6 @@ class TestAddRemoveNewUserMethod(unittest.TestCase):
         pids.append(terminate_get_pid(username))
 
         remove_user_instance(username)
-        print(pids)
         passed = all(pid == str(os.getpid()) for pid in pids)
 
         self.assertTrue(passed)
@@ -184,6 +184,49 @@ class TestPrintToScreenMethod(unittest.TestCase):
         expected = "RENDER::" + string_to_print + "\n"
         actual = buffer.getvalue()
         self.assertEqual(expected, actual)
+
+
+class TestAPIIntegration(unittest.TestCase):
+    def test_api_init(self):
+        username = "FOO"
+        password = "BAR"
+        api = cunyfirstapi.CUNYFirstAPI(username, password)
+        self.assertEqual(api._username, username)
+        self.assertEqual(api._password, password)
+
+    def test_get_session(self):
+        username = "FOO"
+        password = "BAR"
+        api = cunyfirstapi.CUNYFirstAPI(username, password)
+        self.assertIsNotNone(api.get_current_session())
+
+    def test_restart_session(self):
+        username = "FOO"
+        password = "BAR"
+        api = cunyfirstapi.CUNYFirstAPI(username, password)
+
+        first_session = api.get_current_session()
+        api.restart_session()
+        second_session = api.get_current_session()
+
+        self.assertIsNotNone(first_session)
+        self.assertIsNotNone(second_session)
+        self.assertNotEqual(first_session, second_session)
+
+
+    def test_is_logged_in(self):
+        username = "FOO"
+        password = "BAR"
+
+        api = cunyfirstapi.CUNYFirstAPI(username, password)
+        self.assertFalse(api.is_logged_in())
+
+        api.login()
+
+        # Invalid credentials were passed in
+        # user should still not be logged in
+        self.assertFalse(api.is_logged_in())
+
 
 def run_test():
     scriptpath = script_path()

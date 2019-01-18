@@ -1,7 +1,11 @@
-<center><img src=http://icons.iconarchive.com/icons/icons8/windows-8/512/Files-Add-File-icon.png width=50> 
 
-# Contributing Guide 
-</center>
+<p align="center">
+
+<img src=http://icons.iconarchive.com/icons/icons8/windows-8/512/Files-Add-File-icon.png width=50>
+<br>
+<h1 align="center">Contributing Guide</h1>
+</p>
+<br>
 
 
 ## Reporting A Problem

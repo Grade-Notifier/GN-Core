@@ -1,3 +1,15 @@
+###***********************************###
+'''
+Grade Notifier
+File: initializegn.py
+Author: Ehud Adler
+Core Maintainers: Ehud Adler, Akiva Sherman,
+Yehuda Moskovits
+Copyright: Copyright 2019, Ehud Adler
+License: MIT
+'''
+###***********************************###
+
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
@@ -7,14 +19,13 @@ import os
 import requests
 import getpass
 import subprocess
+import cunyfirstapi
 from helper import constants
 from lxml import html
 from helper.fileManager import create_dir
-from helper.session import Session
 from helper.constants import log_path
 from helper.constants import script_path, abs_repo_path
 from helper.helper import print_to_screen
-from login_flow.cunylogin import login, logout
 from dotenv import load_dotenv
 from os.path import join, dirname
 
@@ -37,8 +48,6 @@ load_dotenv(dotenv_path)
 
 # Accessing variables.
 account_pass = os.getenv('ACCOUNT_PASSWORD')
-
-
 
 def run(username, password, school, phone):
     log_path = '{0}/{1}{2}'.format(
@@ -91,12 +100,6 @@ def parse():
 def main():
     args = parse()
     try:
-
-        s = requests.Session()
-        s.headers = {
-            'User-Agent':
-            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
-        }
         username = input(
             "Enter username: ") if not args.username else args.username
         password = getpass.getpass(
@@ -104,19 +107,22 @@ def main():
         number = input(
             "Enter phone number: ") if not args.phone else args.phone
         prod = False if not args.prod else True
-        session = Session(s, username, password, number)
-        did_log_in = login(session, username, password)
-        if did_log_in:
-            run(username, password, args.school.upper(), number)
 
-            print_to_screen("Check your phone for a text!\n" \
-            + "The service will check for new grades every 5 min and text you when anything changes.\n" \
-            + "The service will continue for 5 days and then require you to sign-in again.\n" \
-            + "Please only sign in once.\n" \
-            + "Enjoy!")
+        api = cunyfirstapi.CUNYFirstAPI(username, password)
+        if api.is_logged_in():
+            run(username, password, args.school.upper(), number)
+            print_to_screen(
+                "Check your phone for a text!\n" \
+                + "The service will check for new grades every 5 min and text you when anything changes.\n" \
+                + "The service will continue for 5 days and then require you to sign-in again.\n" \
+                + "Please only sign in once.\n" \
+                + "Enjoy!"
+            )
         else:
-            print_to_screen("The username/password combination you entered seems to be invalid.\n" \
-                + "Please try again.")
+            print_to_screen(
+                "The username/password combination you entered seems to be invalid.\n" \
+                + "Please try again."
+            )
 
     except Exception as e:
         print(str(e))
