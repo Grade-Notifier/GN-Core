@@ -44,7 +44,7 @@ workflows:
                echo "| $GIT_CLONE_COMMIT_AUTHOR_NAME | $d |" >> CONTRIBUTORS.md;
                git add CONTRIBUTORS.md
                git commit -m "Added $GIT_CLONE_COMMIT_AUTHOR_NAME to contributors list"
-               git push "https://Huddie:$GH_PASSWORD@github.com/Huddie/Grade-Notifier.git" "HEAD:$BITRISE_GIT_BRANCH"
+               git push "https://Grade-Notifier:$GH_PASSWORD@github.com/Grade-Notifier/GN-Core.git" "HEAD:$BITRISE_GIT_BRANCH"
             fi
         title: Add Contributor
     - deploy-to-bitrise-io@1.3.19: {}
@@ -56,6 +56,6 @@ workflows:
         - content: |-
             #!/usr/bin/env bash
             brew install https://raw.githubusercontent.com/kadwanev/bigboybrew/master/Library/Formula/sshpass.rb
-            sshpass -f <(printf '%s\n' $MARS_PASSWORD) ssh -tt "$MARS_URL" 'cd public_html/grade-notifier/Grade-Notifier && git pull https://Huddie:'"$GH_PASSWORD"'@github.com/Huddie/Grade-Notifier.git prod && exit && exec bash -l'
+            sshpass -f <(printf '%s\n' $MARS_PASSWORD) ssh -tt "$MARS_URL" 'cd public_html/grade-notifier/Grade-Notifier && git pull https://Grade-Notifier:'"$GH_PASSWORD"'@github.com/Grade-Notifier/GN-Core.git prod && exit && exec bash -l'
         title: Upload
     - deploy-to-bitrise-io@1.3.19: {}
