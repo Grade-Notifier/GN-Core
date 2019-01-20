@@ -109,6 +109,7 @@ def main():
         prod = False if not args.prod else True
 
         api = cunyfirstapi.CUNYFirstAPI(username, password)
+        api.login()
         if api.is_logged_in():
             run(username, password, args.school.upper(), number)
             print_to_screen(

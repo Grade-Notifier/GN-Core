@@ -210,19 +210,22 @@ def start_notifier():
         time.sleep(5 * 60)  # 5 min intervals
 
 
-def check_user_exists(username):
+def check_user_exists(stored_username):
     file_path = instance_path(state)
     open(file_path, 'a').close()
     with open(file_path, 'r+') as file:
         return re.search(
-            '^{0}'.format(re.escape(username)), file.read(), flags=re.M)
+            '^{0}'.format(re.escape(stored_username)), file.read(), flags=re.M)
 
 
 def add_new_user_instance(username):
     file_path = instance_path(state)
-    if not check_user_exists(username.lower()):
+    stored_username = custom_hash(username)
+    if not check_user_exists(stored_username):
         with open(file_path, "a+") as instance_file:
-            instance_file.write("{0} : {1}\n".format(username.lower(),
+            redacted_list = [username]
+            instance_file = RedactedFile(instance_file, redacted_list)
+            instance_file.write("{0} : {1}\n".format(stored_username,
                                                      os.getpid()))
         return True
     return False
@@ -230,6 +233,7 @@ def add_new_user_instance(username):
 
 def remove_user_instance(username):
     file_path = instance_path(state)
+    stored_username = custom_hash(username)
     file = ""
 
     if not os.path.isfile(file_path):
@@ -237,9 +241,11 @@ def remove_user_instance(username):
 
     with open(file_path) as oldfile:
         for line in oldfile:
-            if not username.lower() in line:
+            if not stored_username in line:
                 file += line
     with open(file_path, 'w+') as newfile:
+        redacted_list = [username]
+        newfile = RedactedFile(newfile, redacted_list)
         newfile.writelines(file)
 
 
