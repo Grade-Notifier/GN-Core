@@ -219,13 +219,15 @@ class TestAPIIntegration(unittest.TestCase):
         password = "BAR"
 
         api = cunyfirstapi.CUNYFirstAPI(username, password)
+        session = api.get_current_session()
+        self.assertFalse(api.is_logged_in(session))
         self.assertFalse(api.is_logged_in())
-
         api.login()
 
         # Invalid credentials were passed in
         # user should still not be logged in
         self.assertFalse(api.is_logged_in())
+        self.assertFalse(api.is_logged_in(session))
 
 
 def run_test():
