@@ -18,5 +18,6 @@ def print_to_screen(text):
 
 def custom_hash(username):
     peppered_username = username.lower() + 'asdf'
-    hashed_username = hashlib.sha256(peppered_username).hexdigest().encode('utf-8')
+    peppered_username = peppered_username.encode('utf-8')
+    hashed_username = hashlib.sha256(peppered_username).hexdigest()
     return hashed_username
