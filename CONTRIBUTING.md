@@ -26,15 +26,15 @@ First off, thanks!
 
 **Step 2** is cloning from your remote repository to your local machine. To do this, follow githubs guide: [How to clone](https://help.github.com/articles/cloning-a-repository/)
 
-**Step 3:** The project is now setup on your machine but you need to install the dependencies. While inside the Grade-Notifier directory execute `bash Depfiles/depinstall.sh` .his should take care of installing all necessary dependencies for you. To check everything worked well try running the Unit Test suite. Again, while in the Grade-Notifier directory execute `python3 src/tests/tests.py`. If everything passes you should be good to go!
+**Step 3:** The project is now setup on your machine but you need to install the dependencies. While inside the Grade-Notifier directory execute `bash Depfiles/depinstall.sh`  this should take care of installing all necessary dependencies for you. To check everything worked well try running the Unit Test suite. Again, while in the Grade-Notifier directory execute `python3 src/tests/tests.py`. If everything passes you should be good to go!
 
 **Step 4:** Now its time to find an issue you want to help with. Head over to the [issues section](https://github.com/Huddie/Grade-Notifier/issues) of this repo to find one. If your a beginner we suggest finding one marked with the ["good-first-issue"](https://github.com/Huddie/Grade-Notifier/labels/good%20first%20issue) tag. 
 
 Don't hesitate to reach out for help. Simply comment on the issue and someone will help you out.
 
-**Step 4:** Once you think you've solved the issue and are ready to have your changes incorperated into the master, check out the [Pull Request guide](https://github.com/Huddie/Grade-Notifier/blob/master/PULL_REQUEST_GUIDE.md).
+**Step 5:** Once you think you've solved the issue and are ready to have your changes incorperated into the master, check out the [Pull Request guide](https://github.com/Huddie/Grade-Notifier/blob/master/PULL_REQUEST_GUIDE.md).
 
-Again, if you have any question, feel free to reach out and thanks for your future contributions!
+Again, if you have any questions, check out our FAQ [here](https://github.com/Grade-Notifier/GN-Core/blob/master/CONTRIBUTING_FAQ.md), if that does not answer your question feel free to reach out and thanks for your future contributions!
 
 ### Commit Rules
 
