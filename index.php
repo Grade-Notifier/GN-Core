@@ -58,6 +58,7 @@
          $account_pass = getenv('ACCOUNT_PASSWORD');
          $mars_user = getenv('MARS_USERNAME');
          $cmd = 'echo "'.$account_pass.'" | su -c "python3 /home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"].' --prod=true" - '.$mars_user;
+
      } else {
          echo '********************\nRunning Local....\n********************\n';
          $cmd = 'python3 src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"];
