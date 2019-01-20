@@ -14,6 +14,14 @@ License: MIT
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 # Remote
+from cunyfirstapi import Locations
+from cunyfirstapi import CUNYFirstAPI
+from bs4 import BeautifulSoup
+from lxml import etree
+from twilio.rest import Client
+from lxml import html
+from os.path import join, dirname
+from dotenv import load_dotenv
 from helper.userdata import User
 from login_flow.loginState import LoginState
 from helper.message import Message
@@ -23,7 +31,6 @@ from helper import constants
 from helper.helper import get_semester
 from helper import fileManager
 from helper import helper
-
 from helper.changelog import Changelog
 from helper.refresh_result import RefreshResult
 from helper.school_class import Class
@@ -39,15 +46,6 @@ import fileinput
 import time
 import logging
 import traceback
-from cunyfirstapi import Locations
-from cunyfirstapi import CUNYFirstAPI
-from bs4 import BeautifulSoup
-from lxml import etree
-from twilio.rest import Client
-from lxml import html
-from os.path import join, dirname
-from dotenv import load_dotenv
-
 ###********* GLOBALS *********###
 
 # Create .env file path.
@@ -85,7 +83,6 @@ def send_text(message, sendNumber):
 
 '''
     Converts a changelog array to a message
-
     Changelog: The list of classes which have had grade changes
 '''
 def create_text_message(change_log):
@@ -174,9 +171,29 @@ def create_instance():
     api.login()
     start_notifier()
 
+def parse_grades_to_class(raw_grades):
+    results = []
+    for grade in raw_grades:
+        new_class = Class(
+            grade["name"],
+            grade["description"],
+            grade["units"],
+            grade["grading"],
+            grade["grade"],
+            grade["gradepts"],
+        )
+    return results
+
 def refresh():
     actObj = api.move_to(Locations.student_grades)
-    return actObj.grades
+
+    # action.grades returns a tuple of
+    # {grades}, term_gpa (float), cumulative_gpa (float)
+    raw_grades = actObj.grades
+
+    result = parse_grades_to_class(raw_grades[0])
+    refresh_result = RefreshResult(result, GPA(raw_grades[1], raw_grades[2]))
+    return refresh_result
 
 def start_notifier():
     counter = 0
@@ -193,7 +210,6 @@ def start_notifier():
             old_result = result
             time.sleep(5 * 60)  # 5 sec intervals
             counter += 1
-
 
 def check_user_exists(username):
     file_path = instance_path(state)
