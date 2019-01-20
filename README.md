@@ -52,7 +52,7 @@ Reach out cunybot1@gmail.com or ehud.adler62@qmail.cuny.edu. We're happy to walk
 If your looking to get going quickly checkout our Starter file. It can be downloaded here: [Grade-Notifier Starter file](https://gist.github.com/Huddie/e7e19d4f84a4e531944c25d6751cfe39/archive/77c0815b530659dde202b1d60f873e58a0c4d600.zip)
 
 
-1. Make sure you have jumpstarter installed (This requires ruby gems) `gem install jump-starter`
+1. Make sure you have jumpstarter installed. If not type into your terminal (anywhere) `gem install jump-starter`
 
 2. Have your Github username and password on hand. 
 

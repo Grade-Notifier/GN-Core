@@ -14,16 +14,22 @@ License: MIT
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 # Remote
+from cunyfirstapi import Locations
+from cunyfirstapi import CUNYFirstAPI
+from bs4 import BeautifulSoup
+from lxml import etree
+from twilio.rest import Client
+from lxml import html
+from os.path import join, dirname
+from dotenv import load_dotenv
 from helper.userdata import User
 from login_flow.loginState import LoginState
 from helper.message import Message
 from helper.gpa import GPA
 from helper.constants import instance_path, abs_repo_path
 from helper import constants
-from helper.helper import get_semester
 from helper import fileManager
 from helper import helper
-
 from helper.changelog import Changelog
 from helper.refresh_result import RefreshResult
 from helper.school_class import Class
@@ -39,14 +45,6 @@ import fileinput
 import time
 import logging
 import traceback
-from cunyfirstapi import CUNYFirstAPI
-from bs4 import BeautifulSoup
-from lxml import etree
-from twilio.rest import Client
-from lxml import html
-from os.path import join, dirname
-from dotenv import load_dotenv
-
 ###********* GLOBALS *********###
 
 # Create .env file path.
@@ -84,7 +82,6 @@ def send_text(message, sendNumber):
 
 '''
     Converts a changelog array to a message
-
     Changelog: The list of classes which have had grade changes
 '''
 def create_text_message(change_log):
@@ -167,63 +164,35 @@ def find_changes(old, new):
     return None if len(changelog) == 0 else Changelog(
         changelog, new_gpa)  # always add gpa to the list
 
-
 ###********* Main Program *********###
 
 def create_instance():
     api.login()
     start_notifier()
 
+def parse_grades_to_class(raw_grades):
+    results = []
+    for grade in raw_grades:
+        new_class = Class(
+            grade["name"],
+            grade["description"],
+            grade["units"],
+            grade["grading"],
+            grade["grade"],
+            grade["gradepts"],
+        )
+        results.append(new_class)
+    return results
+
 def refresh():
-
-    term = helper.get_semester()
-    response = api.to_current_term_grades(term)
-    tree = BeautifulSoup(response.text, 'lxml')
-    good_html = tree.prettify()
-    soup = BeautifulSoup(good_html, 'html.parser')
-
-    try:
-        table = soup.findAll(
-            'table', attrs={'class': "PSLEVEL1GRIDWBO"})[0]  # get term table
-    except BaseException:
-        table = None
-
-    result = []
-    refresh_result = None
-
-    if table is not None:
-        row_marker = 0
-        for row in table.find_all('tr'):
-            column_marker = 0
-            row_marker += 1
-            columns = row.find_all('td')
-            data = []
-            for column in columns:
-                if row_marker > 1:
-                    data.append(column.get_text())
-                column_marker += 1
-            if len(data) is not 0:
-                new_class = Class(data[0].strip(), data[1].strip(),
-                                  data[2].strip(), data[3].strip(),
-                                  data[4].strip(), data[5].strip())
-                result.append(new_class)
-
-        gpa_stats = soup.findAll(
-            'table', attrs={'class': "PSLEVEL1GRIDWBO"})[1]  # get gpa table
-
-        last_row = gpa_stats.find_all('tr')[-1]
-        print(last_row.find_all('td')[1].get_text())
-        term_gpa_text = last_row.find_all('td')[1].get_text().strip()
-        if not term_gpa_text:
-            term_gpa_text = '-1'
-
-        term_gpa = float(term_gpa_text)
-        cumulative_gpa = float(last_row.find_all('td')[-1].get_text())
-
-        refresh_result = RefreshResult(result, GPA(term_gpa, cumulative_gpa))
-
+    actObj = api.move_to(Locations.student_grades)
+    # action.grades returns a dict of
+    # results: [grades], term_gpa: term_gpa (float), 
+    # cumulative_gpa: cumulative_gpa (float)
+    raw_grades = actObj.grades()
+    result = parse_grades_to_class(raw_grades['results'])
+    refresh_result = RefreshResult(result, GPA(raw_grades['term_gpa'], raw_grades['cumulative_gpa']))
     return refresh_result
-
 
 def start_notifier():
     counter = 0
@@ -233,13 +202,12 @@ def start_notifier():
         changelog = find_changes(old_result, result) \
             if result != None \
             else None
-
         if changelog is not None:
             message = create_text_message(changelog)
-            send_text(message, number)
+            send_text(message, user.get_number())
             old_result = result
-            time.sleep(5 * 60)  # 5 sec intervals
-            counter += 1
+        counter += 1
+        time.sleep(5 * 60)  # 5 min intervals
 
 
 def check_user_exists(username):
