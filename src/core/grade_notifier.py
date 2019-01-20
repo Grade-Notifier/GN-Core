@@ -33,7 +33,7 @@ from helper import helper
 from helper.changelog import Changelog
 from helper.refresh_result import RefreshResult
 from helper.school_class import Class
-from helper.redacted_stdout import RedactedPrint, STDOutOptions
+from helper.redacted_stdout import RedactedPrint, STDOutOptions, RedactedFile
 
 import requests
 import getpass
@@ -241,7 +241,7 @@ def remove_user_instance(username):
 
     with open(file_path) as oldfile:
         for line in oldfile:
-            if not stored_username in line:
+            if stored_username not in line:
                 file += line
     with open(file_path, 'w+') as newfile:
         redacted_list = [username]
