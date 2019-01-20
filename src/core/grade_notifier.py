@@ -28,7 +28,6 @@ from helper.message import Message
 from helper.gpa import GPA
 from helper.constants import instance_path, abs_repo_path
 from helper import constants
-from helper.helper import get_semester
 from helper import fileManager
 from helper import helper
 from helper.changelog import Changelog
@@ -182,17 +181,17 @@ def parse_grades_to_class(raw_grades):
             grade["grade"],
             grade["gradepts"],
         )
+        results.append(new_class)
     return results
 
 def refresh():
     actObj = api.move_to(Locations.student_grades)
-
-    # action.grades returns a tuple of
-    # {grades}, term_gpa (float), cumulative_gpa (float)
-    raw_grades = actObj.grades
-
-    result = parse_grades_to_class(raw_grades[0])
-    refresh_result = RefreshResult(result, GPA(raw_grades[1], raw_grades[2]))
+    # action.grades returns a dict of
+    # results: [grades], term_gpa: term_gpa (float), 
+    # cumulative_gpa: cumulative_gpa (float)
+    raw_grades = actObj.grades()
+    result = parse_grades_to_class(raw_grades['results'])
+    refresh_result = RefreshResult(result, GPA(raw_grades['term_gpa'], raw_grades['cumulative_gpa']))
     return refresh_result
 
 def start_notifier():
@@ -203,13 +202,13 @@ def start_notifier():
         changelog = find_changes(old_result, result) \
             if result != None \
             else None
-
         if changelog is not None:
             message = create_text_message(changelog)
-            send_text(message, number)
+            send_text(message, user.get_number())
             old_result = result
-            time.sleep(5 * 60)  # 5 sec intervals
-            counter += 1
+        counter += 1
+        time.sleep(5 * 60)  # 5 min intervals
+
 
 def check_user_exists(username):
     file_path = instance_path(state)
