@@ -30,6 +30,7 @@ from helper.constants import instance_path, abs_repo_path
 from helper import constants
 from helper import fileManager
 from helper import helper
+from helper.helper import custom_hash
 from helper.changelog import Changelog
 from helper.refresh_result import RefreshResult
 from helper.school_class import Class
