@@ -1,7 +1,9 @@
-<center><img src=https://camo.githubusercontent.com/98ac5a9047bbf6a063e667a933cc056ea3e627a6/68747470733a2f2f6d617863646e2e69636f6e73382e636f6d2f416e64726f69645f4c2f504e472f3531322f50726f6772616d6d696e672f70756c6c5f726571756573742d3531322e706e67 width=50> 
+<p align="center">
 
-# Pull Request Guide 
-</center>
+<img src=https://camo.githubusercontent.com/98ac5a9047bbf6a063e667a933cc056ea3e627a6/68747470733a2f2f6d617863646e2e69636f6e73382e636f6d2f416e64726f69645f4c2f504e472f3531322f50726f6772616d6d696e672f70756c6c5f726571756573742d3531322e706e67 width=50>
+<br>
+<h1 align="center">Pull Request Guide</h1>
+</p>
 <br>
 
 Welcome back! Congrats on getting to this point!
@@ -17,9 +19,35 @@ Before making a Pull request try to make sure you've checked off the quick check
 * You didn't forget a #TODO inside your code
 * You followed the [PEP8](https://www.python.org/dev/peps/pep-0008) or equivalent for the language your programming in styleguide
 * Your code passes the unit tests
+* Test your code locally (See below)
 * Your code contains a new unit test (for your new addition) that passes
 * If you've added a new remote import (not builtin) you've included that import in its proper dependencies file (example: dependencies.pip)
 
+## Adding a new file
+If your PR requires a new file to be added please make sure it begins with the header
+
+Don't forget to update the filename
+
+```python
+###***********************************###
+'''
+Grade Notifier
+File: <filename>.py
+Author: Ehud Adler
+Core Maintainers: Ehud Adler, Akiva Sherman, 
+Yehuda Moskovits
+Copyright: Copyright 2019, Ehud Adler
+License: MIT
+'''
+###***********************************###
+```
+
+## Testing code locally
+To test the website locally navigate into the top-level directory
+
+Then run `bash ./src/tests/run-local.sh`
+
+Once the localhost server is running visit `http://localhost:8000` to view the website.
 
 ## Making the Pull Request 
 

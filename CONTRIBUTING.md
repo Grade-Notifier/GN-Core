@@ -1,7 +1,11 @@
-<center><img src=http://icons.iconarchive.com/icons/icons8/windows-8/512/Files-Add-File-icon.png width=50> 
 
-# Contributing Guide 
-</center>
+<p align="center">
+
+<img src=http://icons.iconarchive.com/icons/icons8/windows-8/512/Files-Add-File-icon.png width=50>
+<br>
+<h1 align="center">Contributing Guide</h1>
+</p>
+<br>
 
 
 ## Reporting A Problem
@@ -28,7 +32,7 @@ First off, thanks!
 
 Don't hesitate to reach out for help. Simply comment on the issue and someone will help you out.
 
-**Step 4:** Once you think you've solved the issue and are ready to have your changes incorperated into the master, check out the [Pull Request guide]().
+**Step 4:** Once you think you've solved the issue and are ready to have your changes incorperated into the master, check out the [Pull Request guide](https://github.com/Huddie/Grade-Notifier/blob/master/PULL_REQUEST_GUIDE.md).
 
 Again, if you have any question, feel free to reach out and thanks for your future contributions!
 

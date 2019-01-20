@@ -13,7 +13,7 @@ Great question! Let me highlight a few of our strengths:
 |---|---|
 |🚨| Get Notifier when a new grade is posted |
 |<img src=./Assets/CUNY-Logo.png width=30>| Available to all CUNY schools |
-|📧| Works with email |
+|📧| Works with email (coming soon...) |
 |📱| Works with phone |
 |⏳| Save time|
 |😰| Reduce stress|
@@ -38,7 +38,29 @@ There are currently 3 main ways you can help contribute:
 2. Building out the script
 3. DevOps, making sure the project doesn't hiccup
 
-Check out the [contributing guide](https://github.com/Huddie/Grade-Notifier/blob/master/CONTRIBUTING.md).
+### I want to contribute but...
+
+Reach out cunybot1@gmail.com or ehud.adler62@qmail.cuny.edu. We're happy to walk you through how git works, how the project is structured or anything else.
+
+### Quickstart
+
+> Requirements:
+> - macOS/Linux
+> - git installed
+> - ruby installed (should come preloaded on those 2 OS)
+
+If your looking to get going quickly checkout our Starter file. It can be downloaded here: [Grade-Notifier Starter file](https://gist.github.com/Huddie/e7e19d4f84a4e531944c25d6751cfe39/archive/77c0815b530659dde202b1d60f873e58a0c4d600.zip)
+
+
+1. Make sure you have jumpstarter installed. If not type into your terminal (anywhere) `gem install jump-starter`
+
+2. Have your Github username and password on hand. 
+
+3. Simply drag the Setup file (that you just downloaded) into the folder of your choice and run `jumpstart start` in your terminal (make sure your in the proper directory). 
+
+Thats it! Your good to go!
+
+For a walkthrough of the non-quickstart approach check out the [contributing guide](https://github.com/Huddie/Grade-Notifier/blob/master/CONTRIBUTING.md).
 
 ## Open Source & Copying
 
@@ -46,7 +68,7 @@ We open source this repository for 2 main reasons:
 
 1) We hope that a project like this will excite fellow students and give them a project to work on. We know getting started on projects can be tough and we hope this helps get you coding!
 
-2) This project is susceptible to breakage at any point. Being that it relies on CUNYFirsts website the code and URL's are subject to changes and not in our control. For that reason, constent maintainence and updates could be necessary. As much fun as we had building this, we can't keep ontop of it. 
+2) This project is susceptible to breakage at any point. Being that it relies on CUNYFirsts website the code and URL's are subject to changes and not in our control. For that reason, constant maintainence and updates could be necessary. As much fun as we had building this, we can't keep ontop of it. 
 
 We have chosen to use the MIT License to allow students to make use of the code inside the project but **do not distribute this software commercially** paid or free.  
 

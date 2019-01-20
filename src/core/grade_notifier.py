@@ -1,21 +1,39 @@
+###***********************************###
+'''
+Grade Notifier
+File: grade_notifier.py
+Author: Ehud Adler
+Core Maintainers: Ehud Adler, Akiva Sherman,
+Yehuda Moskovits
+Copyright: Copyright 2019, Ehud Adler
+License: MIT
+'''
+###***********************************###
+
 ###********* Imports *********###
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 # Remote
-from helper.session import Session, SessionState
+from cunyfirstapi import Locations
+from cunyfirstapi import CUNYFirstAPI
+from bs4 import BeautifulSoup
+from lxml import etree
+from twilio.rest import Client
+from lxml import html
+from os.path import join, dirname
+from dotenv import load_dotenv
+from helper.userdata import User
 from login_flow.loginState import LoginState
 from helper.message import Message
-from login_flow.cunylogin import login, logout
 from helper.gpa import GPA
 from helper.constants import instance_path, abs_repo_path
 from helper import constants
-from helper.helper import get_semester
 from helper import fileManager
 from helper import helper
-
 from helper.changelog import Changelog
 from helper.refresh_result import RefreshResult
 from helper.school_class import Class
+from helper.redacted_stdout import RedactedPrint, STDOutOptions
 
 import requests
 import getpass
@@ -27,26 +45,6 @@ import fileinput
 import time
 import logging
 import traceback
-
-from bs4 import BeautifulSoup
-from lxml import etree
-from twilio.rest import Client
-from lxml import html
-from os.path import join, dirname
-from dotenv import load_dotenv
-
-
-"""Grade-Notifier
-"""
-
-__author__ = "Ehud Adler & Akiva Sherman"
-__copyright__ = "Copyright 2018, The Punk Kids"
-__license__ = "MIT"
-__version__ = "1.0.0"
-__maintainer__ = "Ehud Adler & Akiva Sherman"
-__email__ = "self@ehudadler.com"
-__status__ = "Production"
-
 ###********* GLOBALS *********###
 
 # Create .env file path.
@@ -59,8 +57,11 @@ load_dotenv(dotenv_path)
 account_sid = os.getenv('TWILIO_SID')
 auth_token = os.getenv('TWILIO_AUTH_TOKEN')
 
-session = None
+redacted_print_std = None
+redacted_print_err = None
+user = None
 client = None
+api = None
 state = None
 
 '''
@@ -81,11 +82,8 @@ def send_text(message, sendNumber):
 
 '''
     Converts a changelog array to a message
-
     Changelog: The list of classes which have had grade changes
 '''
-
-
 def create_text_message(change_log):
 
     # Message header
@@ -98,7 +96,6 @@ def create_text_message(change_log):
         .newline()
 
     class_num = 1
-
     gpa = change_log.gpa
 
     for elm in change_log.classes:
@@ -142,8 +139,6 @@ def create_text_message(change_log):
     Old: Old Classes
     New: New Classes
 '''
-
-
 def find_changes(old, new):
 
     new_gpa = new.gpa
@@ -169,115 +164,50 @@ def find_changes(old, new):
     return None if len(changelog) == 0 else Changelog(
         changelog, new_gpa)  # always add gpa to the list
 
-
 ###********* Main Program *********###
 
+def create_instance():
+    api.login()
+    start_notifier()
 
-def create_instance(session, username, password, number, school_code):
-    login(session, username, password)
+def parse_grades_to_class(raw_grades):
+    results = []
+    for grade in raw_grades:
+        new_class = Class(
+            grade["name"],
+            grade["description"],
+            grade["units"],
+            grade["grading"],
+            grade["grade"],
+            grade["gradepts"],
+        )
+        results.append(new_class)
+    return results
 
-    if session.is_logged_in():
-        start_notifier(session, number, school_code, username, password)
-    else:
-        # Login failed
-        pass
-
-
-def refresh(session, school):
-
-    session.current.get(constants.CUNY_FIRST_GRADES_URL)
-
-    payload = {'ICACTION': 'DERIVED_SSS_SCT_SSS_TERM_LINK'}
-    try:
-        response = session.current.post(
-            constants.CUNY_FIRST_GRADES_URL, data=payload)
-    except TimeoutError:
-        return refresh(session, school)
-
-    tree = html.fromstring(response.text)
-    term = helper.get_semester()
-    payload_key = ''.join(
-        tree.xpath(
-            '//span[text()="{0}"]/parent::div/parent::td/preceding-sibling::td/div/input/@id'
-            .format(term)))
-    payload_value = ''.join(
-        tree.xpath(
-            '//span[text()="{0}"]/parent::div/parent::td/preceding-sibling::td/div/input/@value'
-            .format(term)))
-
-    payload = {
-        payload_key: payload_value,
-        'ICACTION': 'DERIVED_SSS_SCT_SSR_PB_GO'
-    }
-    try:
-        response = session.current.post(
-            constants.CUNY_FIRST_GRADES_URL, data=payload)
-    except TimeoutError:
-        return refresh(session, school)
-
-    tree = BeautifulSoup(response.text, 'lxml')
-    good_html = tree.prettify()
-    soup = BeautifulSoup(good_html, 'html.parser')
-
-    try:
-        table = soup.findAll(
-            'table', attrs={'class': "PSLEVEL1GRIDWBO"})[0]  # get term table
-    except BaseException:
-        table = None
-
-    result = []
-    refresh_result = None
-
-    if table is not None:
-        row_marker = 0
-        for row in table.find_all('tr'):
-            column_marker = 0
-            row_marker += 1
-            columns = row.find_all('td')
-            data = []
-            for column in columns:
-                if row_marker > 1:
-                    data.append(column.get_text())
-                column_marker += 1
-            if len(data) is not 0:
-                new_class = Class(data[0].strip(), data[1].strip(),
-                                  data[2].strip(), data[3].strip(),
-                                  data[4].strip(), data[5].strip())
-                result.append(new_class)
-
-        gpa_stats = soup.findAll(
-            'table', attrs={'class': "PSLEVEL1GRIDWBO"})[1]  # get gpa table
-
-        last_row = gpa_stats.find_all('tr')[-1]
-        term_gpa = float(last_row.find_all('td')[1].get_text())
-        cumulative_gpa = float(last_row.find_all('td')[-1].get_text())
-
-        refresh_result = RefreshResult(result, GPA(term_gpa, cumulative_gpa))
-
+def refresh():
+    actObj = api.move_to(Locations.student_grades)
+    # action.grades returns a dict of
+    # results: [grades], term_gpa: term_gpa (float), 
+    # cumulative_gpa: cumulative_gpa (float)
+    raw_grades = actObj.grades()
+    result = parse_grades_to_class(raw_grades['results'])
+    refresh_result = RefreshResult(result, GPA(raw_grades['term_gpa'], raw_grades['cumulative_gpa']))
     return refresh_result
 
-
-def start_notifier(session, number, school, username, password):
+def start_notifier():
     counter = 0
     old_result = RefreshResult([], -1)
     while counter < 844:
-        if session.is_logged_in():
-            result = refresh(session, school)
-            
-            changelog = find_changes(old_result, result) \
-                if result != None \
-                else None
-
-            if changelog is not None:
-                message = create_text_message(changelog)
-                send_text(message, number)
-                old_result = result
-                time.sleep(5 * 60)  # 5 sec intervals
-                counter += 1
-        else:
-            # make a new requests.Session object :)
-            session.current = requests.Session()
-            login(session, username, password)
+        result = refresh()
+        changelog = find_changes(old_result, result) \
+            if result != None \
+            else None
+        if changelog is not None:
+            message = create_text_message(changelog)
+            send_text(message, user.get_number())
+            old_result = result
+        counter += 1
+        time.sleep(5 * 60)  # 5 min intervals
 
 
 def check_user_exists(username):
@@ -314,8 +244,8 @@ def remove_user_instance(username):
 
 
 def exit_handler():
-    send_text(constants.SESSION_ENDED_TEXT, session.get_number())
-    remove_user_instance(session.get_username())
+    send_text(constants.SESSION_ENDED_TEXT, user.get_number())
+    remove_user_instance(user.get_username())
 
 
 def already_in_session_message():
@@ -347,8 +277,11 @@ def initialize_twilio():
 
 
 def main():
-    global session
+    global user
     global state
+    global api
+    global redacted_print_std
+    global redacted_print_err
 
     args = parse()
     state = LoginState.determine_state(args)
@@ -358,13 +291,7 @@ def main():
         # or when specifically asked
         if state == LoginState.PROD or args.enable_phone:
             initialize_twilio()
-
-        s = requests.Session()
-        s.headers = {
-            'User-Agent':
-            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 '
-            + '(KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
-        }
+        
         username = input(
             "Enter username: ") if not args.username else args.username
         password = getpass.getpass(
@@ -372,11 +299,18 @@ def main():
         number = input(
             "Enter phone number: ") if not args.phone else args.phone
 
+        ## Monkey Patching stdout to remove any sens. data
+        redacted_list = [username, password]
+        redacted_print_std = RedactedPrint(STDOutOptions.STDOUT, redacted_list)
+        redacted_print_err = RedactedPrint(STDOutOptions.ERROR, redacted_list)
+        redacted_print_std.enable()
+        redacted_print_err.enable()
+
         if add_new_user_instance(username):
-            session = Session(s, username, password, number)
+            api = CUNYFirstAPI(username, password)
+            user = User(username, password, number, args.school.upper())
             atexit.register(exit_handler)
-            create_instance(session, username, password, number,
-                            args.school.upper())
+            create_instance()
         else:
             print(already_in_session_message())
 
