@@ -1,4 +1,24 @@
-git fork Huddie/Grade-Notifier
-git clone Grade-Notifier
-cd Grade-Notifier
+puts "\n\n"
+puts "Hi There!  ✌️".green
+puts "Thanks for contributing to the  Grade-Notifier  🚨!\n".green
+puts "Our setup process is fairly basic but we'll walk you through it\n"
+puts "So without further ado, Let's begin!\n\n".green
+puts "We'll need you GitHub Username and Password to start".yellow
+puts "Don't worry, we don't store either of them\n".yellow
+print "GitHub Username: "
+username = STDIN.gets.chomp
+password = STDIN.getpass("GitHub Password: ")
+puts "\n\n👍  Great!, Thanks!\n\n".green
+puts "We'll start by forking the Grade-Notifier/GN-Core repo.\n"
+puts "This could take a second so hold tight.\n".yellow
+git fork "Grade-Notifier/GN-Core" --username=username --password=password
+puts "👍  Fork Complete!\n\n".green
+puts "Next up we're gonna clone your forked repo #{username}/GN-Core\n"
+puts "This could take a second so hold tight.\n".yellow
+git clone "GN-Core" --username=username
+puts "👍  Clone Complete! Nice!\n\n".green
+cd GN-Core
+puts "Installing dependencies....\n".green
 bash run ./Depfiles/depinstall.sh
+puts "👍  Dependencies Installed! Nice!\n\n".green
+puts "Done."
