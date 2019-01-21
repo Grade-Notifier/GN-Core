@@ -48,7 +48,7 @@ if forgot_tests and not declared_trivial
 	warn("It appears that you forgot to add a Unit Test to the test file.\r\n Please add a test and upload the new version.\r\n The test file can currently be found at: ./src/tests/tests.py\r\n If this is a 'trivial' change add #trivial to the title")
 
 else
-      msg = not forgot_tests ? "Thanks for remembering to add a test!" : "Thanks for remembering to declare trivial!"
+      msg = !forgot_tests ? "Thanks for remembering to add a test!" : "Thanks for remembering to declare trivial!"
      message(msg)
 end
 
