@@ -15,7 +15,7 @@ import io
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from helper.helper import print_to_screen
+from helper.helper import print_to_screen, custom_hash
 from helper.constants import script_path, instance_path
 from helper.message import Message
 from helper.gpa import GPA
@@ -228,6 +228,22 @@ class TestAPIIntegration(unittest.TestCase):
         # user should still not be logged in
         self.assertFalse(api.is_logged_in())
         self.assertFalse(api.is_logged_in(session))
+
+class TestCustomHashMethod(unittest.TestCase):
+    def test_custom_hash_case_insensitive(self):
+        username1 = 'FOO'
+        username2 = 'fOO'
+        self.assertEqual(custom_hash(username1), custom_hash(username2))
+
+
+    def test_custom_hash_constant_results(self):
+        username = 'foo'
+        expected_hash = 'e4af8b9ab44a126630815144bc6412ad113f5dd94ac59e6aa1fef60b954bf5c9'
+        actual_hash = custom_hash(username)
+        self.assertEqual(expected_hash, actual_hash)
+
+
+
 
 
 def run_test():
