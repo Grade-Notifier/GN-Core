@@ -211,7 +211,8 @@ def start_notifier():
         time.sleep(5 * 60)  # 5 min intervals
 
 
-def check_user_exists(stored_username):
+def check_user_exists(username):
+    stored_username = custom_hash(username)
     file_path = instance_path(state)
     open(file_path, 'a').close()
     with open(file_path, 'r+') as file:
@@ -222,7 +223,7 @@ def check_user_exists(stored_username):
 def add_new_user_instance(username):
     file_path = instance_path(state)
     stored_username = custom_hash(username)
-    if not check_user_exists(stored_username):
+    if not check_user_exists(username):
         with open(file_path, "a+") as instance_file:
             redacted_list = [username]
             instance_file = RedactedFile(instance_file, redacted_list)
