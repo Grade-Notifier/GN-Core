@@ -60,7 +60,7 @@
          $cmd = 'echo "'.$account_pass.'" | su -c "python3 /home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"].' --prod=true" - '.$mars_user;
 
      } else {
-         echo '********************\nRunning Local....\n********************\n';
+         echo nl2br("********************\r\nRunning Local....\r\n********************\r\n");
          $cmd = 'python3 src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"];
      }
      $message = exec($cmd, $arr);
