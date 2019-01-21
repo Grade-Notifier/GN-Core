@@ -47,11 +47,9 @@ forgot_tests = !git.modified_files.include?("src/tests/tests.py")
 if forgot_tests and not declared_trivial
 	warn("It appears that you forgot to add a Unit Test to the test file.\r\n Please add a test and upload the new version.\r\n The test file can currently be found at: ./src/tests/tests.py\r\n If this is a 'trivial' change add #trivial to the title")
 
-elif not forgot_tests
-	message("Thanks for remembering to add a test!")
-
-elif declared_trivial
-	message("Thanks for remembering to declare trivial!")
+else
+      msg = not forgot_tests ? "Thanks for remembering to add a test!" : "Thanks for remembering to declare trivial!"
+     message(msg)
 end
 
 ## Unit Tests
