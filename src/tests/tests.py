@@ -229,6 +229,7 @@ class TestAPIIntegration(unittest.TestCase):
         self.assertFalse(api.is_logged_in())
         self.assertFalse(api.is_logged_in(session))
 
+
 class TestCustomHashMethod(unittest.TestCase):
     def test_custom_hash_case_insensitive(self):
         username1 = 'FOO'
@@ -243,6 +244,10 @@ class TestCustomHashMethod(unittest.TestCase):
         self.assertEqual(expected_hash, actual_hash)
 
 
+    def test_custom_hash_different_users(self):
+        username1 = 'foo'
+        username2 = 'bar'
+        self.assertNotEqual(custom_hash(username1), custom_hash(username2))
 
 
 

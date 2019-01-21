@@ -36,12 +36,12 @@ def parse():
 
 
 def getpid(username):
-    stored_username = custom_hash(username)
     file_path = instance_path(state)
 
     if not os.path.isfile(file_path):
         return
 
+    stored_username = custom_hash(username)
     with open(file_path) as oldfile:
         for line in oldfile:
             if stored_username in line:

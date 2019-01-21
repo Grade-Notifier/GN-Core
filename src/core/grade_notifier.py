@@ -222,8 +222,8 @@ def check_user_exists(username):
 
 def add_new_user_instance(username):
     file_path = instance_path(state)
-    stored_username = custom_hash(username)
-    if not check_user_exists(username):
+    if not check_user_exists(username):    
+        stored_username = custom_hash(username)
         with open(file_path, "a+") as instance_file:
             redacted_list = [username]
             instance_file = RedactedFile(instance_file, redacted_list)
@@ -235,12 +235,12 @@ def add_new_user_instance(username):
 
 def remove_user_instance(username):
     file_path = instance_path(state)
-    stored_username = custom_hash(username)
     file = ""
 
     if not os.path.isfile(file_path):
         return
 
+    stored_username = custom_hash(username)
     with open(file_path) as oldfile:
         for line in oldfile:
             if stored_username not in line:
