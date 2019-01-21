@@ -19,7 +19,7 @@ import re
 import argparse
 import os
 from helper.constants import instance_path, abs_repo_path
-from helper.helper import cutsome_hash
+from helper.helper import custom_hash
 from helper import constants
 import subprocess
 
@@ -36,7 +36,7 @@ def parse():
 
 
 def getpid(username):
-    stored_username = cutsome_hash(username)
+    stored_username = custom_hash(username)
     file_path = instance_path(state)
 
     if not os.path.isfile(file_path):
@@ -49,7 +49,7 @@ def getpid(username):
 
 
 def kill(username):
-    stored_username = cutsome_hash(username)
+    stored_username = custom_hash(username)
     pid = getpid(stored_username)
     if pid:
     	subprocess.run(['kill','-SIGINT',pid])
