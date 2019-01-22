@@ -30,10 +30,11 @@ from helper.constants import instance_path, abs_repo_path
 from helper import constants
 from helper import fileManager
 from helper import helper
+from helper.helper import custom_hash
 from helper.changelog import Changelog
 from helper.refresh_result import RefreshResult
 from helper.school_class import Class
-from helper.redacted_stdout import RedactedPrint, STDOutOptions
+from helper.redacted_stdout import RedactedPrint, STDOutOptions, RedactedFile
 
 import requests
 import getpass
@@ -211,18 +212,22 @@ def start_notifier():
 
 
 def check_user_exists(username):
+    stored_username = custom_hash(username)
     file_path = instance_path(state)
     open(file_path, 'a').close()
     with open(file_path, 'r+') as file:
         return re.search(
-            '^{0}'.format(re.escape(username)), file.read(), flags=re.M)
+            '^{0}'.format(re.escape(stored_username)), file.read(), flags=re.M)
 
 
 def add_new_user_instance(username):
     file_path = instance_path(state)
-    if not check_user_exists(username.lower()):
+    if not check_user_exists(username):    
+        stored_username = custom_hash(username)
         with open(file_path, "a+") as instance_file:
-            instance_file.write("{0} : {1}\n".format(username.lower(),
+            redacted_list = [username]
+            instance_file = RedactedFile(instance_file, redacted_list)
+            instance_file.write("{0} : {1}\n".format(stored_username,
                                                      os.getpid()))
         return True
     return False
@@ -235,11 +240,14 @@ def remove_user_instance(username):
     if not os.path.isfile(file_path):
         return
 
+    stored_username = custom_hash(username)
     with open(file_path) as oldfile:
         for line in oldfile:
-            if not username.lower() in line:
+            if stored_username not in line:
                 file += line
     with open(file_path, 'w+') as newfile:
+        redacted_list = [username]
+        newfile = RedactedFile(newfile, redacted_list)
         newfile.writelines(file)
 
 
