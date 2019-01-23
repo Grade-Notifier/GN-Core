@@ -55,7 +55,7 @@ end
 system("python3 ./src/tests/tests.py 2> log.txt")
 unit_text = File.read("./log.txt")
 if not unit_text.include?('OK')
-	fail(clean_text)
+	fail(unit_text)
 else
 	message("All Unit Test Passed! 🤟")
 end
