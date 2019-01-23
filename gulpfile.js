@@ -8,15 +8,12 @@ var sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('serve', function() {
     browserSync.init({
-        server: true,
-        online:true,
-        tunnel: true,
-        index: "index_success.html"
+        server: true
     });
 
-    gulp.watch('./development-assets/scss/*.scss', ['css']);
+    gulp.watch('./src/site/development-assets/scss/*.scss', ['css']);
     gulp.watch('./index.html').on('change', browserSync.reload);
-    gulp.watch('./site-assets/js/*.js').on('change', browserSync.reload);
+    gulp.watch('./src/site/site-assets/js/*.js').on('change', browserSync.reload);
 });
 
 gulp.task('css', function () {
@@ -27,12 +24,12 @@ gulp.task('css', function () {
     ];
 
     return gulp
-        .src('./development-assets/scss/*.scss')
+        .src('./src/site/development-assets/scss/*.scss')
         .pipe(sourcemaps.init())
             .pipe(sass.sync().on('error', sass.logError))
             .pipe(postcss(plugins))
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest('site-assets/css/'))
+        .pipe(gulp.dest('./src/site/site-assets/css/'))
         .pipe(browserSync.stream());
 });
 

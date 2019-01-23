@@ -1,3 +1,13 @@
+/*****************************************************
+ * Compiled from SCSS to CSS using gulp. If you would 
+ * like to use gulp to compile the CSS:
+ *   1. Make sure you have Node.js installed.
+ *   2. From the top folder, run `npm install`.
+ *   3. Once it is done installing, run `gulp`.
+ * Don't worry if a webpage opens up. Simply save the
+ * SCSS file and gulp will upate the CSS file for you.
+ *****************************************************/
+
 @import 'functions';
 @import 'normalize';
 
@@ -7,6 +17,8 @@ $black: #151e37;
 $blue: #1d3a83;
 $grey: #b5b5b5;
 $light-blue: hsl(222, 45%, 90%);
+$button: hsl(207, 100%, 51%);
+$button-hover: hsl(207, 100%, 67%);;
 
 $fontsize-input: 1.75em;
 
@@ -146,10 +158,10 @@ body {
 }
 
 .submit {
-    background-color: hsl(207, 100%, 51%);
-    border-width: 0;
+    background-color: $button;
     border-radius: 6px;
-    color: white;
+    border-width: 0;
+    color: #ffffff;
     cursor: pointer;
     font-size: $fontsize-input;
     margin-top: 0.5em;
@@ -157,7 +169,7 @@ body {
     // transition: background-color 0.2s ease-in-out;
 
     &:hover {
-        background-color: hsl(207, 100%, 67%);
+        background-color: $button-hover;
     }
 }
 
