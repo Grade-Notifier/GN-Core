@@ -57,7 +57,6 @@ password = "$GH_PASSWORD"
 system("python3 ./src/tests/tests.py 2> log.txt")
 unit_text = File.read("./log.txt")
 if not unit_text.include?('OK')
-	unit_text = "%s %s unit_text" % [username, unit_text]
 	clean_text = unit_text.sub("/%s|%s/" % [username, password], "[REDACTED]") 
 	fail("Oh No! You failed a unit test\nRun Python3 ./src/tests/tests.py to see which test failed\n%s" % [clean_text])
 else
