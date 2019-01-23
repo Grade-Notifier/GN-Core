@@ -295,8 +295,8 @@ def get_username_password():
     global username
     global password
     with open(".env", "r") as f:
-        username = f.readline()
-        password = f.readline()
+        username = f.readline().strip()
+        password = f.readline().strip()
 
 def is_local():
     return not is_venus_mars() and not is_ci()
