@@ -18,7 +18,7 @@ gulp.task('css', function () {
             .pipe(sass.sync().on('error', sass.logError))
             .pipe(postcss(plugins))
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest('../site-assets/css/'))
+        .pipe(gulp.dest('../site-assets/css/'));
 });
 
 gulp.task('default', ['css']);
