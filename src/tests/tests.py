@@ -238,7 +238,8 @@ class TestAPIIntegration(unittest.TestCase):
         if is_ci():
             global username
             global password
-            
+            print(username)
+            print(password)
             api = cunyfirstapi.CUNYFirstAPI(username, password)
             session = api.get_current_session()
             
