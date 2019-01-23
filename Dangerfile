@@ -52,22 +52,13 @@ else
 end
 
 ## Unit Tests
-system("python3 ./src/tests/tests.py 2> log.txt")
-unit_text = File.read("./log.txt")
-if not unit_text.include?('OK')
-	fail("Oh No! You failed a unit test\nRun Python3 ./src/tests/tests.py to see which test failed")
-else
-	message("All Unit Test Passed! 🤟")
-end
-
-## Unit Tests
 username = "$GH_USERNAME"
 password = "$GH_PASSWORD"
 system("python3 ./src/tests/tests.py 2> log.txt")
 unit_text = File.read("./log.txt")
 if not unit_text.include?('OK')
 	clean_text = unit_text.sub("/%s|%s/" % [username, password], "[REDACTED]") 
-	fail(clean_text)
+	fail("Oh No! You failed a unit test\nRun Python3 ./src/tests/tests.py to see which test failed\n%s" % [clean_text])
 else
 	message("All Unit Test Passed! 🤟")
 end
