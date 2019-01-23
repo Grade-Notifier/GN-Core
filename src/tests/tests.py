@@ -196,7 +196,7 @@ class TestAPIIntegration(unittest.TestCase):
     def test_api_init(self):
         fake_username = "FOO"
         fake_password = "BAR"
-        api = cunyfirstapi.CUNYFirstAPI(username, password)
+        api = cunyfirstapi.CUNYFirstAPI(fake_username, fake_password)
         self.assertEqual(api._username, fake_username)
         self.assertEqual(api._password, fake_password)
 
@@ -306,13 +306,13 @@ def is_venus_mars():
     return socket.gethostname() == "venus" or socket.gethostname() == "mars"
 
 def is_ci():
-    return os.path.isfile("./.ci")
+    return os.path.isfile(".ci")
 
 def main():
     if is_ci():
+        print("Running on CI.....")
         get_username_password()
         monkey_path_print()
-        
     run_test()
 
 if __name__ == '__main__':
