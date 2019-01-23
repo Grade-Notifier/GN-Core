@@ -238,19 +238,17 @@ class TestAPIIntegration(unittest.TestCase):
         if is_ci():
             global username
             global password
-            print(username)
-            print(password)
-            api = cunyfirstapi.CUNYFirstAPI(username, password)
+            api2 = cunyfirstapi.CUNYFirstAPI(username, password)
             session = api.get_current_session()
             
-            self.assertFalse(api.is_logged_in(session))
-            self.assertFalse(api.is_logged_in())
-            api.login()
+            self.assertFalse(api2.is_logged_in(session))
+            self.assertFalse(api2.is_logged_in())
+            api2.login()
 
             # valid credentials were passed in
             # user should be logged in
-            self.assertTrue(api.is_logged_in())
-            self.assertTrue(api.is_logged_in(session))
+            self.assertTrue(api2.is_logged_in(session))
+            self.assertTrue(api2.is_logged_in())
             
 class TestCustomHashMethod(unittest.TestCase):
     def test_custom_hash_case_insensitive(self):
