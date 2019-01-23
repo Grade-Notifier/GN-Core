@@ -112,18 +112,18 @@ def main():
         api.login()
         if api.is_logged_in():
             run(username, password, args.school.upper(), number)
-            print_to_screen(
-                "Check your phone for a text!\n" \
-                + "The service will check for new grades every 5 min and text you when anything changes.\n" \
-                + "The service will continue for 5 days and then require you to sign-in again.\n" \
-                + "Please only sign in once.\n" \
-                + "Enjoy!"
-            )
+            print_to_screen("ok", status=True)
+            print_to_screen("Hold tight!", title=True)
+            print_to_screen("You should receive a text soon.")
+            print_to_screen("The service will check for new grades every 5 minutes and text you when anything changes.")
+            print_to_screen("The service will continue for 5 days and then require you sign in again.")
+            print_to_screen("Please sign in only once.")
+            print_to_screen("Enjoy!")
         else:
-            print_to_screen(
-                "The username/password combination you entered seems to be invalid.\n" \
-                + "Please try again."
-            )
+            print_to_screen("error", status=True)
+            print_to_screen("Error!", title=True)
+            print_to_screen("The username/password combination you entered seems to be invalid.")
+            print_to_screen("Please try again.")
 
     except Exception as e:
         print(str(e))

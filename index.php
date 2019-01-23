@@ -1,4 +1,46 @@
-<?php $homepage = !isset($_POST["submit"]); ?>
+<?php
+$arr = array();
+$status = '';
+$title = '';
+$landing = !isset($_POST["submit"]);
+
+function display(){
+    global $arr, $status, $title;
+    $cmd = '';
+    if (gethostname() == "venus" || gethostname() == "mars") {
+        require_once 'vendor/autoload.php';
+        $dotenv = Dotenv\Dotenv::create(__DIR__);
+        $dotenv->load();
+        $account_pass = getenv('ACCOUNT_PASSWORD');
+        $mars_user = getenv('MARS_USERNAME');
+        $cmd = 'echo "'.$account_pass.'" | su -c "python3 /home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"].' --prod=true" - '.$mars_user;
+        
+    } else {
+        echo nl2br("********************\r\nRunning Local....\r\n********************\r\n");
+        $cmd = 'python3 src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"];
+    }
+    $message = exec($cmd, $arr);
+    
+    for ($x = 0; $x < count($arr); $x++) {
+        if (strpos($arr[$x], 'RENDER::STATUS::') !== false) {
+            $status = str_replace("RENDER::STATUS::", "", $arr[$x]);
+            break;
+        }
+    }
+
+    for ($x = 0; $x < count($arr); $x++) {
+        if (strpos($arr[$x], 'RENDER::TITLE::') !== false) {
+            $title = str_replace("RENDER::TITLE::", "", $arr[$x]);
+            break;
+        }
+    }
+}
+
+if (isset($_POST["submit"])){
+    display();
+}
+?>
+
 <!doctype html>
 <html>
 <head>
@@ -24,9 +66,34 @@
 <body>
     <div class="wrapper">
         <div class="column column--left">
-			<?php if(!$homepage): ?><img class="confirmed-check" alt="Check" src="Assets/site/Check.svg"><?php endif ?>
-			<h1 class="callout"><?php if($homepage): ?>Get a text when you<br>get your grades!<?php else: ?>Hold tight!<?php endif ?></h1>
-			<?php if($homepage): ?><div class="callout__divider"></div>
+        <?php
+        if (!$landing):
+            if ($status == "ok"):
+        ?>
+            <img class="status-symbol" alt="Check" src="Assets/site/Check.svg">
+        <?php
+            elseif ($status == "error"):
+        ?>
+            <img class="status-symbol" alt="Exclamation mark" src="Assets/site/Exclamation.svg">
+        <?php
+            endif;
+        endif;
+        ?>
+			<h1 class="callout">
+        <?php
+        if ($landing):
+        ?>
+            Get a text when you<br>get your grades!
+        <?php
+        elseif ($title):
+            echo $title;
+        endif;
+        ?>
+            </h1>
+        <?php
+        if ($landing):
+        ?>
+            <div class="callout__divider"></div>
             <form action=<?php echo $_SERVER['PHP_SELF']; ?> method="POST">
                 <input class="input" type="text" name="username" placeholder="Username" required><span class="username-posttext">@login.cuny.edu</span>
                 <br>
@@ -68,13 +135,34 @@
                 <input class="input input--full-width" type="text" name="phone" placeholder="Phone Number" required>
                 <br>
                 <input class="submit" type="submit" name="submit" value="Text me!">
-			</form><?php else: ?><div class="confirm-message__wrapper">
-                <p class="confirm-message__text">You should receive a text soon.</p>
-                <p class="confirm-message__text">The service will check for new grades every 5 minutes and text you when anything changes.</p>
-                <p class="confirm-message__text">The service will continue for 5 days and then require you sign in again.</p>
-                <p class="confirm-message__text">Please only sign in once.</p>
-                <p class="confirm-message__text">Enjoy!</p>
-			</div><?php endif ?>
+            </form>
+        <?php
+        else:
+            if ($arr): // If the array contains text to print
+        ?>
+            <div class="confirm-message__wrapper">
+            <?php
+                for ($x = 0; $x < count($arr); $x++) {
+                    if (strpos($arr[$x], 'RENDER::') !== false && strpos($arr[$x], 'RENDER::TITLE::') === false && strpos($arr[$x], 'RENDER::STATUS::') === false) {
+                        echo "<p class=\"confirm-message__text\">";
+                        echo htmlspecialchars(str_replace("RENDER::", "", $arr[$x]));
+                        echo "</p>";
+                    }
+                }
+            ?>
+            </div>
+        <?php
+            endif;
+
+            if ($status == "error"):
+        ?>
+            <form method="get">
+                <input class="submit" type="submit" value="Start over">
+            </form>
+        <?php
+            endif;
+        endif;
+        ?>
 			
 			<div class="credits">
                 <h3 class="credit">Made with ❤️  by Ehud Adler</h3>
@@ -83,39 +171,22 @@
         </div>
 
         <div class="column column--right">
-			<img class="image" <?php if($homepage): ?>alt="Phone" src="Assets/site/undraw_mobile_life_381t_edited.svg"<?php else: ?>alt="Phone with check mark" src="Assets/site/undraw_order_confirmed_1m3v.svg"<?php endif ?>>
+        <?php
+        if ($landing):
+        ?>
+            <img class="image" alt="Phone" src="Assets/site/undraw_mobile_life_381t_edited.svg">
+        <?php
+        elseif ($status == "ok"):
+        ?>
+            <img class="image" alt="Phone with check mark" src="Assets/site/undraw_order_confirmed_1m3v.svg">
+        <?php
+        elseif ($status == "error"):
+        ?>
+            <img class="image" alt="Phone with exclamation mark" src="Assets/site/undraw_order_confirmed_1m3v_and_heartbroken_cble.svg">
+        <?php
+        endif
+        ?>
 		</div>
     </div>
 </body>
 </html>
-
-<?php
-	function display(){
-     $arr = array();
-     $cmd = '';
-     if (gethostname() == "venus" || gethostname() == "mars") {
-         require_once 'vendor/autoload.php';
-         $dotenv = Dotenv\Dotenv::create(__DIR__);
-         $dotenv->load();
-         $account_pass = getenv('ACCOUNT_PASSWORD');
-         $mars_user = getenv('MARS_USERNAME');
-         $cmd = 'echo "'.$account_pass.'" | su -c "python3 /home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"].' --prod=true" - '.$mars_user;
-
-     } else {
-         echo nl2br("********************\r\nRunning Local....\r\n********************\r\n");
-         $cmd = 'python3 src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"];
-     }
-     $message = exec($cmd, $arr);
-     for($x = 0; $x < count($arr); $x++) {
-         if (strpos($arr[$x], 'RENDER::') !== false) {
-             echo htmlspecialchars(str_replace("RENDER::", "", $arr[$x]));
-             echo "<br>";
-         }
-     }
-		?>
-		<?php
-	}
-	if(isset($_POST["submit"])){
-		display();
-	}
-	?>

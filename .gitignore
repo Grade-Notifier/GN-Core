@@ -125,3 +125,4 @@ node_modules/
 
 # Sass/SCSS
 **/.sass-cache/
+src/site/site-assets/css/styles.css

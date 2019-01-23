@@ -12,8 +12,18 @@ License: MIT
 
 import hashlib
 
-def print_to_screen(text):
-    print("RENDER::" + text)
+def print_to_screen(text, status=False, title=False):
+    '''Prepend "RENDER::" to any text that must be printed on the website.
+    If it is a status indicator, prepend "RENDER::STATUS::".
+    If it is a page title, prepend "RENDER::TITLE::".'''
+    if not (status or title):
+        print("RENDER::" + text)
+    elif status:
+        print('RENDER::STATUS::' + text)
+    elif title:
+        print('RENDER::TITLE::' + text)
+    else:
+        print('BAD print_to_screen() PARAMETERS. ATTEMPTED TO PRINT: ' + text)
 
 
 def custom_hash(username):
