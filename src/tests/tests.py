@@ -239,7 +239,7 @@ class TestAPIIntegration(unittest.TestCase):
             global username
             global password
             print(username)
-            print(password)
+            print(f"pass: {password}")
             api2 = cunyfirstapi.CUNYFirstAPI(username, password)
             session = api.get_current_session()
             
