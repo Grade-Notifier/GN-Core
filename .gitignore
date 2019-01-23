@@ -122,3 +122,6 @@ dmypy.json
 
 # Node.js
 node_modules/
+
+# Sass/SCSS
+**/.sass-cache/
