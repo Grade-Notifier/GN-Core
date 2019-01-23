@@ -12,10 +12,11 @@ License: MIT
 
 from os import sys, path
 import io
+import socket
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from helper.helper import print_to_screen
+from helper.helper import print_to_screen, custom_hash
 from helper.constants import script_path, instance_path
 from helper.message import Message
 from helper.gpa import GPA
@@ -30,6 +31,11 @@ import os
 import argparse
 import cunyfirstapi
 from core.terminategn import getpid as terminate_get_pid
+
+redacted_print_std = None
+redacted_print_err = None
+username = None
+password = None
 
 class TestMessageClass(unittest.TestCase):
 
@@ -188,22 +194,22 @@ class TestPrintToScreenMethod(unittest.TestCase):
 
 class TestAPIIntegration(unittest.TestCase):
     def test_api_init(self):
-        username = "FOO"
-        password = "BAR"
-        api = cunyfirstapi.CUNYFirstAPI(username, password)
-        self.assertEqual(api._username, username)
-        self.assertEqual(api._password, password)
+        fake_username = "FOO"
+        fake_password = "BAR"
+        api = cunyfirstapi.CUNYFirstAPI(fake_username, fake_password)
+        self.assertEqual(api._username, fake_username)
+        self.assertEqual(api._password, fake_password)
 
     def test_get_session(self):
-        username = "FOO"
-        password = "BAR"
-        api = cunyfirstapi.CUNYFirstAPI(username, password)
+        fake_username = "FOO"
+        fake_password = "BAR"
+        api = cunyfirstapi.CUNYFirstAPI(fake_username, fake_password)
         self.assertIsNotNone(api.get_current_session())
 
     def test_restart_session(self):
-        username = "FOO"
-        password = "BAR"
-        api = cunyfirstapi.CUNYFirstAPI(username, password)
+        fake_username = "FOO"
+        fake_password = "BAR"
+        api = cunyfirstapi.CUNYFirstAPI(fake_username, fake_password)
 
         first_session = api.get_current_session()
         api.restart_session()
@@ -215,10 +221,10 @@ class TestAPIIntegration(unittest.TestCase):
 
 
     def test_is_logged_in(self):
-        username = "FOO"
-        password = "BAR"
+        fake_username = "FOO"
+        fake_password = "BAR"
 
-        api = cunyfirstapi.CUNYFirstAPI(username, password)
+        api = cunyfirstapi.CUNYFirstAPI(fake_username, fake_password)
         session = api.get_current_session()
         self.assertFalse(api.is_logged_in(session))
         self.assertFalse(api.is_logged_in())
@@ -228,7 +234,38 @@ class TestAPIIntegration(unittest.TestCase):
         # user should still not be logged in
         self.assertFalse(api.is_logged_in())
         self.assertFalse(api.is_logged_in(session))
+        
+        if is_ci():
+            global username
+            global password
+            api2 = cunyfirstapi.CUNYFirstAPI(username, password)
+            session = api.get_current_session()
+            
+            self.assertFalse(api2.is_logged_in(session))
+            self.assertFalse(api2.is_logged_in())
+            api2.login()
 
+            # valid credentials were passed in
+            # user should be logged in
+            self.assertTrue(api2.is_logged_in(session))
+            self.assertTrue(api2.is_logged_in())
+            
+class TestCustomHashMethod(unittest.TestCase):
+    def test_custom_hash_case_insensitive(self):
+        username1 = 'FOO'
+        username2 = 'fOO'
+        self.assertEqual(custom_hash(username1), custom_hash(username2))
+        
+    def test_custom_hash_constant_results(self):
+        username = 'foo'
+        expected_hash = 'e4af8b9ab44a126630815144bc6412ad113f5dd94ac59e6aa1fef60b954bf5c9'
+        actual_hash = custom_hash(username)
+        self.assertEqual(expected_hash, actual_hash)
+
+    def test_custom_hash_different_users(self):
+        username1 = 'foo'
+        username2 = 'bar'
+        self.assertNotEqual(custom_hash(username1), custom_hash(username2))
 
 def run_test():
     scriptpath = script_path()
@@ -242,9 +279,40 @@ def run_test():
     os.system('rm {0}'.format(instancepath))
 
 
-def main():
-    run_test()
+def monkey_path_print():
+    global username
+    global password
+    global redacted_print_std
+    global redacted_print_err
+    ## Monkey Patching stdout to remove any sens. data
+    redacted_list = [username, password]
+    redacted_print_std = RedactedPrint(STDOutOptions.STDOUT, redacted_list)
+    redacted_print_err = RedactedPrint(STDOutOptions.ERROR, redacted_list)
+    redacted_print_std.enable()
+    redacted_print_err.enable()
 
+def get_username_password():
+    global username
+    global password
+    with open(".env", "r") as f:
+        username = f.readline().strip()
+        password = f.readline().strip()
+
+def is_local():
+    return not is_venus_mars() and not is_ci()
+
+def is_venus_mars():
+    return socket.gethostname() == "venus" or socket.gethostname() == "mars"
+
+def is_ci():
+    return os.path.isfile(".ci")
+
+def main():
+    if is_ci():
+        print("Running on CI.....")
+        get_username_password()
+        monkey_path_print()
+    run_test()
 
 if __name__ == '__main__':
     main()
