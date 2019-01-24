@@ -12,19 +12,21 @@ License: MIT
 
 import hashlib
 
-def print_to_screen(text, status=False, title=False):
-    '''Prepend "RENDER::" to any text that must be printed on the website.
-    If it is a status indicator, prepend "RENDER::STATUS::".
-    If it is a page title, prepend "RENDER::TITLE::".'''
-    if not (status or title):
-        print("RENDER::" + text)
-    elif status:
-        print('RENDER::STATUS::' + text)
-    elif title:
-        print('RENDER::TITLE::' + text)
-    else:
-        print('BAD print_to_screen() PARAMETERS. ATTEMPTED TO PRINT: ' + text)
 
+'''
+    Style: RENDER:: --status="ok" --title="Hold tight" 
+    --message="This is my message"
+'''
+def print_to_screen(text, status=None, title=None):
+    pstr = "RENDER:: "
+
+    if status:
+        pstr += f'--status="{status}" '
+    if title:
+        pstr += f'--title="{title}" '
+
+    pstr += text
+    print(pstr)
 
 def custom_hash(username):
     peppered_username = username.lower() + 'asdf'
