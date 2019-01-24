@@ -2,6 +2,7 @@
 $arr = array();
 $status = '';
 $title = '';
+$message = '';
 $landing = !isset($_POST["submit"]);
 
 function display(){
@@ -19,18 +20,42 @@ function display(){
         echo nl2br("********************\r\nRunning Local....\r\n********************\r\n");
         $cmd = 'python3 src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"];
     }
+
     $message = exec($cmd, $arr);
     
     for ($x = 0; $x < count($arr); $x++) {
-        if (strpos($arr[$x], 'RENDER::STATUS::') !== false) {
-            $status = str_replace("RENDER::STATUS::", "", $arr[$x]);
-            break;
-        }
-    }
+        if (strpos($arr[$x], 'RENDER::') !== false) {
 
-    for ($x = 0; $x < count($arr); $x++) {
-        if (strpos($arr[$x], 'RENDER::TITLE::') !== false) {
-            $title = str_replace("RENDER::TITLE::", "", $arr[$x]);
+            // Remove RENDER::
+            $worend = str_replace("RENDER::", "", $arr[$x]);
+
+            // Parse the text to get the status and title
+            //
+            // Regex matches the following:
+            // --<key>="<value>" (Will match)
+            // --<key>=<value> (Will not match)
+            //
+            // Contain a single group to capture the
+            // <value> 
+            preg_match_all("/--?[^=\s]+?=(\"[^\"]+\")?/", $worend, $matches);
+            $val = $matches[1];
+            $status = $val[0];
+            $title = $val[1];
+
+            $x++;
+            // Continue eating until we see the end indicator
+            // denoted by [END]. This is an extra precaution as
+            // it should always end with the last item
+            // in the array
+            while (strpos($arr[$x], '[END]') === false) {
+                $message.= nl2br(" $arr[$x]\r\n");
+                $x++;
+            }
+
+            $message = str_replace("[END]", "", $message);
+            // We only care about the first returned
+            // error or success message. Break out early
+            // to avoid overwritting
             break;
         }
     }

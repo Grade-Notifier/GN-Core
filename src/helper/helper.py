@@ -25,7 +25,8 @@ def print_to_screen(text, status=None, title=None):
     if title:
         pstr += f'--title="{title}" '
 
-    pstr += f'--title="{text}"'
+    pstr += f'\n{text}"\n'
+    pstr += "[END]"
     print(pstr)
 
 def custom_hash(username):
