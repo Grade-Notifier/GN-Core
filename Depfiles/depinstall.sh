@@ -20,7 +20,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]] || [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 # CSS/Node
-if [ "$HOSTNAME" = "venus" ] || [ "$HOSTNAME" = "mars" ] ; then
+if [[ "$HOSTNAME" == "venus" ]] || [[ "$HOSTNAME" == "mars" ]] ; then
     npm install;
     gulp --gulpfile src/site/development-assets/generate-css.js;
 fi
