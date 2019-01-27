@@ -69,10 +69,11 @@
 <!doctype html>
 <html>
 <head>
+<base href="/adeh6562/public_html/grade-notifier/Grade-Notifier">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CUNY Grade Notifier</title>
-<link type="text/css" rel="stylesheet" href="/home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/src/site/site-assets/css/styles.css">
+<link type="text/css" rel="stylesheet" href="src/site/site-assets/css/styles.css">
 <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,700" rel="stylesheet">
 
 <!-- Favicon and icons for other platforms -->
