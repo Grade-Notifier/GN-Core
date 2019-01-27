@@ -12,9 +12,22 @@ License: MIT
 
 import hashlib
 
-def print_to_screen(text):
-    print("RENDER::" + text)
 
+'''
+    Style: RENDER:: --status="ok" --title="Hold tight" 
+    --message="This is my message"
+'''
+def print_to_screen(text, status=None, title=None):
+    pstr = "RENDER:: "
+
+    if status:
+        pstr += f'--status="{status}" '
+    if title:
+        pstr += f'--title="{title}" '
+
+    pstr += f'\n{text}"\n'
+    pstr += "[END]"
+    print(pstr)
 
 def custom_hash(username):
     peppered_username = username.lower() + 'asdf'

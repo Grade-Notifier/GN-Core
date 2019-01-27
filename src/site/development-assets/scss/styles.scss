@@ -1,0 +1,195 @@
+/*****************************************************
+ * Compiled from SCSS to CSS using gulp. If you would
+ * like to use gulp to compile the CSS:
+ *   1. Make sure you have Node.js installed.
+ *   2. From the top folder, run `npm install`.
+ *   3. Once it is done installing, run `gulp`.
+ * Don't worry if a webpage opens up. Simply save the
+ * SCSS file and gulp will upate the CSS file for you.
+ *****************************************************/
+
+@import 'functions';
+@import 'normalize';
+
+
+$bg: hsla(0, 0%, 98%, 1);
+$black: #151e37;
+$blue: #1d3a83;
+$grey: #b5b5b5;
+$light-blue: hsl(222, 45%, 90%);
+$button: hsl(207, 100%, 51%);
+$button-hover: hsl(207, 100%, 67%);
+
+$fontsize-input: 1.75em;
+
+$width-image-xlg: 20vw;
+$width-image-lg: 5vw;
+
+
+body {
+    color: $black;
+    font-family: 'Roboto Slab', sans-serif;
+    margin: 0 3em;
+
+    @include bp(sm) {
+        margin: 2em 1em 0;
+    }
+}
+
+.wrapper {
+    display: table;
+    height: 100vh;
+    margin: 0 auto;
+
+    @include bp(sm) {
+        display: block;
+        height: auto;
+    }
+}
+
+.column {
+    // float: left;
+    display: inline-block;
+    display: table-cell;
+    vertical-align: middle;
+    
+    &--left {
+        @include ft(585px, 865px, 8px, 16px);
+
+        max-width: 30vw;
+        min-width: 29em;
+
+        @include bp(sm) {
+            @include ft(320px, 500px, 10px, 15px);
+            
+            display: block;
+            max-width: unset;
+            text-align: center;
+        }
+    }
+
+    &--right {
+        @include bp(sm) {
+            display: none;
+        }
+    }
+}
+
+.status-symbol {
+    display: none;
+    margin-bottom: 2em;
+    width: 30%;
+
+    @include bp(sm) {
+        display: inline;
+    }
+}
+
+.callout {
+    margin: 0 0 1.5em;
+    font-size: 2.25em;
+    
+    @include bp(sm) {
+        margin: 0 0 0.5em;
+    }
+    
+    &__divider {
+        background-color: $black;
+        display: none;
+        height: .313em;
+        margin: 0 auto 3.5em;
+        width: 90%;
+        
+        @include bp(sm) {
+            display: block;
+        }
+    }
+}
+
+.confirm-message {
+    &__wrapper {
+        @include bp(sm) {
+            margin: auto;
+            width: 80%;
+        }
+    }
+
+    &__text {
+        font-size: 1.3em;
+    }
+}
+
+.form {
+    white-space: nowrap;
+}
+
+.input {
+    background-color: transparent;
+    border-width: 0;
+    border-bottom: 2px solid $grey;
+    color: $black;
+    font-size: $fontsize-input;
+    margin-bottom: 0.75em;
+    transition: border-bottom-color 0.2s ease-in-out;
+    width: 8.4em;
+
+    @include bp(sm) {
+        margin-bottom: 2em;
+    }
+
+    &:focus {
+        outline-width: 0;
+        border-bottom-color: $black;
+    }
+
+    &::placeholder {
+        color: $grey;
+    }
+
+    &--select {
+        width: unset;
+    }
+
+    &--full-width {
+        @include bp(sm) {
+            width: 91%;
+        }
+    }
+}
+
+.submit {
+    background-color: $button;
+    border-radius: 6px;
+    border-width: 0;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: $fontsize-input;
+    margin-top: 0.5em;
+    padding: 0.4em 0.6em;
+    // transition: background-color 0.2s ease-in-out;
+
+    &:hover {
+        background-color: $button-hover;
+    }
+}
+
+.username-posttext {
+    font-size: $fontsize-input;
+}
+
+.credits {
+    margin-top: 6em;
+
+    @include bp(sm) {
+        margin-bottom: 3em;
+    }
+}
+
+.credit {
+    margin: 0 0 0.25em;
+}
+
+.image {
+    max-height: 95vh;
+    width: 40vw;
+}
