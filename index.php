@@ -69,7 +69,7 @@
 <!doctype html>
 <html>
 <head>
-<base href="/adeh6562/grade-notifier/Grade-Notifier/">
+<base href="/~adeh6562/grade-notifier/Grade-Notifier/">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CUNY Grade Notifier</title>
