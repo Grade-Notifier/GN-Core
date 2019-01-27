@@ -204,7 +204,7 @@ Get a text when you<br>get your grades!
 <?php
     if ($landing):
     ?>
-<img class="image" alt="Phone" src="Assets/site/undraw_mobile_life_381t_edited.svg">
+<img class="image" alt="Phone" src="/home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/Assets/site/undraw_mobile_life_381t_edited.svg">
 <?php
     elseif ($status == "ok"):
     ?>
