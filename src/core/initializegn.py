@@ -119,12 +119,16 @@ def main():
                 + "The service will check for new grades every 5 min and text you when anything changes.\n" \
                 + "The service will continue for 5 days and then require you to sign-in again.\n" \
                 + "Please only sign in once.\n" \
-                + "Enjoy!"
+                + "Enjoy!",
+                "ok",
+                "Hold Tight!",
             )
         else:
             print_to_screen(
                 "The username/password combination you entered seems to be invalid.\n" \
-                + "Please try again."
+                + "Please try again.",
+                "error",
+                "Oh No!",
             )
 
     except Exception as e:
