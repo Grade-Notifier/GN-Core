@@ -68,6 +68,14 @@
 
 <!doctype html>
 <html>
+<?php
+    if (gethostname() == "venus" || gethostname() == "mars") {
+        require_once 'vendor/autoload.php';
+        $dotenv = Dotenv\Dotenv::create(__DIR__);
+        $dotenv->load();
+        $mars_user = getenv('MARS_USERNAME');
+        echo '<base href=/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/>'
+?>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
