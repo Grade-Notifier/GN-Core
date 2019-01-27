@@ -76,6 +76,7 @@
         $dotenv->load();
         $mars_user = getenv('MARS_USERNAME');
         echo '<base href="/~'.$mars_user.'adeh6562/grade-notifier/Grade-Notifier/">';
+    }
 ?>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
