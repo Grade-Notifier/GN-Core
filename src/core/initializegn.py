@@ -62,7 +62,8 @@ def run(username, password, school, phone):
                               f"--password={password}",
                               f"--school={school}",
                               f"--phone={phone}"],
-                             stdout=outfile)
+                             stdout=outfile,
+                             stderr=outfile)
     else:
         with open("{0}.txt".format(log_path), "w+") as outfile:
             subprocess.Popen(
@@ -76,7 +77,8 @@ def run(username, password, school, phone):
                     f"--school={school}",
                     f"--phone={phone}",
                     "--prod=true"],
-                stdout=outfile)
+                stdout=outfile,
+                stderr=outfile)
 
 
 def parse():
