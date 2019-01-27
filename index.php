@@ -69,7 +69,14 @@
 <!doctype html>
 <html>
 <head>
-<base href="/~adeh6562/grade-notifier/Grade-Notifier/">
+<?php
+    if (gethostname() == "venus" || gethostname() == "mars") {
+        require_once 'vendor/autoload.php';
+        $dotenv = Dotenv\Dotenv::create(__DIR__);
+        $dotenv->load();
+        $mars_user = getenv('MARS_USERNAME');
+        echo '<base href="/~'.$mars_user.'adeh6562/grade-notifier/Grade-Notifier/">';
+?>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CUNY Grade Notifier</title>
