@@ -6,7 +6,7 @@ $message = '';
 $landing = !isset($_POST["submit"]);
 
 function display(){
-    global $arr, $status, $title;
+    global $arr, $status, $title, $message;
     $cmd = '';
     if (gethostname() == "venus" || gethostname() == "mars") {
         require_once 'vendor/autoload.php';
@@ -37,7 +37,7 @@ function display(){
             //
             // Contain a single group to capture the
             // <value> 
-            preg_match_all("/--?[^=\s]+?=(\"[^\"]+\")?/", $worend, $matches);
+            preg_match_all("/--?[^=\s]+?=\"([^\"]+)\"?/", $worend, $matches);
             $val = $matches[1];
             $status = $val[0];
             $title = $val[1];
@@ -163,17 +163,13 @@ if (isset($_POST["submit"])){
             </form>
         <?php
         else:
-            if ($arr): // If the array contains text to print
+            if($status == "ok"):
         ?>
             <div class="confirm-message__wrapper">
             <?php
-                for ($x = 0; $x < count($arr); $x++) {
-                    if (strpos($arr[$x], 'RENDER::') !== false && strpos($arr[$x], 'RENDER::TITLE::') === false && strpos($arr[$x], 'RENDER::STATUS::') === false) {
-                        echo "<p class=\"confirm-message__text\">";
-                        echo htmlspecialchars(str_replace("RENDER::", "", $arr[$x]));
-                        echo "</p>";
-                    }
-                }
+                echo "<p class=\"confirm-message__text\">";
+                echo htmlspecialchars($message);
+                echo "</p>";
             ?>
             </div>
         <?php
