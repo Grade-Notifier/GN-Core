@@ -3,10 +3,11 @@ $arr = array();
 $status = '';
 $title = '';
 $message = '';
+$mars_user = '';
 $landing = !isset($_POST["submit"]);
 
 function display(){
-    global $arr, $status, $title, $message;
+    global $arr, $status, $title, $message, $mars_user;
     $cmd = '';
     if (gethostname() == "venus" || gethostname() == "mars") {
         require_once 'vendor/autoload.php';
@@ -72,20 +73,20 @@ if (isset($_POST["submit"])){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CUNY Grade Notifier</title>
-    <link type="text/css" rel="stylesheet" href="src/site/site-assets/css/styles.css">
+    <link type="text/css" rel="stylesheet" href='/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/src/site/site-assets/css/styles.css'>
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,700" rel="stylesheet">
 
     <!-- Favicon and icons for other platforms -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/src/site/site-assets/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/src/site/site-assets/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/src/site/site-assets/icons/favicon-16x16.png">
-    <link rel="manifest" href="/src/site/site-assets/icons/site.webmanifest">
-    <link rel="mask-icon" href="/src/site/site-assets/icons/safari-pinned-tab.svg" color="#5bbad5">
-    <link rel="shortcut icon" href="/src/site/site-assets/icons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href='/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/src/site/site-assets/icons/apple-touch-icon.png'>
+    <link rel="icon" type="image/png" sizes="32x32" href='/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/src/site/site-assets/icons/favicon-32x32.png'>
+    <link rel="icon" type="image/png" sizes="16x16" href='/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/src/site/site-assets/icons/favicon-16x16.png'>
+    <link rel="manifest" href='/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/src/site/site-assets/icons/site.webmanifest'>
+    <link rel="mask-icon" href='/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/src/site/site-assets/icons/safari-pinned-tab.svg' color="#5bbad5">
+    <link rel="shortcut icon" href='/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/src/site/site-assets/icons/favicon.ico'>
     <meta name="apple-mobile-web-app-title" content="Grade Notifier">
     <meta name="application-name" content="Grade Notifier">
     <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-config" content="/src/site/site-assets/icons/browserconfig.xml">
+    <meta name="msapplication-config" content='/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/src/site/site-assets/icons/browserconfig.xml'>
     <meta name="theme-color" content="#ffffff">
 </head>
 <body>
@@ -95,11 +96,11 @@ if (isset($_POST["submit"])){
         if (!$landing):
             if ($status == "ok"):
         ?>
-            <img class="status-symbol" alt="Check" src="Assets/site/Check.svg">
+            <img class="status-symbol" alt="Check" src='/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/Assets/site/Check.svg'>
         <?php
             elseif ($status == "error"):
         ?>
-            <img class="status-symbol" alt="Exclamation mark" src="Assets/site/Exclamation.svg">
+            <img class="status-symbol" alt="Exclamation mark" src='/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/Assets/site/Exclamation.svg'>
         <?php
             endif;
         endif;
@@ -195,15 +196,15 @@ if (isset($_POST["submit"])){
         <?php
         if ($landing):
         ?>
-            <img class="image" alt="Phone" src="Assets/site/undraw_mobile_life_381t_edited.svg">
+            <img class="image" alt="Phone" src='/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/Assets/site/undraw_mobile_life_381t_edited.svg'>
         <?php
         elseif ($status == "ok"):
         ?>
-            <img class="image" alt="Phone with check mark" src="Assets/site/undraw_order_confirmed_1m3v.svg">
+            <img class="image" alt="Phone with check mark" src='/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/Assets/site/undraw_order_confirmed_1m3v.svg'>
         <?php
         elseif ($status == "error"):
         ?>
-            <img class="image" alt="Phone with exclamation mark" src="Assets/site/undraw_order_confirmed_1m3v_and_heartbroken_cble.svg">
+            <img class="image" alt="Phone with exclamation mark" src='/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/Assets/site/undraw_order_confirmed_1m3v_and_heartbroken_cble.svg'>
         <?php
         endif
         ?>
