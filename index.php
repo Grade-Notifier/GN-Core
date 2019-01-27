@@ -74,7 +74,8 @@
         $dotenv = Dotenv\Dotenv::create(__DIR__);
         $dotenv->load();
         $mars_user = getenv('MARS_USERNAME');
-        echo '<base href=/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/>'
+        echo "HELLO";
+        // echo '<base href=/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/>'
     endif;
 ?>
 <head>
