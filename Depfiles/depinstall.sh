@@ -22,6 +22,8 @@ fi
 # CSS/Node
 if [[ "$HOSTNAME" == "venus" ]] || [[ "$HOSTNAME" == "mars" ]] ; then
     npm install;
+    npm install gulp-cli -g;
+    npm install gulp -D;
     gulp --gulpfile src/site/development-assets/generate-css.js;
 fi
 

@@ -93,6 +93,14 @@ if (isset($_POST["submit"])){
     <div class="wrapper">
         <div class="column column--left">
         <?php
+            global $mars_user;
+            if (gethostname() == "venus" || gethostname() == "mars") {
+                require_once 'vendor/autoload.php';
+                $dotenv = Dotenv\Dotenv::create(__DIR__);
+                $dotenv->load();
+                $mars_user = getenv('MARS_USERNAME');
+
+
         if (!$landing):
             if ($status == "ok"):
         ?>
