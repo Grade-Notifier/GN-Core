@@ -68,20 +68,11 @@
 
 <!doctype html>
 <html>
-<?php
-    if (gethostname() == "venus" || gethostname() == "mars"):
-        require_once 'vendor/autoload.php';
-        $dotenv = Dotenv\Dotenv::create(__DIR__);
-        $dotenv->load();
-        $mars_user = getenv('MARS_USERNAME');
-        echo '<base href=/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/>';
-    endif;
-?>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CUNY Grade Notifier</title>
-<link type="text/css" rel="stylesheet" href="src/site/site-assets/css/styles.css">
+<link type="text/css" rel="stylesheet" href="/home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/src/site/site-assets/css/styles.css">
 <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,700" rel="stylesheet">
 
 <!-- Favicon and icons for other platforms -->
@@ -204,7 +195,7 @@ Get a text when you<br>get your grades!
 <?php
     if ($landing):
     ?>
-<img class="image" alt="Phone" src="/home/fa18/313/adeh6562/public_html/grade-notifier/Grade-Notifier/Assets/site/undraw_mobile_life_381t_edited.svg">
+<img class="image" alt="Phone" src="Assets/site/undraw_mobile_life_381t_edited.svg">
 <?php
     elseif ($status == "ok"):
     ?>
