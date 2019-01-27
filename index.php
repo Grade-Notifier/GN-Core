@@ -69,13 +69,13 @@
 <!doctype html>
 <html>
 <?php
-    if (gethostname() == "venus" || gethostname() == "mars") {
+    if (gethostname() == "venus" || gethostname() == "mars"):
         require_once 'vendor/autoload.php';
         $dotenv = Dotenv\Dotenv::create(__DIR__);
         $dotenv->load();
         $mars_user = getenv('MARS_USERNAME');
         echo '<base href=/home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/>'
-    }
+    endif;
 ?>
 <head>
 <meta charset="UTF-8">
