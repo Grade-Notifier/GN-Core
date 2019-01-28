@@ -171,7 +171,7 @@ def welcome_message():
     new_message = Message()
 
     new_message \
-        .add("Welcome to the Grade Notifier 🚨") \
+        .add("👋 Welcome to the Grade Notifier 🚨") \
         .newline() \
         .add("You're all set up. You should recieve a message soon with your current grade.") \
         .newline() \
