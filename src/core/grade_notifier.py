@@ -197,7 +197,7 @@ def sign_in(remaining_attempts=5):
 
 
 def create_instance():
-    sign_in()
+    sign_in(2)
     if api.is_logged_in():
         send_text(welcome_message(), user.get_number())
         start_notifier()
