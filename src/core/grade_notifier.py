@@ -180,6 +180,7 @@ def welcome_message():
         .newline() \
     return new_message.sign().message()
 
+
 def sign_in(retry=False):
     api.restart_session()
     api.login()
@@ -190,11 +191,12 @@ def sign_in(retry=False):
     else:
         return False
 
+
 def create_instance(retry = True):
     sign_in()
     if api.is_logged_in():
         send_text(welcome_message(), user.get_number())
-        start_notifier()       
+        start_notifier()
 
 
 
