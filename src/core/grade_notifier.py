@@ -231,7 +231,16 @@ def start_notifier():
     counter = 0
     old_result = RefreshResult([], -1)
     while counter < 844:
-        result = refresh()
+        try:
+            result = refresh()
+        except TypeError:
+            traceback.print_exc()
+            print('[DEBUG] Trying again...')
+            # Note this will not affect counter
+            continue
+        except ValueError:
+            # send message asking for more info to help us?
+            pass
         changelog = find_changes(old_result, result) \
             if result != None \
             else None
