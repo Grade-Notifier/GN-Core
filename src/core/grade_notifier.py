@@ -167,9 +167,26 @@ def find_changes(old, new):
 
 ###********* Main Program *********###
 
-def create_instance():
+def welcome_message():
+    new_message = Message()
+
+    new_message \
+        .add("👋 Welcome to the Grade Notifier 🚨") \
+        .newline() \
+        .add("You're all set up. You should recieve a message soon with your current grade.") \
+        .newline() \
+        .add("After that first message, the notifier will message you whenever a grade changes (or is added)!") \
+    return new_message.sign().message()
+
+
+def create_instance(retry = True):
     api.login()
-    start_notifier()
+    if api.is_logged_in():
+        send_text(welcome_message(), user.get_number())
+        start_notifier()
+    elif retry:
+        create_instance(False)
+
 
 def parse_grades_to_class(raw_grades):
     results = []
@@ -191,11 +208,24 @@ def refresh():
     # results: [grades], term_gpa: term_gpa (float), 
     # cumulative_gpa: cumulative_gpa (float)
     raw_grades = actObj.grades()
-    result = parse_grades_to_class(raw_grades['results'])
-    refresh_result = RefreshResult(result, GPA(raw_grades['term_gpa'], raw_grades['cumulative_gpa']))
-    return refresh_result
 
-def start_notifier():
+    if 'results' in raw_grades 
+    and 'term_gpa' in raw_grades 
+    and 'cumulative_gpa' in raw_grades:
+        result = parse_grades_to_class(raw_grades['results'])
+        return RefreshResult(
+            result, 
+            GPA(
+                raw_grades['term_gpa'], 
+                raw_grades['cumulative_gpa']
+            )
+        )  
+    else:
+        # Couldn't get the proper grade from 
+        # cunyfirstapi just try and refresh
+        refresh()
+
+def start_notifier()):
     counter = 0
     old_result = RefreshResult([], -1)
     while counter < 844:
