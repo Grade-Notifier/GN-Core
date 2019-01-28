@@ -65,6 +65,7 @@ client = None
 api = None
 state = None
 
+
 '''
     Sends a text message via Twilio
 
@@ -181,16 +182,16 @@ def welcome_message():
     return new_message.sign().message()
 
 
-MAX_SIGN_IN_ATTEMPTS = 5
 
 
-def sign_in(attempt=0):
+
+def sign_in(remaining_attempts=5):
     api.restart_session()
     api.login()
     if api.is_logged_in():
         return True
-    elif attempt < MAX_SIGN_IN_ATTEMPTS:
-        return sign_in(attempt+1)
+    elif remaining_attempts > 0:
+        return sign_in(remaining_attempts-1)
     else:
         return False
 
