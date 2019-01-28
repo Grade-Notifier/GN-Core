@@ -175,7 +175,8 @@ def welcome_message():
         .newline() \
         .add("You're all set up. You should recieve a message soon with your current grade.") \
         .newline() \
-        .add("After that first message, the notifier will message you whenever a grade changes (or is added)!") \
+        .add("After that first message, the notifier will message you whenever a grade changes (or is added)!")
+
     return new_message.sign().message()
 
 
@@ -209,8 +210,8 @@ def refresh():
     # cumulative_gpa: cumulative_gpa (float)
     raw_grades = actObj.grades()
 
-    if 'results' in raw_grades 
-    and 'term_gpa' in raw_grades 
+    if 'results' in raw_grades \
+    and 'term_gpa' in raw_grades  \
     and 'cumulative_gpa' in raw_grades:
         result = parse_grades_to_class(raw_grades['results'])
         return RefreshResult(
@@ -225,7 +226,7 @@ def refresh():
         # cunyfirstapi just try and refresh
         refresh()
 
-def start_notifier()):
+def start_notifier():
     counter = 0
     old_result = RefreshResult([], -1)
     while counter < 844:
