@@ -180,19 +180,20 @@ def welcome_message():
         .newline()
     return new_message.sign().message()
 
+MAX_SIGN_IN_ATTEMPTS = 5
 
-def sign_in(retry=False):
+def sign_in(attempt=0):
     api.restart_session()
     api.login()
     if api.is_logged_in():
         return True
-    elif retry:
-        return sign_in(False)
+    elif attempt < MAX_SIGN_IN_ATTEMPTS:
+        return sign_in(attempt+1)
     else:
         return False
 
 
-def create_instance(retry = True):
+def create_instance():
     sign_in()
     if api.is_logged_in():
         send_text(welcome_message(), user.get_number())
