@@ -176,7 +176,7 @@ def welcome_message():
         .newline() \
         .add("You're all set up. You should recieve a message soon with your current grades.") \
         .newline() \
-        .add("After that first message, the notifier will message you whenever a grade changes (or is added)!")
+        .add("After that first message, the notifier will message you whenever a grade changes (or is added)!") \
         .newline()
     return new_message.sign().message()
 
