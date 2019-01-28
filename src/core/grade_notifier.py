@@ -65,6 +65,7 @@ client = None
 api = None
 state = None
 
+
 '''
     Sends a text message via Twilio
 
@@ -173,20 +174,34 @@ def welcome_message():
     new_message \
         .add("👋 Welcome to the Grade Notifier 🚨") \
         .newline() \
-        .add("You're all set up. You should recieve a message soon with your current grade.") \
         .newline() \
-        .add("After that first message, the notifier will message you whenever a grade changes (or is added)!")
-
+        .add("You're all set up. You should recieve a message soon with your current grades.") \
+        .newline() \
+        .add("After that first message, the notifier will message you whenever a grade changes (or is added)!") \
+        .newline()
     return new_message.sign().message()
 
 
-def create_instance(retry = True):
+
+
+
+def sign_in(remaining_attempts=5):
+    api.restart_session()
     api.login()
+    if api.is_logged_in():
+        return True
+    elif remaining_attempts > 0:
+        return sign_in(remaining_attempts-1)
+    else:
+        return False
+
+
+def create_instance():
+    sign_in(2)
     if api.is_logged_in():
         send_text(welcome_message(), user.get_number())
         start_notifier()
-    elif retry:
-        create_instance(False)
+
 
 
 def parse_grades_to_class(raw_grades):
@@ -204,6 +219,8 @@ def parse_grades_to_class(raw_grades):
     return results
 
 def refresh():
+    if not api.is_logged_in():
+        sign_in()
     actObj = api.move_to(Locations.student_grades)
     # action.grades returns a dict of
     # results: [grades], term_gpa: term_gpa (float), 
@@ -230,7 +247,16 @@ def start_notifier():
     counter = 0
     old_result = RefreshResult([], -1)
     while counter < 844:
-        result = refresh()
+        try:
+            result = refresh()
+        except TypeError:
+            traceback.print_exc()
+            print('[DEBUG] Trying again...')
+            # Note this will not affect counter
+            continue
+        except ValueError:
+            # send message asking for more info to help us?
+            pass
         changelog = find_changes(old_result, result) \
             if result != None \
             else None
