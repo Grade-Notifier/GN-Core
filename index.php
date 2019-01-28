@@ -197,6 +197,7 @@ Get a text when you<br>get your grades!
 <div class="credits">
 <h3 class="credit">Made with ❤️  by Ehud Adler</h3>
 <h4 class="credit">Big thanks to @ericshermancs</h4>
+<h4 class="credit">Please see our <a href="https://github.com/Grade-Notifier/GN-Core/blob/master/CONTRIBUTORS.md" title="Contributors">full list of contributors</a>.</h4>
 </div>
 </div>
 
