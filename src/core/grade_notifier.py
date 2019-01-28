@@ -180,14 +180,22 @@ def welcome_message():
         .newline() \
     return new_message.sign().message()
 
-
-def create_instance(retry = True):
+def sign_in(retry=False):
+    api.restart_session()
     api.login()
     if api.is_logged_in():
-        send_text(welcome_message(), user.get_number())
-        start_notifier()
+        return True
     elif retry:
-        create_instance(False)
+        return sign_in(False)
+    else:
+        return False
+
+def create_instance(retry = True):
+    sign_in()
+    if api.is_logged_in():
+        send_text(welcome_message(), user.get_number())
+        start_notifier()       
+
 
 
 def parse_grades_to_class(raw_grades):
@@ -205,6 +213,8 @@ def parse_grades_to_class(raw_grades):
     return results
 
 def refresh():
+    if not api.is_logged_in():
+        sign_in()
     actObj = api.move_to(Locations.student_grades)
     # action.grades returns a dict of
     # results: [grades], term_gpa: term_gpa (float), 
