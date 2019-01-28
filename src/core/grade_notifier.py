@@ -180,7 +180,9 @@ def welcome_message():
         .newline()
     return new_message.sign().message()
 
+
 MAX_SIGN_IN_ATTEMPTS = 5
+
 
 def sign_in(attempt=0):
     api.restart_session()
