@@ -187,7 +187,11 @@ def welcome_message():
 
 def sign_in(remaining_attempts=5):
     api.restart_session()
-    api.login()
+    try:
+        api.login()
+    except IndexError:
+        return sign_in(remaining_attempts-1)
+
     if api.is_logged_in():
         return True
     elif remaining_attempts > 0:
