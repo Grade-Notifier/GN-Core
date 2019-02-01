@@ -8,3 +8,4 @@
 | Julian Moskovits | Wed Jan  9 15:31:39 PST 2019 |
 | Joseph Salomon | Sun Jan  20 11:09:23 PST 2019 |
 | Michael Kolber | Mon Jan 21 21:11:36 PST 2019 |
+| Eric Sherman | Thu Jan 31 16:38:54 PST 2019 |
