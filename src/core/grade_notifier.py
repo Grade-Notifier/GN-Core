@@ -241,7 +241,7 @@ def refresh():
     else:
         # Couldn't get the proper grade from 
         # cunyfirstapi just try and refresh
-        refresh()
+        return refresh()
 
 def start_notifier():
     counter = 0
