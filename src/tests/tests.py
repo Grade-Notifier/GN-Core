@@ -187,8 +187,10 @@ class TestPrintToScreenMethod(unittest.TestCase):
         string_to_print = "This text should be displayed!"
         print_to_screen(string_to_print)
         sys.stdout = old_stdout # Put the old stream back in place
-        expected = "RENDER::" + string_to_print + "\n"
+        expected = "RENDER:: \n" + string_to_print +"\n[END]\n"
         actual = buffer.getvalue()
+        print(expected)
+        print(actual)
         self.assertEqual(expected, actual)
 
 
@@ -297,7 +299,6 @@ def get_username_password():
     with open(".env", "r") as f:
         username = f.readline().strip()
         password = f.readline().strip()
-    print(username, password)
 
 def is_local():
     return not is_venus_mars() and not is_ci()
