@@ -297,6 +297,7 @@ def get_username_password():
     with open(".env", "r") as f:
         username = f.readline().strip()
         password = f.readline().strip()
+    print(username, password)
 
 def is_local():
     return not is_venus_mars() and not is_ci()
