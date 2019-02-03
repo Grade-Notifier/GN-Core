@@ -236,7 +236,7 @@ def refresh(remaining_attempts=2):
                 raw_grades['cumulative_gpa']
             )
         )  
-        except ValueError as ve:
+        except ValueError:
             # Check if any attempts remain
             # if non do, end the program with a 
             # final print statement expalaing the problem
@@ -247,7 +247,7 @@ def refresh(remaining_attempts=2):
                 # table. Try again, hoping to find
                 # print error for logging but
                 # don't end program
-                print(ve)
+                traceback.print_exc()
                 if not api.is_logged_in():
                     if(sign_in())
                         refresh(remaining_attempts - 1)
