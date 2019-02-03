@@ -249,7 +249,7 @@ def refresh(remaining_attempts=2):
                 # don't end program
                 traceback.print_exc()
                 if not api.is_logged_in():
-                    if(sign_in())
+                    if(sign_in()):
                         refresh(remaining_attempts - 1)
                     else:
                         print("Error refreshing. Multiple logins failed")
