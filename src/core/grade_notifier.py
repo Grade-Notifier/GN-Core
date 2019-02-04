@@ -187,7 +187,11 @@ def welcome_message():
 
 def sign_in(remaining_attempts=5):
     api.restart_session()
-    api.login()
+    try:
+        api.login()
+    except IndexError:
+        return sign_in(remaining_attempts-1)
+
     if api.is_logged_in():
         return True
     elif remaining_attempts > 0:
@@ -241,22 +245,13 @@ def refresh():
     else:
         # Couldn't get the proper grade from 
         # cunyfirstapi just try and refresh
-        refresh()
+        return refresh()
 
 def start_notifier():
     counter = 0
     old_result = RefreshResult([], -1)
     while counter < 844:
-        try:
-            result = refresh()
-        except TypeError:
-            traceback.print_exc()
-            print('[DEBUG] Trying again...')
-            # Note this will not affect counter
-            continue
-        except ValueError:
-            # send message asking for more info to help us?
-            pass
+        result = refresh()
         changelog = find_changes(old_result, result) \
             if result != None \
             else None
