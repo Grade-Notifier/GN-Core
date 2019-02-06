@@ -177,7 +177,7 @@ Get a text when you<br>get your grades!
 <div class="confirm-message__wrapper">
 <?php
     echo "<p class=\"confirm-message__text\">";
-    echo htmlspecialchars($message);
+    echo $message;
     echo "</p>";
     ?>
 </div>
