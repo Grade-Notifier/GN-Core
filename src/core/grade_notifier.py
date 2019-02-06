@@ -181,10 +181,6 @@ def welcome_message():
         .newline()
     return new_message.sign().message()
 
-
-
-
-
 def sign_in(remaining_attempts=5):
     api.restart_session()
     api.login()
@@ -195,14 +191,11 @@ def sign_in(remaining_attempts=5):
     else:
         return False
 
-
 def create_instance():
     sign_in(2)
     if api.is_logged_in():
         send_text(welcome_message(), user.get_number())
         start_notifier()
-
-
 
 def parse_grades_to_class(raw_grades):
     results = []
@@ -218,30 +211,64 @@ def parse_grades_to_class(raw_grades):
         results.append(new_class)
     return results
 
-def refresh():
-    if not api.is_logged_in():
-        sign_in()
+
+def refresh(remaining_attempts=2):
+
     actObj = api.move_to(Locations.student_grades)
     # action.grades returns a dict of
     # results: [grades], term_gpa: term_gpa (float), 
     # cumulative_gpa: cumulative_gpa (float)
     raw_grades = actObj.grades()
 
+    # do some perliminary checks on raw_grades to 
+    # make sure the format is proper before
+    # trying to access info
     if 'results' in raw_grades \
-    and 'term_gpa' in raw_grades  \
-    and 'cumulative_gpa' in raw_grades:
-        result = parse_grades_to_class(raw_grades['results'])
-        return RefreshResult(
+        and 'term_gpa' in raw_grades  \
+        and 'cumulative_gpa' in raw_grades:
+        try:
+            raw_results = raw_grades['results']
+            result = parse_grades_to_class(raw_results)
+            return RefreshResult(
             result, 
             GPA(
                 raw_grades['term_gpa'], 
                 raw_grades['cumulative_gpa']
             )
         )  
+        except ValueError:
+            # Check if any attempts remain
+            # if non do, end the program with a 
+            # final print statement expalaing the problem
+            if not remaining_attempts:
+                print("Error refreshing. No attempts left.")
+            else:
+                # CUNYFirstAPI had  issue finding grade
+                # table. Try again, hoping to find
+                # print error for logging but
+                # don't end program
+                traceback.print_exc()
+                if not api.is_logged_in():
+                    if(sign_in()):
+                        refresh(remaining_attempts - 1)
+                    else:
+                        print("Error refreshing. Multiple logins failed")
     else:
-        # Couldn't get the proper grade from 
-        # cunyfirstapi just try and refresh
-        refresh()
+        # Check if any attempts remain
+        # if non do, end the program with a 
+        # final print statement expalaing the problem
+        if not remaining_attempts:
+            print("Error refreshing. No attempts left.")
+        else:
+            # CUNYFirstAPI had  issue finding grade
+            # table. Try again, hoping to find
+            # print error for logging but
+            # don't end program
+            if not api.is_logged_in():
+                if(sign_in()):
+                    refresh(remaining_attempts - 1)
+                else:
+                    print("Error refreshing. Multiple logins failed")
 
 def start_notifier():
     counter = 0
