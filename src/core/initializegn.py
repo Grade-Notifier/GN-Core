@@ -62,7 +62,8 @@ def run(username, password, school, phone):
                               f"--password={password}",
                               f"--school={school}",
                               f"--phone={phone}"],
-                             stdout=outfile)
+                             stdout=outfile,
+                             stderr=outfile)
     else:
         with open("{0}.txt".format(log_path), "w+") as outfile:
             subprocess.Popen(
@@ -76,7 +77,8 @@ def run(username, password, school, phone):
                     f"--school={school}",
                     f"--phone={phone}",
                     "--prod=true"],
-                stdout=outfile)
+                stdout=outfile,
+                stderr=outfile)
 
 
 def parse():
@@ -117,12 +119,16 @@ def main():
                 + "The service will check for new grades every 5 min and text you when anything changes.\n" \
                 + "The service will continue for 5 days and then require you to sign-in again.\n" \
                 + "Please only sign in once.\n" \
-                + "Enjoy!"
+                + "Enjoy!",
+                "ok",
+                "Hold Tight!",
             )
         else:
             print_to_screen(
                 "The username/password combination you entered seems to be invalid.\n" \
-                + "Please try again."
+                + "Please try again.",
+                "error",
+                "Oh No!",
             )
 
     except Exception as e:

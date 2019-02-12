@@ -46,17 +46,19 @@ forgot_tests = !git.modified_files.include?("src/tests/tests.py")
 
 if forgot_tests and not declared_trivial
 	warn("It appears that you forgot to add a Unit Test to the test file.\r\n Please add a test and upload the new version.\r\n The test file can currently be found at: ./src/tests/tests.py\r\n If this is a 'trivial' change add #trivial to the title")
-
 else
-      msg = !forgot_tests ? "Thanks for remembering to add a test!" : "Thanks for remembering to declare trivial!"
-     message(msg)
+     	msg = !forgot_tests ? "Thanks for remembering to add a test!" : "Thanks for remembering to declare trivial!"
+     	message(msg)
 end
 
 ## Unit Tests
+username = "$GH_USERNAME"
+password = "$GH_PASSWORD"
 system("python3 ./src/tests/tests.py 2> log.txt")
 unit_text = File.read("./log.txt")
 if not unit_text.include?('OK')
-	fail(unit_text)
+	clean_text = unit_text.sub("/%s|%s/" % [username, password], "[REDACTED]") 
+	fail("Oh No! You failed a unit test\nRun Python3 ./src/tests/tests.py to see which test failed\n%s" % [clean_text])
 else
 	message("All Unit Test Passed! 🤟")
 end

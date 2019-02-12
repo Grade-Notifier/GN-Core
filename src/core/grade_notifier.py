@@ -65,6 +65,7 @@ client = None
 api = None
 state = None
 
+
 '''
     Sends a text message via Twilio
 
@@ -167,9 +168,34 @@ def find_changes(old, new):
 
 ###********* Main Program *********###
 
-def create_instance():
+def welcome_message():
+    new_message = Message()
+
+    new_message \
+        .add("👋 Welcome to the Grade Notifier 🚨") \
+        .newline() \
+        .newline() \
+        .add("You're all set up. You should recieve a message soon with your current grades.") \
+        .newline() \
+        .add("After that first message, the notifier will message you whenever a grade changes (or is added)!") \
+        .newline()
+    return new_message.sign().message()
+
+def sign_in(remaining_attempts=5):
+    api.restart_session()
     api.login()
-    start_notifier()
+    if api.is_logged_in():
+        return True
+    elif remaining_attempts > 0:
+        return sign_in(remaining_attempts-1)
+    else:
+        return False
+
+def create_instance():
+    sign_in(2)
+    if api.is_logged_in():
+        send_text(welcome_message(), user.get_number())
+        start_notifier()
 
 def parse_grades_to_class(raw_grades):
     results = []
@@ -185,21 +211,79 @@ def parse_grades_to_class(raw_grades):
         results.append(new_class)
     return results
 
-def refresh():
+
+def refresh(remaining_attempts=2):
+
     actObj = api.move_to(Locations.student_grades)
     # action.grades returns a dict of
     # results: [grades], term_gpa: term_gpa (float), 
     # cumulative_gpa: cumulative_gpa (float)
     raw_grades = actObj.grades()
-    result = parse_grades_to_class(raw_grades['results'])
-    refresh_result = RefreshResult(result, GPA(raw_grades['term_gpa'], raw_grades['cumulative_gpa']))
-    return refresh_result
+
+    # do some perliminary checks on raw_grades to 
+    # make sure the format is proper before
+    # trying to access info
+    if 'results' in raw_grades \
+        and 'term_gpa' in raw_grades  \
+        and 'cumulative_gpa' in raw_grades:
+        try:
+            raw_results = raw_grades['results']
+            result = parse_grades_to_class(raw_results)
+            return RefreshResult(
+            result, 
+            GPA(
+                raw_grades['term_gpa'], 
+                raw_grades['cumulative_gpa']
+            )
+        )  
+        except ValueError:
+            # Check if any attempts remain
+            # if non do, end the program with a 
+            # final print statement expalaing the problem
+            if not remaining_attempts:
+                print("Error refreshing. No attempts left.")
+            else:
+                # CUNYFirstAPI had  issue finding grade
+                # table. Try again, hoping to find
+                # print error for logging but
+                # don't end program
+                traceback.print_exc()
+                if not api.is_logged_in():
+                    if(sign_in()):
+                        refresh(remaining_attempts - 1)
+                    else:
+                        print("Error refreshing. Multiple logins failed")
+    else:
+        # Check if any attempts remain
+        # if non do, end the program with a 
+        # final print statement expalaing the problem
+        if not remaining_attempts:
+            print("Error refreshing. No attempts left.")
+        else:
+            # CUNYFirstAPI had  issue finding grade
+            # table. Try again, hoping to find
+            # print error for logging but
+            # don't end program
+            if not api.is_logged_in():
+                if(sign_in()):
+                    refresh(remaining_attempts - 1)
+                else:
+                    print("Error refreshing. Multiple logins failed")
 
 def start_notifier():
     counter = 0
     old_result = RefreshResult([], -1)
     while counter < 844:
-        result = refresh()
+        try:
+            result = refresh()
+        except TypeError:
+            traceback.print_exc()
+            print('[DEBUG] Trying again...')
+            # Note this will not affect counter
+            continue
+        except ValueError:
+            # send message asking for more info to help us?
+            pass
         changelog = find_changes(old_result, result) \
             if result != None \
             else None
