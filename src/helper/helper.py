@@ -2,7 +2,7 @@
 '''
 Grade Notifier
 File: helper.py
-Author: Ehud Adler
+Author: Yehuda Moskovitz
 Core Maintainers: Ehud Adler, Akiva Sherman,
 Yehuda Moskovits
 Copyright: Copyright 2019, Ehud Adler

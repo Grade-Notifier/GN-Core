@@ -10,10 +10,22 @@ License: MIT
 '''
 ###***********************************###
 
-###********* Imports *********###
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-# Remote
+
+## stdlib imports
+import requests
+import getpass
+import re
+import argparse
+import os
+import atexit
+import fileinput
+import time
+import logging
+import traceback
+
+## remote imports
 from cunyfirstapi import Locations
 from cunyfirstapi import CUNYFirstAPI
 from bs4 import BeautifulSoup
@@ -36,17 +48,9 @@ from helper.refresh_result import RefreshResult
 from helper.school_class import Class
 from helper.redacted_stdout import RedactedPrint, STDOutOptions, RedactedFile
 
-import requests
-import getpass
-import re
-import argparse
-import os
-import atexit
-import fileinput
-import time
-import logging
-import traceback
-###********* GLOBALS *********###
+
+## Globals
+#----------------------------------------------------#
 
 # Create .env file path.
 dotenv_path = join(constants.abs_repo_path(), '.env')
@@ -65,6 +69,7 @@ client = None
 api = None
 state = None
 
+#----------------------------------------------------#
 
 '''
     Sends a text message via Twilio
@@ -86,10 +91,10 @@ def send_text(message, sendNumber):
     Converts a changelog array to a message
     Changelog: The list of classes which have had grade changes
 '''
-def create_text_message(change_log):
+def create_text_message(changelog, welcome=False):
 
     # Message header
-    new_message = Message()
+    new_message = Message() if not welcome else welcome_message()
 
     new_message \
         .add("New Grades have been posted for the following classes") \
@@ -98,9 +103,13 @@ def create_text_message(change_log):
         .newline()
 
     class_num = 1
-    gpa = change_log.gpa
 
-    for elm in change_log.classes:
+    # Grab the gpa off the changelog
+    gpa = changelog.gpa
+    
+    # Loop over all classes adding each one, one line at a time
+    # to the new message.
+    for elm in changelog.classes:
         if len(elm['grade']) != 0:
             new_message \
                 .add("{0}. {1}".format(class_num, elm['name'])) \
@@ -114,24 +123,30 @@ def create_text_message(change_log):
         .add("----------------------------") \
         .newline()
 
-    for elm in change_log.classes:
+    for elm in changelog.classes:
         if len(elm['grade']) != 0:
             new_message \
                 .add("{0}: {1} (Grade) -- {2} (Grade Points)".format(
                     elm['name'], elm['grade'], elm['gradepts'])) \
                 .newline()
 
+    # Check if term gpa is greater than 0 this is a basic 
+    # check to see if wewere able to grab a valid gpa 
+    # when we scraped the page. 
+    # If we were, add the gpa, term and cumulative to
+    # to message
     if gpa.get_term_gpa() >= 0:
-
         new_message.add("----------------------------") .newline() .add(
             "Your term GPA is: {0}".format(
                 gpa.get_term_gpa())) .newline() .add(
             "Your cumulative GPA is: {0}".format(
                 gpa.get_cumulative_gpa())) .newline()
 
-        # Sign the message
-        new_message.sign()
+    # Sign the message regardless of gpa presents or not
+    new_message.sign()
 
+    # Return the actual text of the message, rather than then
+    # message object
     return new_message.message()
 
 
@@ -144,27 +159,23 @@ def create_text_message(change_log):
 def find_changes(old, new):
 
     new_gpa = new.gpa
-    changelog = []
 
-    for i in range(0, len(new.classes)):
-        class2 = new.classes[i]
-        if i >= len(old.classes):
-            changelog.append({
-                'name': class2.name,
-                'grade': class2.grade,
-                'gradepts': class2.gradepts
-            })
-        else:
-            class1 = old.classes[i]
-            if class1.name == class2.name and class1 != class2:
-                changelog.append({
-                    'name': class2.name,
-                    'grade': class2.grade,
-                    'gradepts': class2.gradepts
-                })
-
+    # Iterate over all classes and find which of
+    # the classes in the new list are missing
+    # from the old list.
+    # Those classes are the real "new" classes
+    # and should be added to the changelog.
+    changelog = [
+        {
+            'name': c.name,
+            'grade': c.grade,
+            'gradepts': c.gradepts
+        } 
+        for c in new.classes if c not in old.classes
+    ] 
     return None if len(changelog) == 0 else Changelog(
-        changelog, new_gpa)  # always add gpa to the list
+        changelog, new_gpa
+    )  # always add gpa to the list
 
 ###********* Main Program *********###
 
@@ -175,15 +186,27 @@ def welcome_message():
         .add("👋 Welcome to the Grade Notifier 🚨") \
         .newline() \
         .newline() \
-        .add("You're all set up. You should recieve a message soon with your current grades.") \
+        .add("You're all set up!") \
         .newline() \
-        .add("After that first message, the notifier will message you whenever a grade changes (or is added)!") \
+        .add("The notifier will message you whenever a grade changes (or is added)!") \
         .newline()
-    return new_message.sign().message()
+    return new_message
 
 def sign_in(remaining_attempts=5):
+    # Load the api with a new session.
+    # This is a precaution in case for some reason
+    # there was an issue with the existing session
     api.restart_session()
-    api.login()
+
+    # Try to login, if an error occurs try again
+    # but decrement the count of remaining attempts
+    # if remaining attempts is 0, end session.
+    try:
+        api.login()
+    except IndexError:
+        return sign_in(remaining_attempts-1)
+
+    # Make sure the api is properly logged in
     if api.is_logged_in():
         return True
     elif remaining_attempts > 0:
@@ -192,10 +215,13 @@ def sign_in(remaining_attempts=5):
         return False
 
 def create_instance():
+    
+    # Try to sign in twice. If both times fail, 
+    # end the session as most likley something
+    # went wrong
     sign_in(2)
     if api.is_logged_in():
-        send_text(welcome_message(), user.get_number())
-        start_notifier()
+        start_notifier(True)
 
 def parse_grades_to_class(raw_grades):
     results = []
@@ -270,7 +296,7 @@ def refresh(remaining_attempts=2):
                 else:
                     print("Error refreshing. Multiple logins failed")
 
-def start_notifier():
+def start_notifier(is_welcome=False):
     counter = 0
     old_result = RefreshResult([], -1)
     while counter < 844:
@@ -288,7 +314,11 @@ def start_notifier():
             if result != None \
             else None
         if changelog is not None:
-            message = create_text_message(changelog)
+            message = create_text_message(changelog, is_welcome)
+
+            # set is_welcome to false so that future messages
+            # arent welcome messages with welcome heading
+            is_welcome = False
             send_text(message, user.get_number())
             old_result = result
         counter += 1

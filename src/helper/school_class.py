@@ -30,5 +30,6 @@ class Class():
         self.gradepts = gradepts
 
     def __eq__(self, other):
-        return self.grade == other.grade \
+        return self.name == other.name \
+            and self.grade == other.grade \
             and self.gradepts == other.gradepts
