@@ -223,7 +223,7 @@ def refresh(remaining_attempts=2):
             refresh(remaining_attempts - 1)
         else:
             print("Error refreshing. Multiple logins failed")
-
+            
     actObj = api.move_to(Locations.student_grades)
 
     # action.grades returns a dict of
@@ -262,7 +262,7 @@ def refresh(remaining_attempts=2):
             print("Error refreshing. No attempts left.")
         else:
             refresh(remaining_attempts - 1)
-            
+
 def start_notifier():
     counter = 0
     old_result = RefreshResult([], -1)
