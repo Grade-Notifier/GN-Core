@@ -14,22 +14,18 @@ License: MIT
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 # Remote
-from cunyfirstapi import Locations
-from cunyfirstapi import CUNYFirstAPI
+from cunyfirstapi import Locations, CUNYFirstAPI
 from bs4 import BeautifulSoup
-from lxml import etree
+from lxml import etree, html
 from twilio.rest import Client
-from lxml import html
 from os.path import join, dirname
 from dotenv import load_dotenv
-from helper.userdata import User
 from login_flow.loginState import LoginState
+from helper.userdata import User
 from helper.message import Message
 from helper.gpa import GPA
 from helper.constants import instance_path, abs_repo_path
-from helper import constants
-from helper import fileManager
-from helper import helper
+from helper import constants, fileManager, helper
 from helper.helper import custom_hash
 from helper.changelog import Changelog
 from helper.refresh_result import RefreshResult
@@ -64,7 +60,6 @@ user = None
 client = None
 api = None
 state = None
-
 
 '''
     Sends a text message via Twilio
@@ -133,7 +128,6 @@ def create_text_message(change_log):
         new_message.sign()
 
     return new_message.message()
-
 
 '''
     Finds differences between 2 arrays of classes and returns the differences
@@ -211,14 +205,31 @@ def parse_grades_to_class(raw_grades):
         results.append(new_class)
     return results
 
-
 def refresh(remaining_attempts=2):
 
+    # If no attempts remain, print error and end
+    if remaining_attempts <= 0:
+        print("Error refreshing. No attempts left.")
+        exit_handler()
+        exit(1)
+
+    if not api.is_logged_in():
+        if(sign_in()):
+            refresh(remaining_attempts - 1)
+        else:
+            print("Error refreshing. Multiple logins failed")
+            
     actObj = api.move_to(Locations.student_grades)
+
     # action.grades returns a dict of
     # results: [grades], term_gpa: term_gpa (float), 
     # cumulative_gpa: cumulative_gpa (float)
     raw_grades = actObj.grades()
+
+    # Check if raw_grades is none, 
+    # if so, retry
+    if not raw_grades:
+        refresh(remaining_attempts - 1)
 
     # do some perliminary checks on raw_grades to 
     # make sure the format is proper before
@@ -237,22 +248,7 @@ def refresh(remaining_attempts=2):
             )
         )  
         except ValueError:
-            # Check if any attempts remain
-            # if non do, end the program with a 
-            # final print statement expalaing the problem
-            if not remaining_attempts:
-                print("Error refreshing. No attempts left.")
-            else:
-                # CUNYFirstAPI had  issue finding grade
-                # table. Try again, hoping to find
-                # print error for logging but
-                # don't end program
-                traceback.print_exc()
-                if not api.is_logged_in():
-                    if(sign_in()):
-                        refresh(remaining_attempts - 1)
-                    else:
-                        print("Error refreshing. Multiple logins failed")
+            refresh(remaining_attempts - 1)
     else:
         # Check if any attempts remain
         # if non do, end the program with a 
@@ -260,15 +256,7 @@ def refresh(remaining_attempts=2):
         if not remaining_attempts:
             print("Error refreshing. No attempts left.")
         else:
-            # CUNYFirstAPI had  issue finding grade
-            # table. Try again, hoping to find
-            # print error for logging but
-            # don't end program
-            if not api.is_logged_in():
-                if(sign_in()):
-                    refresh(remaining_attempts - 1)
-                else:
-                    print("Error refreshing. Multiple logins failed")
+            refresh(remaining_attempts - 1)
 
 def start_notifier():
     counter = 0
@@ -294,7 +282,6 @@ def start_notifier():
         counter += 1
         time.sleep(5 * 60)  # 5 min intervals
 
-
 def check_user_exists(username):
     stored_username = custom_hash(username)
     file_path = instance_path(state)
@@ -302,7 +289,6 @@ def check_user_exists(username):
     with open(file_path, 'r+') as file:
         return re.search(
             '^{0}'.format(re.escape(stored_username)), file.read(), flags=re.M)
-
 
 def add_new_user_instance(username):
     file_path = instance_path(state)
@@ -315,7 +301,6 @@ def add_new_user_instance(username):
                                                      os.getpid()))
         return True
     return False
-
 
 def remove_user_instance(username):
     file_path = instance_path(state)
@@ -334,15 +319,12 @@ def remove_user_instance(username):
         newfile = RedactedFile(newfile, redacted_list)
         newfile.writelines(file)
 
-
 def exit_handler():
     send_text(constants.SESSION_ENDED_TEXT, user.get_number())
     remove_user_instance(user.get_username())
 
-
 def already_in_session_message():
     return constants.ALREADY_IN_SESSION
-
 
 def parse():
     parser = argparse.ArgumentParser(
