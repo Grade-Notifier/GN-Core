@@ -81,10 +81,15 @@ def send_text(message, sendNumber):
     Converts a changelog array to a message
     Changelog: The list of classes which have had grade changes
 '''
-def create_text_message(change_log):
+def create_text_message(change_log, is_welcome):
 
     # Message header
-    new_message = Message()
+    new_message = None
+
+    if is_welcome:
+        new_message = welcome_message()
+    else:
+        new_message = Message()
 
     new_message \
         .add("New Grades have been posted for the following classes") \
@@ -169,11 +174,11 @@ def welcome_message():
         .add("👋 Welcome to the Grade Notifier 🚨") \
         .newline() \
         .newline() \
-        .add("You're all set up. You should recieve a message soon with your current grades.") \
+        .add("You're all set up. You should see your current grades below!") \
         .newline() \
-        .add("After that first message, the notifier will message you whenever a grade changes (or is added)!") \
+        .add("The notifier will message you whenever a grade changes (or is added)!") \
         .newline()
-    return new_message.sign().message()
+    return new_message
 
 def sign_in(remaining_attempts=5):
     api.restart_session()
