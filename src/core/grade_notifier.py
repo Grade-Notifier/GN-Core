@@ -61,7 +61,6 @@ client = None
 api = None
 state = None
 
-
 '''
     Sends a text message via Twilio
 
@@ -129,7 +128,6 @@ def create_text_message(change_log):
         new_message.sign()
 
     return new_message.message()
-
 
 '''
     Finds differences between 2 arrays of classes and returns the differences
@@ -207,7 +205,6 @@ def parse_grades_to_class(raw_grades):
         results.append(new_class)
     return results
 
-
 def refresh(remaining_attempts=2):
 
     # If no attempts remain, print error and end
@@ -261,7 +258,6 @@ def refresh(remaining_attempts=2):
         else:
             refresh(remaining_attempts - 1)
             
-
 def start_notifier():
     counter = 0
     old_result = RefreshResult([], -1)
@@ -286,7 +282,6 @@ def start_notifier():
         counter += 1
         time.sleep(5 * 60)  # 5 min intervals
 
-
 def check_user_exists(username):
     stored_username = custom_hash(username)
     file_path = instance_path(state)
@@ -294,7 +289,6 @@ def check_user_exists(username):
     with open(file_path, 'r+') as file:
         return re.search(
             '^{0}'.format(re.escape(stored_username)), file.read(), flags=re.M)
-
 
 def add_new_user_instance(username):
     file_path = instance_path(state)
@@ -307,7 +301,6 @@ def add_new_user_instance(username):
                                                      os.getpid()))
         return True
     return False
-
 
 def remove_user_instance(username):
     file_path = instance_path(state)
@@ -326,15 +319,12 @@ def remove_user_instance(username):
         newfile = RedactedFile(newfile, redacted_list)
         newfile.writelines(file)
 
-
 def exit_handler():
     send_text(constants.SESSION_ENDED_TEXT, user.get_number())
     remove_user_instance(user.get_username())
 
-
 def already_in_session_message():
     return constants.ALREADY_IN_SESSION
-
 
 def parse():
     parser = argparse.ArgumentParser(
