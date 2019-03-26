@@ -210,6 +210,7 @@ def refresh(remaining_attempts=2):
     # If no attempts remain, print error and end
     if remaining_attempts <= 0:
         print("Error refreshing. No attempts left.")
+        exit_handler()
         exit(1)
 
     if not api.is_logged_in():
@@ -248,7 +249,6 @@ def refresh(remaining_attempts=2):
         )  
         except ValueError:
             refresh(remaining_attempts - 1)
-
     else:
         # Check if any attempts remain
         # if non do, end the program with a 
