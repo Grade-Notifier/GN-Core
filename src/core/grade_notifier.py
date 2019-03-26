@@ -211,7 +211,7 @@ def parse_grades_to_class(raw_grades):
 def refresh(remaining_attempts=2):
 
     # If no attempts remain, print error and end
-    if not remaining_attempts:
+    if remaining_attempts <= 0:
         print("Error refreshing. No attempts left.")
         exit(1)
 
