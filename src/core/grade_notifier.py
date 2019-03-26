@@ -14,22 +14,18 @@ License: MIT
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 # Remote
-from cunyfirstapi import Locations
-from cunyfirstapi import CUNYFirstAPI
+from cunyfirstapi import Locations, CUNYFirstAPI
 from bs4 import BeautifulSoup
-from lxml import etree
+from lxml import etree, html
 from twilio.rest import Client
-from lxml import html
 from os.path import join, dirname
 from dotenv import load_dotenv
-from helper.userdata import User
 from login_flow.loginState import LoginState
+from helper.userdata import User
 from helper.message import Message
 from helper.gpa import GPA
 from helper.constants import instance_path, abs_repo_path
-from helper import constants
-from helper import fileManager
-from helper import helper
+from helper import constants, fileManager, helper
 from helper.helper import custom_hash
 from helper.changelog import Changelog
 from helper.refresh_result import RefreshResult
@@ -226,7 +222,7 @@ def refresh(remaining_attempts=2):
             print("Error refreshing. Multiple logins failed")
 
     actObj = api.move_to(Locations.student_grades)
-    
+
     # action.grades returns a dict of
     # results: [grades], term_gpa: term_gpa (float), 
     # cumulative_gpa: cumulative_gpa (float)
