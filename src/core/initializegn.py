@@ -25,9 +25,10 @@ from lxml import html
 from helper.fileManager import create_dir
 from helper.constants import log_path
 from helper.constants import script_path, abs_repo_path
-from helper.helper import print_to_screen
+from helper.helper import print_to_screen, custom_hash
 from dotenv import load_dotenv
 from os.path import join, dirname
+
 
 """Initialize Grade-Notifier
 """
@@ -80,6 +81,13 @@ def run(username, password, school, phone):
                 stdout=outfile,
                 stderr=outfile)
 
+def check_user_exists(username):
+    stored_username = custom_hash(username)
+    file_path = instance_path(state)
+    open(file_path, 'a').close()
+    with open(file_path, 'r+') as file:
+        return re.search(
+            '^{0}'.format(re.escape(stored_username)), file.read(), flags=re.M)
 
 def parse():
     parser = argparse.ArgumentParser(
@@ -109,6 +117,16 @@ def main():
         number = input(
             "Enter phone number: ") if not args.phone else args.phone
         prod = False if not args.prod else True
+
+
+        if(check_user_exists(username)):
+            print_to_screen(
+                "Seems that you already have a session running.\n" \
+                + "If you think there is a mistake, contact me @ Ehud.Adler62@qmail.cuny.edu",
+                "error",
+                "Oh No!",
+            )
+            return
 
         api = cunyfirstapi.CUNYFirstAPI(username, password)
         api.login()

@@ -174,6 +174,7 @@ def welcome_message():
         .add("👋 Welcome to the Grade Notifier 🚨") \
         .newline() \
         .newline() \
+        .add("Your UID is: ".format(custom_hash(user.get_username())))
         .add("You're all set up. You should see your current grades below!") \
         .newline() \
         .add("The notifier will message you whenever a grade changes (or is added)!") \
