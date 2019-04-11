@@ -26,6 +26,7 @@ from lxml import html
 from helper.fileManager import create_dir
 from helper.constants import log_path, instance_path, script_path, abs_repo_path
 from helper.helper import print_to_screen, custom_hash
+from login_flow.loginState import LoginState
 from dotenv import load_dotenv
 from os.path import join, dirname
 
