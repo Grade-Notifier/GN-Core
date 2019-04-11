@@ -23,8 +23,7 @@ import cunyfirstapi
 from helper import constants
 from lxml import html
 from helper.fileManager import create_dir
-from helper.constants import log_path
-from helper.constants import script_path, abs_repo_path
+from helper.constants import log_path, instance_path, script_path, abs_repo_path
 from helper.helper import print_to_screen, custom_hash
 from dotenv import load_dotenv
 from os.path import join, dirname
@@ -81,7 +80,7 @@ def run(username, password, school, phone):
                 stdout=outfile,
                 stderr=outfile)
 
-def check_user_exists(username):
+def check_user_exists(username, state):
     stored_username = custom_hash(username)
     file_path = instance_path(state)
     open(file_path, 'a').close()
@@ -118,8 +117,8 @@ def main():
             "Enter phone number: ") if not args.phone else args.phone
         prod = False if not args.prod else True
 
-
-        if(check_user_exists(username)):
+        state = LoginState.determine_state(args)
+        if(check_user_exists(username, state)):
             print_to_screen(
                 "Seems that you already have a session running.\n" \
                 + "If you think there is a mistake, contact me @ Ehud.Adler62@qmail.cuny.edu",
