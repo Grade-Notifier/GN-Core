@@ -16,6 +16,7 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 import argparse
 import time
 import os
+import re
 import requests
 import getpass
 import subprocess
