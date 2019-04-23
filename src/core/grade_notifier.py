@@ -46,6 +46,7 @@ import fileinput
 import time
 import logging
 import traceback
+import datetime
 ###********* GLOBALS *********###
 
 # Create .env file path.
@@ -247,10 +248,12 @@ def refresh():
         # cunyfirstapi just try and refresh
         return refresh()
 
+end_time = datetime.datetime.now() + datetime.timedelta(days=7)
+
 def start_notifier():
     counter = 0
     old_result = RefreshResult([], -1)
-    while counter < 844:
+    while datetime.datetime.now() < end_time:
         result = refresh()
         changelog = find_changes(old_result, result) \
             if result != None \
