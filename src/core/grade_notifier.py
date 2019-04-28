@@ -266,7 +266,6 @@ def refresh(remaining_attempts=2):
             refresh(remaining_attempts - 1)
 
 def start_notifier():
-    counter = 0
     old_result = RefreshResult([], -1)
     while datetime.datetime.now() < endtime:
         try:
@@ -287,7 +286,6 @@ def start_notifier():
             message = create_text_message(changelog)
             send_text(message, user.get_number())
             old_result = result
-        counter += 1
         time.sleep(5 * 60)  # 5 min intervals
 
 def check_user_exists(username):
