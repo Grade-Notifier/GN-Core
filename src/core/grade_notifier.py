@@ -290,6 +290,7 @@ def start_notifier(is_welcome=False):
             is_welcome = False
         time.sleep(30 * 60)  # 30 min intervals
 
+
 def check_user_exists(username):
     stored_username = custom_hash(username)
     file_path = instance_path(state)
