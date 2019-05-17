@@ -389,7 +389,7 @@ def main():
         redacted_print_err.enable()
 
         if add_new_user_instance(username):
-            endtime = datetime.datetime.now() + datetime.timedelta(days=7)
+            endtime = datetime.datetime.now() + datetime.timedelta(days=14)
             api = CUNYFirstAPI(username, password)
             user = User(username, password, number, args.school.upper())
             atexit.register(exit_handler)
