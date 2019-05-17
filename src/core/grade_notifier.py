@@ -42,6 +42,7 @@ import fileinput
 import time
 import logging
 import traceback
+import datetime
 ###********* GLOBALS *********###
 
 # Create .env file path.
@@ -60,6 +61,7 @@ user = None
 client = None
 api = None
 state = None
+endtime = None
 
 '''
     Sends a text message via Twilio
@@ -265,17 +267,17 @@ def refresh(remaining_attempts=2):
             refresh(remaining_attempts - 1)
 
 def start_notifier():
-    counter = 0
     old_result = RefreshResult([], -1)
-    while counter < 844:
+    while datetime.datetime.now() < endtime:
         try:
             result = refresh()
         except TypeError:
             traceback.print_exc()
-            print('[DEBUG] Trying again...')
+            print('[DEBUG] (TypeError, start_notifier) Trying again...')
             # Note this will not affect counter
             continue
         except ValueError:
+            print('[DEBUG] (ValueError, start_notifier) Trying again...')
             # send message asking for more info to help us?
             pass
         changelog = find_changes(old_result, result) \
@@ -285,7 +287,6 @@ def start_notifier():
             message = create_text_message(changelog)
             send_text(message, user.get_number())
             old_result = result
-        counter += 1
         time.sleep(5 * 60)  # 5 min intervals
 
 def check_user_exists(username):
@@ -362,6 +363,7 @@ def main():
     global api
     global redacted_print_std
     global redacted_print_err
+    global endtime
 
     args = parse()
     state = LoginState.determine_state(args)
@@ -387,6 +389,7 @@ def main():
         redacted_print_err.enable()
 
         if add_new_user_instance(username):
+            endtime = datetime.datetime.now() + datetime.timedelta(days=7)
             api = CUNYFirstAPI(username, password)
             user = User(username, password, number, args.school.upper())
             atexit.register(exit_handler)
