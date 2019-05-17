@@ -42,6 +42,7 @@ import fileinput
 import time
 import logging
 import traceback
+import datetime
 ###********* GLOBALS *********###
 
 # Create .env file path.
@@ -60,6 +61,7 @@ user = None
 client = None
 api = None
 state = None
+endtime = None
 
 '''
     Sends a text message via Twilio
@@ -81,10 +83,15 @@ def send_text(message, sendNumber):
     Converts a changelog array to a message
     Changelog: The list of classes which have had grade changes
 '''
-def create_text_message(change_log):
+def create_text_message(change_log, is_welcome=False):
 
     # Message header
-    new_message = Message()
+    new_message = None
+
+    if is_welcome:
+        new_message = welcome_message()
+    else:
+        new_message = Message()
 
     new_message \
         .add("New Grades have been posted for the following classes") \
@@ -169,11 +176,12 @@ def welcome_message():
         .add("👋 Welcome to the Grade Notifier 🚨") \
         .newline() \
         .newline() \
-        .add("You're all set up. You should recieve a message soon with your current grades.") \
+        .add("Your UID is: ".format(custom_hash(user.get_username()))) \
+        .add("You're all set up. You should see your current grades below!") \
         .newline() \
-        .add("After that first message, the notifier will message you whenever a grade changes (or is added)!") \
+        .add("The notifier will message you whenever a grade changes (or is added)!") \
         .newline()
-    return new_message.sign().message()
+    return new_message
 
 def sign_in(remaining_attempts=5):
     api.restart_session()
@@ -259,17 +267,17 @@ def refresh(remaining_attempts=2):
             refresh(remaining_attempts - 1)
 
 def start_notifier():
-    counter = 0
     old_result = RefreshResult([], -1)
-    while counter < 844:
+    while datetime.datetime.now() < endtime:
         try:
             result = refresh()
         except TypeError:
             traceback.print_exc()
-            print('[DEBUG] Trying again...')
+            print('[DEBUG] (TypeError, start_notifier) Trying again...')
             # Note this will not affect counter
             continue
         except ValueError:
+            print('[DEBUG] (ValueError, start_notifier) Trying again...')
             # send message asking for more info to help us?
             pass
         changelog = find_changes(old_result, result) \
@@ -279,7 +287,6 @@ def start_notifier():
             message = create_text_message(changelog)
             send_text(message, user.get_number())
             old_result = result
-        counter += 1
         time.sleep(5 * 60)  # 5 min intervals
 
 def check_user_exists(username):
@@ -356,6 +363,7 @@ def main():
     global api
     global redacted_print_std
     global redacted_print_err
+    global endtime
 
     args = parse()
     state = LoginState.determine_state(args)
@@ -381,6 +389,7 @@ def main():
         redacted_print_err.enable()
 
         if add_new_user_instance(username):
+            endtime = datetime.datetime.now() + datetime.timedelta(days=14)
             api = CUNYFirstAPI(username, password)
             user = User(username, password, number, args.school.upper())
             atexit.register(exit_handler)
