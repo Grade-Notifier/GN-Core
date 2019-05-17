@@ -196,8 +196,7 @@ def sign_in(remaining_attempts=5):
 def create_instance():
     sign_in(2)
     if api.is_logged_in():
-        send_text(welcome_message(), user.get_number())
-        start_notifier()
+        start_notifier(True)
 
 def parse_grades_to_class(raw_grades):
     results = []
@@ -266,7 +265,7 @@ def refresh(remaining_attempts=2):
         else:
             refresh(remaining_attempts - 1)
 
-def start_notifier():
+def start_notifier(is_welcome=False):
     old_result = RefreshResult([], -1)
     while datetime.datetime.now() < endtime:
         try:
@@ -284,10 +283,12 @@ def start_notifier():
             if result != None \
             else None
         if changelog is not None:
-            message = create_text_message(changelog)
+            message = create_text_message(changelog, is_welcome)
             send_text(message, user.get_number())
             old_result = result
-        time.sleep(5 * 60)  # 5 min intervals
+            is_welcome = False
+        time.sleep(30 * 60)  # 30 min intervals
+
 
 def check_user_exists(username):
     stored_username = custom_hash(username)
