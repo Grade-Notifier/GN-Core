@@ -216,8 +216,8 @@ def parse_grades_to_class(raw_grades):
 def refresh(remaining_attempts=2):
 
     # If this is a re-attempt, sleep for 30 min between attempts
-    if remaining_attempts != 2:
-        time.sleep(30 * 60)
+    # if remaining_attempts != 2:
+    #     time.sleep(2 * 60)
 
     # If no attempts remain, print error and end
     if remaining_attempts <= 0:
@@ -226,6 +226,7 @@ def refresh(remaining_attempts=2):
 
     if not api.is_logged_in():
         if(sign_in()):
+            print("Login Failed")
             refresh(remaining_attempts - 1)
         else:
             print("Error refreshing. Multiple logins failed")
