@@ -186,6 +186,13 @@ Get a text when you<br>get your grades!
 
     if ($status == "error"):
     ?>
+    <div class="confirm-message__wrapper">
+<?php
+    echo "<p class=\"confirm-message__text\">";
+    echo $message;
+    echo "</p>";
+    ?>
+</div>
 <form method="get">
 <input class="submit" type="submit" value="Start over">
 </form>

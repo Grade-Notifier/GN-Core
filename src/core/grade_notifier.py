@@ -215,10 +215,13 @@ def parse_grades_to_class(raw_grades):
 
 def refresh(remaining_attempts=2):
 
+    # If this is a re-attempt, sleep for 30 min between attempts
+    if remaining_attempts != 2:
+        time.sleep(30 * 60)
+
     # If no attempts remain, print error and end
     if remaining_attempts <= 0:
         print("Error refreshing. No attempts left.")
-        exit_handler()
         exit(1)
 
     if not api.is_logged_in():
@@ -371,6 +374,7 @@ def main():
     state = LoginState.determine_state(args)
 
     try:
+
         # Only initialize twilio in production
         # or when specifically asked
         if state == LoginState.PROD or args.enable_phone:
@@ -392,7 +396,7 @@ def main():
 
         if add_new_user_instance(username):
             endtime = datetime.datetime.now() + datetime.timedelta(days=14)
-            api = CUNYFirstAPI(username, password)
+            api = CUNYFirstAPI(username, password, args.school.upper())
             user = User(username, password, number, args.school.upper())
             atexit.register(exit_handler)
             create_instance()
