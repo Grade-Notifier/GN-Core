@@ -260,8 +260,12 @@ def refresh(remaining_attempts=2):
             )
         )  
         except ValueError:
+            print("Value Error")
             refresh(remaining_attempts - 1)
     else:
+        print('results' in raw_grades)
+        print('term_gpa' in raw_grades)
+        print('cumulative_gpa' in raw_grades)
         # Check if any attempts remain
         # if non do, end the program with a 
         # final print statement expalaing the problem
