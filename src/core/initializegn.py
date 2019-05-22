@@ -135,8 +135,8 @@ def main():
             run(username, password, args.school.upper(), number)
             print_to_screen(
                 "Check your phone for a text!\n" \
-                + "The service will check for new grades every 5 min and text you when anything changes.\n" \
-                + "The service will continue for 5 days and then require you to sign-in again.\n" \
+                + "The service will check for new grades every 30 min and text you when anything changes.\n" \
+                + "The service will continue for 2 weeks and then require you to sign-in again.\n" \
                 + "Please only sign in once.\n" \
                 + "Enjoy!",
                 "ok",
