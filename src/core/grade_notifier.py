@@ -375,7 +375,6 @@ def main():
 
     try:
 
-        print(args)
         # Only initialize twilio in production
         # or when specifically asked
         if state == LoginState.PROD or args.enable_phone:
