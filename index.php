@@ -175,6 +175,8 @@ Get a text when you<br>get your grades!
 
 <input class="input input--full-width" type="text" name="phone" placeholder="Phone Number" required>
 <br>
+<input class="checkbox" type="checkbox" name="hide_grades">Don't show my grades in the text
+<br>
 <input class="submit" type="submit" name="submit" value="Text me!">
 </form>
 <?php
