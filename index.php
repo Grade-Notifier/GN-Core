@@ -13,6 +13,7 @@
             if($_POST['hide_grades']=='true'){
                 $hide_grades = 'true';
             }
+
         }
         if (gethostname() == "venus" || gethostname() == "mars") {
             require_once 'vendor/autoload.php';
@@ -174,7 +175,9 @@ Get a text when you<br>get your grades!
 
 <input class="input input--full-width" type="text" name="phone" placeholder="Phone Number" required>
 <br>
-<input type="checkbox" name="hide_grades" value="true"> Do not show my grades
+
+<input class="checkbox" type="checkbox" name="hide_grades" value="true"> Do not show my grades
+
 <br>
 <input class="submit" type="submit" name="submit" value="Text me!">
 </form>
