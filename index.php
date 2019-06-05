@@ -8,17 +8,23 @@
     function display(){
         global $arr, $status, $title, $message;
         $cmd = '';
+        $hide_grades = 'false';
+        if(isset($_POST['hide_grades'])){
+            if($_POST['hide_grades']=='true'){
+                $hide_grades = 'true';
+            }
+        }
         if (gethostname() == "venus" || gethostname() == "mars") {
             require_once 'vendor/autoload.php';
             $dotenv = Dotenv\Dotenv::create(__DIR__);
             $dotenv->load();
             $account_pass = getenv('ACCOUNT_PASSWORD');
             $mars_user = getenv('MARS_USERNAME');
-            $cmd = 'echo "'.$account_pass.'" | su -c "python3 /home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"].' --prod=true" - '.$mars_user;
+            $cmd = 'echo "'.$account_pass.'" | su -c "python3 /home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"].' --hide_grades='.$hide_grades.' --prod=true" - '.$mars_user;
 
         } else {
             echo nl2br("********************\r\nRunning Local....\r\n********************\r\n");
-            $cmd = 'python3 src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"];
+            $cmd = 'python3 src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"].' --hide_grades='.$hide_grades;
         }
 
         $message = exec($cmd, $arr);
@@ -167,6 +173,8 @@ Get a text when you<br>get your grades!
 <br>
 
 <input class="input input--full-width" type="text" name="phone" placeholder="Phone Number" required>
+<br>
+<input type="checkbox" name="hide_grades" value="true"> Do not show my grades
 <br>
 <input class="submit" type="submit" name="submit" value="Text me!">
 </form>

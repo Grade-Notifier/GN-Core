@@ -62,6 +62,7 @@ client = None
 api = None
 state = None
 endtime = None
+hide_grades = False
 
 '''
     Sends a text message via Twilio
@@ -83,13 +84,13 @@ def send_text(message, sendNumber):
     Converts a changelog array to a message
     Changelog: The list of classes which have had grade changes
 '''
-def create_text_message(change_log, is_welcome=False, hide_grades=False):
-
+def create_text_message(change_log, is_welcome=False):
+    global hide_grades
     # Message header
     new_message = None
 
     if is_welcome:
-        new_message = welcome_message(hide_grades)
+        new_message = welcome_message()
     else:
         new_message = Message()
 
@@ -169,7 +170,8 @@ def find_changes(old, new):
 
 ###********* Main Program *********###
 
-def welcome_message(hide_grades=False):
+def welcome_message():
+    global hide_grades
     new_message = Message()
 
     new_message \
@@ -195,10 +197,10 @@ def sign_in(remaining_attempts=5):
     else:
         return False
 
-def create_instance(hide_grades=False):
+def create_instance():
     sign_in(2)
     if api.is_logged_in():
-        start_notifier(True, hide_grades)
+        start_notifier(True)
 
 def parse_grades_to_class(raw_grades):
     results = []
@@ -275,7 +277,8 @@ def refresh(remaining_attempts=2):
         else:
             refresh(remaining_attempts - 1)
 
-def start_notifier(is_welcome=False, hide_grades=False):
+def start_notifier(is_welcome=False):
+    #global hide_grades
     old_result = RefreshResult([], -1)
     while datetime.datetime.now() < endtime:
         try:
@@ -293,7 +296,7 @@ def start_notifier(is_welcome=False, hide_grades=False):
             if result != None \
             else None
         if changelog is not None:
-            message = create_text_message(changelog, is_welcome, hide_grades)
+            message = create_text_message(changelog, is_welcome)
             send_text(message, user.get_number())
             old_result = result
             is_welcome = False
@@ -349,7 +352,7 @@ def parse():
         description='Specify commands for CUNY Grade Notifier Retriever v1.0')
     parser.add_argument('--school')
     parser.add_argument('--list-codes', action='store_true')
-    parser.add_argument('--hide_grades', action='store_true')
+    parser.add_argument('--hide_grades')
     parser.add_argument('--username')
     parser.add_argument('--password')
     parser.add_argument('--phone')
@@ -376,6 +379,7 @@ def main():
     global redacted_print_std
     global redacted_print_err
     global endtime
+    global hide_grades
 
     args = parse()
     state = LoginState.determine_state(args)
@@ -396,6 +400,8 @@ def main():
         school = input(
             "Enter college code: ").upper() if not args.school else args.school.upper()
 
+        hide_grades = True if args.hide_grades == 'true' else False
+
         ## Monkey Patching stdout to remove any sens. data
         redacted_list = [username, password]
         redacted_print_std = RedactedPrint(STDOutOptions.STDOUT, redacted_list)
@@ -408,7 +414,7 @@ def main():
             api = CUNYFirstAPI(username, password, school)
             user = User(username, password, number, school)
             atexit.register(exit_handler)
-            create_instance(args.hide_grades)
+            create_instance()
         else:
             print(already_in_session_message())
 
