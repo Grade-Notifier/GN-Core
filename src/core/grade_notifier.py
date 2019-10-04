@@ -62,6 +62,7 @@ client = None
 api = None
 state = None
 endtime = None
+hide_grades = False
 
 '''
     Sends a text message via Twilio
@@ -84,7 +85,7 @@ def send_text(message, sendNumber):
     Changelog: The list of classes which have had grade changes
 '''
 def create_text_message(change_log, is_welcome=False):
-
+    global hide_grades
     # Message header
     new_message = None
 
@@ -94,7 +95,7 @@ def create_text_message(change_log, is_welcome=False):
         new_message = Message()
 
     new_message \
-        .add("New Grades have been posted for the following classes") \
+        .add("New grades have been posted for the following classes:") \
         .newline() \
         .add("-------------") \
         .newline()
@@ -108,31 +109,31 @@ def create_text_message(change_log, is_welcome=False):
                 .add("{0}. {1}".format(class_num, elm['name'])) \
                 .newline()
             class_num += 1
+    if not hide_grades:
+        new_message \
+            .newline() \
+            .add("Grade for those classes are:") \
+            .newline() \
+            .add("----------------------------") \
+            .newline()
 
-    new_message \
-        .newline() \
-        .add("Grade for those classes are:") \
-        .newline() \
-        .add("----------------------------") \
-        .newline()
+        for elm in change_log.classes:
+            if len(elm['grade']) != 0:
+                new_message \
+                    .add("{0}: {1} (Grade) -- {2} (Grade Points)".format(
+                        elm['name'], elm['grade'], elm['gradepts'])) \
+                    .newline()
 
-    for elm in change_log.classes:
-        if len(elm['grade']) != 0:
-            new_message \
-                .add("{0}: {1} (Grade) -- {2} (Grade Points)".format(
-                    elm['name'], elm['grade'], elm['gradepts'])) \
-                .newline()
+        if gpa.get_term_gpa() >= 0:
 
-    if gpa.get_term_gpa() >= 0:
+            new_message.add("----------------------------") .newline() .add(
+                "Your term GPA is: {0}".format(
+                    gpa.get_term_gpa())) .newline() .add(
+                "Your cumulative GPA is: {0}".format(
+                    gpa.get_cumulative_gpa())) .newline()
 
-        new_message.add("----------------------------") .newline() .add(
-            "Your term GPA is: {0}".format(
-                gpa.get_term_gpa())) .newline() .add(
-            "Your cumulative GPA is: {0}".format(
-                gpa.get_cumulative_gpa())) .newline()
-
-        # Sign the message
-        new_message.sign()
+            # Sign the message
+    new_message.sign()
 
     return new_message.message()
 
@@ -170,6 +171,7 @@ def find_changes(old, new):
 ###********* Main Program *********###
 
 def welcome_message():
+    global hide_grades
     new_message = Message()
 
     new_message \
@@ -178,7 +180,8 @@ def welcome_message():
         .newline() \
         .add("Your UID is: {0}".format(custom_hash(user.get_username()))) \
         .newline() \
-        .add("You're all set up. You should see your current grades below!") \
+        .add("You're all set up. You should see your current grades below!"\
+        if not hide_grades else "") \
         .newline() \
         .add("The notifier will message you whenever a grade changes (or is added)!") \
         .newline()
@@ -275,6 +278,7 @@ def refresh(remaining_attempts=2):
             refresh(remaining_attempts - 1)
 
 def start_notifier(is_welcome=False):
+    #global hide_grades
     old_result = RefreshResult([], -1)
     while datetime.datetime.now() < endtime:
         try:
@@ -346,8 +350,9 @@ def already_in_session_message():
 def parse():
     parser = argparse.ArgumentParser(
         description='Specify commands for CUNY Grade Notifier Retriever v1.0')
-    parser.add_argument('--school', default="QNS01")
+    parser.add_argument('--school')
     parser.add_argument('--list-codes', action='store_true')
+    parser.add_argument('--hide_grades')
     parser.add_argument('--username')
     parser.add_argument('--password')
     parser.add_argument('--phone')
@@ -374,6 +379,7 @@ def main():
     global redacted_print_std
     global redacted_print_err
     global endtime
+    global hide_grades
 
     args = parse()
     state = LoginState.determine_state(args)
@@ -391,6 +397,10 @@ def main():
             "Enter password: ") if not args.password else args.password
         number = input(
             "Enter phone number: ") if not args.phone else args.phone
+        school = input(
+            "Enter college code: ").upper() if not args.school else args.school.upper()
+
+        hide_grades = True if args.hide_grades == 'true' else False
 
         ## Monkey Patching stdout to remove any sens. data
         redacted_list = [username, password]
@@ -401,8 +411,8 @@ def main():
 
         if add_new_user_instance(username):
             endtime = datetime.datetime.now() + datetime.timedelta(days=14)
-            api = CUNYFirstAPI(username, password, args.school.upper())
-            user = User(username, password, number, args.school.upper())
+            api = CUNYFirstAPI(username, password, school)
+            user = User(username, password, number, school)
             atexit.register(exit_handler)
             create_instance()
         else:
