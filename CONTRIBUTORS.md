@@ -11,4 +11,3 @@
 | Eric Sherman | Mon Jan 28 15:41:30 PST 2019 |
 | J. Doe (https://devcenter.bitrise.io/builds/setting-your-git-credentials-on-build-machines/) | Fri May 17 14:13:21 PDT 2019 |
 | dependabot[bot] | Thu Oct  3 09:05:18 PDT 2019 |
-
