@@ -20,6 +20,8 @@ from bs4 import BeautifulSoup
 from lxml import etree
 from twilio.rest import Client
 from lxml import html
+from pprint import pprint
+from cryptography.fernet import Fernet
 from os.path import join, dirname
 from dotenv import load_dotenv
 from helper.userdata import User
@@ -46,23 +48,25 @@ import fileinput
 import time
 import logging
 import traceback
+import mysql.connector
 ###********* GLOBALS *********###
 
 # Create .env file path.
 dotenv_path = join(constants.abs_repo_path(), '.env')
 
 # Load file from the path.
-load_dotenv(dotenv_path)
+load_dotenv()
 
 # Accessing variables.
 account_sid = os.getenv('TWILIO_SID')
 auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+DB_USERNAME = os.getenv('LOCALHOST_USERNAME')
+DB_PASSWORD = os.getenv('LOCALHOST_PASSWORD')
 
 redacted_print_std = None
 redacted_print_err = None
 user = None
 client = None
-api = None
 state = None
 
 '''
@@ -100,9 +104,9 @@ def create_text_message(change_log):
     gpa = change_log.gpa
 
     for elm in change_log.classes:
-        if len(elm['grade']) != 0:
+        if len(elm.grade) != 0:
             new_message \
-                .add("{0}. {1}".format(class_num, elm['name'])) \
+                .add("{0}. {1}".format(class_num, elm.name)) \
                 .newline()
             class_num += 1
 
@@ -114,10 +118,10 @@ def create_text_message(change_log):
         .newline()
 
     for elm in change_log.classes:
-        if len(elm['grade']) != 0:
+        if len(elm.grade) != 0:
             new_message \
                 .add("{0}: {1} (Grade) -- {2} (Grade Points)".format(
-                    elm['name'], elm['grade'], elm['gradepts'])) \
+                    elm.name, elm.grade, elm.gradepts)) \
                 .newline()
 
     if gpa.get_term_gpa() >= 0:
@@ -134,37 +138,6 @@ def create_text_message(change_log):
     return new_message.message()
 
 
-'''
-    Finds differences between 2 arrays of classes and returns the differences
-
-    Old: Old Classes
-    New: New Classes
-'''
-def find_changes(old, new):
-
-    new_gpa = new.gpa
-    changelog = []
-
-    for i in range(0, len(new.classes)):
-        class2 = new.classes[i]
-        if i >= len(old.classes):
-            changelog.append({
-                'name': class2.name,
-                'grade': class2.grade,
-                'gradepts': class2.gradepts
-            })
-        else:
-            class1 = old.classes[i]
-            if class1.name == class2.name and class1 != class2:
-                changelog.append({
-                    'name': class2.name,
-                    'grade': class2.grade,
-                    'gradepts': class2.gradepts
-                })
-
-    return None if len(changelog) == 0 else Changelog(
-        changelog, new_gpa)  # always add gpa to the list
-
 ###********* Main Program *********###
 
 def welcome_message():
@@ -176,18 +149,10 @@ def welcome_message():
         .newline() \
         .add("You're all set up. You should recieve a message soon with your current grades.") \
         .newline() \
-        .add("After that first message, the notifier will message you whenever a grade changes (or is added)!")
-        .newline() \
+        .add("After that first message, the notifier will message you whenever a grade changes (or is added)!") \
+        .newline()
     return new_message.sign().message()
 
-
-def create_instance(retry = True):
-    api.login()
-    if api.is_logged_in():
-        send_text(welcome_message(), user.get_number())
-        start_notifier()
-    elif retry:
-        create_instance(False)
 
 
 def parse_grades_to_class(raw_grades):
@@ -202,9 +167,10 @@ def parse_grades_to_class(raw_grades):
             grade["gradepts"],
         )
         results.append(new_class)
+
     return results
 
-def refresh():
+def refresh(api):
     actObj = api.move_to(Locations.student_grades)
     # action.grades returns a dict of
     # results: [grades], term_gpa: term_gpa (float), 
@@ -225,23 +191,68 @@ def refresh():
     else:
         # Couldn't get the proper grade from 
         # cunyfirstapi just try and refresh
-        refresh()
+        return refresh(api)
 
 def start_notifier():
-    counter = 0
-    old_result = RefreshResult([], -1)
-    while counter < 844:
-        result = refresh()
-        changelog = find_changes(old_result, result) \
-            if result != None \
-            else None
-        if changelog is not None:
-            message = create_text_message(changelog)
-            send_text(message, user.get_number())
-            old_result = result
-        counter += 1
-        time.sleep(5 * 60)  # 5 min intervals
 
+    myconnector = mysql.connector.Connect(user=DB_USERNAME,
+        host='localhost',passwd=DB_PASSWORD)
+
+    cursor = myconnector.cursor()
+    myconnector.autocommit = True
+    cursor.execute('USE GradeNotifier')
+    while True:
+
+        cursor.execute('''SELECT * FROM Users WHERE lastUpdated < NOW() - INTERVAL 30 MINUTE ORDER BY lastUpdated DESC LIMIT 1''') # get top row from 
+        # cursor.execute('''SELECT * FROM Users LIMIT 1''')
+        try: 
+            row = cursor.next()
+            column_names = cursor.column_names
+
+            query_dict = {k: v for k,v in zip(column_names, row)}
+            pprint(query_dict)
+            
+            cursor.execute(f'UPDATE Users SET lastUpdated = NOW() WHERE id={query_dict["id"]};')
+
+            encrypted_password = query_dict['password']
+
+            key = os.getenv('DB_ENCRYPTION_KEY').encode('utf-8')
+
+            f = Fernet(key)
+            password = f.decrypt(encrypted_password.encode('utf-8')).decode()
+
+            api = CUNYFirstAPI(query_dict['username'], password, query_dict['school'].upper())
+            api.login()
+
+            grade_result= refresh(api)
+
+            frozen_set_grades = frozenset(grade_result.classes)
+            grade_hash = str(hash(frozen_set_grades))
+
+            '''
+            IMPORTANT NOTE!!!
+            Hash seed value changes each time you run so you need 
+            to set the hash seed to be the same each time
+            so when running this script, run it as
+            PYTHONHASHSEED=0 python3 ...
+            '''
+
+            print(grade_hash)
+            if grade_hash != query_dict['gradeHash']:
+                # we have a difference
+                message = create_text_message(grade_result)
+                send_text(message, query_dict['phoneNumber'])
+
+                cursor.execute(f'UPDATE Users SET gradeHash = {grade_hash} WHERE id={query_dict["id"]};')
+
+            
+            api.logout()
+        except StopIteration:
+            pass
+        except:
+            traceback.print_exc()
+        time.sleep(1)
+       
 
 def check_user_exists(username):
     stored_username = custom_hash(username)
@@ -295,12 +306,6 @@ def already_in_session_message():
 def parse():
     parser = argparse.ArgumentParser(
         description='Specify commands for CUNY Grade Notifier Retriever v1.0')
-    parser.add_argument('--school', default="QNS01")
-    parser.add_argument('--list-codes', action='store_true')
-    parser.add_argument('--username')
-    parser.add_argument('--password')
-    parser.add_argument('--phone')
-    parser.add_argument('--filename')
 
     # Production
     parser.add_argument('--prod')
@@ -332,32 +337,10 @@ def main():
         if state == LoginState.PROD or args.enable_phone:
             initialize_twilio()
         
-        username = input(
-            "Enter username: ") if not args.username else args.username
-        password = getpass.getpass(
-            "Enter password: ") if not args.password else args.password
-        number = input(
-            "Enter phone number: ") if not args.phone else args.phone
+        start_notifier()
 
-        ## Monkey Patching stdout to remove any sens. data
-        redacted_list = [username, password]
-        redacted_print_std = RedactedPrint(STDOutOptions.STDOUT, redacted_list)
-        redacted_print_err = RedactedPrint(STDOutOptions.ERROR, redacted_list)
-        redacted_print_std.enable()
-        redacted_print_err.enable()
-
-        if add_new_user_instance(username):
-            api = CUNYFirstAPI(username, password)
-            user = User(username, password, number, args.school.upper())
-            atexit.register(exit_handler)
-            create_instance()
-        else:
-            print(already_in_session_message())
-
-    except Exception as e:
-        print("ERROR")
+    except: 
         traceback.print_exc()
-        # adding comment bc cant push
 
 
 if __name__ == '__main__':
