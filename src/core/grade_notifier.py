@@ -62,6 +62,7 @@ account_sid = os.getenv('TWILIO_SID')
 auth_token = os.getenv('TWILIO_AUTH_TOKEN')
 DB_USERNAME = os.getenv('LOCALHOST_USERNAME')
 DB_PASSWORD = os.getenv('LOCALHOST_PASSWORD')
+key = os.getenv('DB_ENCRYPTION_KEY').encode('utf-8')
 
 redacted_print_std = None
 redacted_print_err = None
@@ -89,10 +90,13 @@ def send_text(message, sendNumber):
     Converts a changelog array to a message
     Changelog: The list of classes which have had grade changes
 '''
-def create_text_message(change_log):
+def create_text_message(change_log, is_welcome=False):
 
     # Message header
     new_message = Message()
+
+    if is_welcome:
+        new_message = welcome_message()
 
     new_message \
         .add("New Grades have been posted for the following classes") \
@@ -147,11 +151,11 @@ def welcome_message():
         .add("👋 Welcome to the Grade Notifier 🚨") \
         .newline() \
         .newline() \
-        .add("You're all set up. You should recieve a message soon with your current grades.") \
+        .add("You're all set up. You should see your current grades below!") \
         .newline() \
-        .add("After that first message, the notifier will message you whenever a grade changes (or is added)!") \
+        .add("The notifier will message you whenever a grade changes (or is added)!") \
         .newline()
-    return new_message.sign().message()
+    return new_message
 
 
 
@@ -202,7 +206,7 @@ def start_notifier():
     myconnector.autocommit = True
     cursor.execute('USE GradeNotifier')
     while True:
-
+        global key
         cursor.execute('''SELECT * FROM Users WHERE lastUpdated < NOW() - INTERVAL 30 MINUTE ORDER BY lastUpdated DESC LIMIT 1''') # get top row from 
         # cursor.execute('''SELECT * FROM Users LIMIT 1''')
         try: 
@@ -211,12 +215,17 @@ def start_notifier():
 
             query_dict = {k: v for k,v in zip(column_names, row)}
             pprint(query_dict)
-            
+
+            if query_dict['lastUpdated'].year == 1970:
+                is_welcome = True
+            else:
+                is_welcome = False
+
             cursor.execute(f'UPDATE Users SET lastUpdated = NOW() WHERE id={query_dict["id"]};')
 
             encrypted_password = query_dict['password']
 
-            key = os.getenv('DB_ENCRYPTION_KEY').encode('utf-8')
+            
 
             f = Fernet(key)
             password = f.decrypt(encrypted_password.encode('utf-8')).decode()
@@ -240,13 +249,17 @@ def start_notifier():
             print(grade_hash)
             if grade_hash != query_dict['gradeHash']:
                 # we have a difference
-                message = create_text_message(grade_result)
+                print('GRADE DIFFERENCE, SENDING MESSAGE!')
+                message = create_text_message(grade_result, is_welcome)
                 send_text(message, query_dict['phoneNumber'])
 
                 cursor.execute(f'UPDATE Users SET gradeHash = {grade_hash} WHERE id={query_dict["id"]};')
 
             
             api.logout()
+
+            
+
         except StopIteration:
             pass
         except:
@@ -254,44 +267,6 @@ def start_notifier():
         time.sleep(1)
        
 
-def check_user_exists(username):
-    stored_username = custom_hash(username)
-    file_path = instance_path(state)
-    open(file_path, 'a').close()
-    with open(file_path, 'r+') as file:
-        return re.search(
-            '^{0}'.format(re.escape(stored_username)), file.read(), flags=re.M)
-
-
-def add_new_user_instance(username):
-    file_path = instance_path(state)
-    if not check_user_exists(username):    
-        stored_username = custom_hash(username)
-        with open(file_path, "a+") as instance_file:
-            redacted_list = [username]
-            instance_file = RedactedFile(instance_file, redacted_list)
-            instance_file.write("{0} : {1}\n".format(stored_username,
-                                                     os.getpid()))
-        return True
-    return False
-
-
-def remove_user_instance(username):
-    file_path = instance_path(state)
-    file = ""
-
-    if not os.path.isfile(file_path):
-        return
-
-    stored_username = custom_hash(username)
-    with open(file_path) as oldfile:
-        for line in oldfile:
-            if stored_username not in line:
-                file += line
-    with open(file_path, 'w+') as newfile:
-        redacted_list = [username]
-        newfile = RedactedFile(newfile, redacted_list)
-        newfile.writelines(file)
 
 
 def exit_handler():

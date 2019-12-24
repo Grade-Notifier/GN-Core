@@ -18,8 +18,11 @@ import time
 import os
 import requests
 import getpass
+from cryptography.fernet import Fernet
 import subprocess
 import cunyfirstapi
+import mysql.connector
+import traceback
 from helper import constants
 from lxml import html
 from helper.fileManager import create_dir
@@ -44,42 +47,45 @@ __status__ = "Production"
 dotenv_path = join(constants.abs_repo_path(), '.env')
 
 # Load file from the path.
-load_dotenv(dotenv_path)
+load_dotenv()
 
 # Accessing variables.
-account_pass = os.getenv('ACCOUNT_PASSWORD')
+DB_USERNAME = os.getenv('LOCALHOST_USERNAME')
+DB_PASSWORD = os.getenv('LOCALHOST_PASSWORD')
+key = os.getenv('DB_ENCRYPTION_KEY').encode('utf-8')
 
-def run(username, password, school, phone):
-    log_path = '{0}/{1}{2}'.format(
-        constants.log_path(), username, time.time())
-    create_dir(constants.log_path())
-    if constants.is_local():
-        with open("{0}.txt".format(log_path), "w+") as outfile:
-            subprocess.Popen(["nohup",
-                              "python3",
-                              f"{constants.script_path()}/grade_notifier.py",
-                              f"--username={username}",
-                              f"--password={password}",
-                              f"--school={school}",
-                              f"--phone={phone}"],
-                             stdout=outfile,
-                             stderr=outfile)
-    else:
-        with open("{0}.txt".format(log_path), "w+") as outfile:
-            subprocess.Popen(
-                [
-                    "nohup",
-                    "setsid",
-                    "python3",
-                    f"{constants.script_path()}/grade_notifier.py",
-                    f"--username={username}",
-                    f"--password={password}",
-                    f"--school={school}",
-                    f"--phone={phone}",
-                    "--prod=true"],
-                stdout=outfile,
-                stderr=outfile)
+def add_to_db(username, encrypted_password, school, phone):
+    myconnector = mysql.connector.Connect(user=DB_USERNAME,
+        host='localhost',passwd=DB_PASSWORD)
+    cursor = myconnector.cursor()
+    myconnector.autocommit = True
+    cursor.execute('USE GradeNotifier')
 
+    query_string = (f'''INSERT INTO Users (username, password, school, phoneNumber) VALUES '''
+        f'''(%s, %s, %s, %s);''')
+
+    # query_string = myconnector.converter.escape(query_string)
+    # print(query_string)
+    data = (username, encrypted_password, school, phone)
+    cursor.execute(query_string, data)
+
+
+
+def user_exists(username, school):
+    myconnector = mysql.connector.Connect(user=DB_USERNAME,
+        host='localhost',passwd=DB_PASSWORD)
+    cursor = myconnector.cursor()
+    myconnector.autocommit = True
+    cursor.execute('USE GradeNotifier')
+
+    # test if in DB by checking count of records with that username and school combo
+    query_string = ('''SELECT COUNT(*) FROM Users WHERE '''
+        f'''username = %s AND school = %s''')
+
+    data = (username, school)
+    cursor.execute(query_string, data)
+    rows = cursor.next()[0]
+    return rows > 0
 
 def parse():
     parser = argparse.ArgumentParser(
@@ -104,16 +110,29 @@ def main():
     try:
         username = input(
             "Enter username: ") if not args.username else args.username
-        password = getpass.getpass(
+        encrypted_password = getpass.getpass(
             "Enter password: ") if not args.password else args.password
         number = input(
             "Enter phone number: ") if not args.phone else args.phone
         prod = False if not args.prod else True
 
+
+        if user_exists(username, args.school.upper()):
+            print_to_screen(
+                "Seems that you already have a session running.\n" \
+                + "If you think there is a mistake, contact me @ Ehud.Adler62@qmail.cuny.edu",
+                "error",
+                "Oh No!",
+            )
+            return
+
+        f = Fernet(key)
+        password = f.decrypt(encrypted_password.encode('utf-8')).decode()
+        # print(password)
         api = cunyfirstapi.CUNYFirstAPI(username, password)
         api.login()
         if api.is_logged_in():
-            run(username, password, args.school.upper(), number)
+            add_to_db(username, encrypted_password, args.school.upper(), number)
             print_to_screen(
                 "Check your phone for a text!\n" \
                 + "The service will check for new grades every 5 min and text you when anything changes.\n" \
@@ -123,6 +142,8 @@ def main():
                 "ok",
                 "Hold Tight!",
             )
+
+            api.logout()
         else:
             print_to_screen(
                 "The username/password combination you entered seems to be invalid.\n" \
@@ -131,8 +152,9 @@ def main():
                 "Oh No!",
             )
 
+
     except Exception as e:
-        print(str(e))
+        traceback.print_exc()
 
 
 if __name__ == '__main__':
