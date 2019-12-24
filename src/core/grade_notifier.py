@@ -60,8 +60,9 @@ load_dotenv()
 # Accessing variables.
 account_sid = os.getenv('TWILIO_SID')
 auth_token = os.getenv('TWILIO_AUTH_TOKEN')
-DB_USERNAME = os.getenv('LOCALHOST_USERNAME')
-DB_PASSWORD = os.getenv('LOCALHOST_PASSWORD')
+DB_USERNAME = os.getenv('DB_USERNAME')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_HOST = os.getenv('DB_HOST')
 key = os.getenv('DB_ENCRYPTION_KEY').encode('utf-8')
 
 redacted_print_std = None
@@ -200,7 +201,7 @@ def refresh(api):
 def start_notifier():
 
     myconnector = mysql.connector.Connect(user=DB_USERNAME,
-        host='localhost',passwd=DB_PASSWORD)
+            host=DB_HOST, passwd=DB_PASSWORD)
 
     cursor = myconnector.cursor()
     myconnector.autocommit = True
@@ -214,7 +215,7 @@ def start_notifier():
             column_names = cursor.column_names
 
             query_dict = {k: v for k,v in zip(column_names, row)}
-            pprint(query_dict)
+            # pprint(query_dict)
 
             if query_dict['lastUpdated'].year == 1970:
                 is_welcome = True
@@ -233,7 +234,7 @@ def start_notifier():
             api = CUNYFirstAPI(query_dict['username'], password, query_dict['school'].upper())
             api.login()
 
-            grade_result= refresh(api)
+            grade_result = refresh(api)
 
             frozen_set_grades = frozenset(grade_result.classes)
             grade_hash = str(hash(frozen_set_grades))
@@ -255,19 +256,15 @@ def start_notifier():
 
                 cursor.execute(f'UPDATE Users SET gradeHash = {grade_hash} WHERE id={query_dict["id"]};')
 
-            
             api.logout()
-
-            
 
         except StopIteration:
             pass
+
         except:
             traceback.print_exc()
         time.sleep(1)
        
-
-
 
 def exit_handler():
     send_text(constants.SESSION_ENDED_TEXT, user.get_number())

@@ -18,11 +18,11 @@ import time
 import os
 import requests
 import getpass
+import mysql.connector
+import traceback
 from cryptography.fernet import Fernet
 import subprocess
 import cunyfirstapi
-import mysql.connector
-import traceback
 from helper import constants
 from lxml import html
 from helper.fileManager import create_dir
@@ -50,13 +50,16 @@ dotenv_path = join(constants.abs_repo_path(), '.env')
 load_dotenv()
 
 # Accessing variables.
-DB_USERNAME = os.getenv('LOCALHOST_USERNAME')
-DB_PASSWORD = os.getenv('LOCALHOST_PASSWORD')
+DB_USERNAME = os.getenv('DB_USERNAME')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_HOST = os.getenv('DB_HOST')
+
 key = os.getenv('DB_ENCRYPTION_KEY').encode('utf-8')
 
 def add_to_db(username, encrypted_password, school, phone):
+
     myconnector = mysql.connector.Connect(user=DB_USERNAME,
-        host='localhost',passwd=DB_PASSWORD)
+        host=DB_HOST,passwd=DB_PASSWORD)
     cursor = myconnector.cursor()
     myconnector.autocommit = True
     cursor.execute('USE GradeNotifier')
@@ -73,14 +76,14 @@ def add_to_db(username, encrypted_password, school, phone):
 
 def user_exists(username, school):
     myconnector = mysql.connector.Connect(user=DB_USERNAME,
-        host='localhost',passwd=DB_PASSWORD)
+        host=DB_HOST, passwd=DB_PASSWORD)
     cursor = myconnector.cursor()
     myconnector.autocommit = True
     cursor.execute('USE GradeNotifier')
 
     # test if in DB by checking count of records with that username and school combo
     query_string = ('''SELECT COUNT(*) FROM Users WHERE '''
-        f'''username = %s AND school = %s''')
+            f'''username = %s AND school = %s''')
 
     data = (username, school)
     cursor.execute(query_string, data)
@@ -115,7 +118,6 @@ def main():
         number = input(
             "Enter phone number: ") if not args.phone else args.phone
         prod = False if not args.prod else True
-
 
         if user_exists(username, args.school.upper()):
             print_to_screen(
