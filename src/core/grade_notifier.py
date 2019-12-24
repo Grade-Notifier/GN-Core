@@ -42,6 +42,7 @@ import getpass
 import re
 import argparse
 import os
+import datetime
 import atexit
 import fileinput
 import time
@@ -256,6 +257,12 @@ def start_notifier():
                 cursor.execute(f'UPDATE Users SET gradeHash = {grade_hash} WHERE id={query_dict["id"]};')
 
             api.logout()
+
+            if datetime.datetime.now() > query_dict['dateCreated'] + datetime.timedelta(days=14):
+                # if the session is older than 14 days, remove from DB
+                query = 'DELETE FROM Users WHERE username=%s'
+                data = (username,)
+                cursor.execute(query, data)
 
         except StopIteration:
             pass
