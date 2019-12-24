@@ -8,18 +8,8 @@
     function display(){
         global $arr, $status, $title, $message;
         $cmd = '';
-        if (gethostname() == "venus" || gethostname() == "mars") {
-            require_once 'vendor/autoload.php';
-            $dotenv = Dotenv\Dotenv::create(__DIR__);
-            $dotenv->load();
-            $account_pass = getenv('ACCOUNT_PASSWORD');
-            $mars_user = getenv('MARS_USERNAME');
-            $cmd = 'echo "'.$account_pass.'" | su -c "python3 /home/fa18/313/'.$mars_user.'/public_html/grade-notifier/Grade-Notifier/src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"].' --prod=true" - '.$mars_user;
-
-        } else {
-            echo nl2br("********************\r\nRunning Local....\r\n********************\r\n");
-            $cmd = 'python3 src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"];
-        }
+       
+        $cmd = escapeshellcmd('python3 src/core/initializegn.py --username='.$_POST["username"].' --password='.$_POST["password"].' --school='.$_POST["school"].' --phone='.$_POST["phone"]);
 
         $message = exec($cmd, $arr);
 
@@ -96,6 +86,8 @@
 <meta name="msapplication-TileColor" content="#ffffff">
 <meta name="msapplication-config" content="/src/site/site-assets/icons/browserconfig.xml">
 <meta name="theme-color" content="#ffffff">
+<script src="src/helper/security/forge/dist/forge.js"></script>
+
 </head>
 <body>
 <div class="wrapper">
@@ -127,8 +119,29 @@ Get a text when you<br>get your grades!
 <?php
     if ($landing):
     ?>
+
+<script type="text/javascript">
+    function encryptPassword(){
+
+    let bytes = document.userform.password.value;
+    let pkeyBytes = "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyD0L92P1+ok+6p5gwxtJ\n08e9J/UaBdtgCHp7d/N8hbiTp2WyDAETOQhDhaZC5hBWxS5w7EMsvSfOirv4rDkz\nHhnXlI45AWF1ZOVMvf/jC+1adp4xmxykqg7YeV0mWumz2Y3C/pxPnIhpxPBmo/fk\nDQGpTpNCGabrL474De0810QuXPg8HqhfDN9Rb6ZoOrKZeYlxn3yUKRu0DY2uIhg+\nUSDW4N/RiqZxvfX9T6TY1hmKWcZggz2MfMxFseOeWm3npo86pVPMuQaXnGbsRmaQ\nAbdLdvqd7lMsTrST+dDDCSOzuWvyxkYPKWw0o5jnpJ7lwZr2VidfLM2t5z95F8+2\nQQIDAQAB\n-----END PUBLIC KEY-----";
+    let publicKey = forge.pki.publicKeyFromPem(pkeyBytes);
+
+
+    var encrypted = publicKey.encrypt(bytes, 'RSA-OAEP', {
+        md: forge.md.sha256.create(),
+        mgf1: {
+          md: forge.md.sha1.create()
+        }
+    });
+
+    document.userform.password.value = encrypted;
+
+
+}
+</script>
 <div class="callout__divider"></div>
-<form action=<?php echo $_SERVER['PHP_SELF']; ?> method="POST">
+<form name="userform" action=<?php echo $_SERVER['PHP_SELF']; ?> method="POST" onSubmit="encryptPassword()">
 <input class="input" type="text" name="username" placeholder="Username" required><span class="username-posttext">@login.cuny.edu</span>
 <br>
 <input class="input input--full-width" type="password" name="password" placeholder="Password" required>
