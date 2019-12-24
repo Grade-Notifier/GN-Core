@@ -231,49 +231,48 @@ def start_notifier():
                                    WHERE lastUpdated < NOW() - INTERVAL 30 MINUTE \
                                    ORDER BY lastUpdated DESC LIMIT 1'''
         ) # get top row from 
+        for row in cursor:
+            try: 
+                column_names = cursor.column_names
 
-        try: 
-            row = cursor.next()
-            column_names = cursor.column_names
+                query_dict = {k: v for k,v in zip(column_names, row)}
 
-            query_dict = {k: v for k,v in zip(column_names, row)}
+                phoneNumber         = query_dict['phoneNumber']
+                last_updated        = query_dict['lastUpdated']
+                username            = query_dict['username']
+                school              = query_dict['school']
+                grade_hash          = query_dict['gradeHash']
+                encrypted_password  = query_dict['password']
+                date_created        = query_dict['dateCreated']
+                __id                = query_dict['id']
 
-            phoneNumber         = query_dict['phoneNumber']
-            last_updated        = query_dict['lastUpdated']
-            username            = query_dict['username']
-            school              = query_dict['school']
-            grade_hash          = query_dict['gradeHash']
-            encrypted_password  = query_dict['password']
-            date_created        = query_dict['dateCreated']
-            __id                = query_dict['id']
+                is_welcome = last_updated.year == 1970
 
-            is_welcome = last_updated.year == 1970
+                cursor.execute(f'UPDATE Users SET lastUpdated = NOW() WHERE id={__id};')
+                
+                fern = Fernet(os.getenv('DB_ENCRYPTION_KEY').encode('utf-8'))
+                decrypted_password = fern.decrypt(
+                    encrypted_password.encode('utf-8')
+                ).decode()
 
-            cursor.execute(f'UPDATE Users SET lastUpdated = NOW() WHERE id={__id};')
-            
-            fern = Fernet(os.getenv('DB_ENCRYPTION_KEY').encode('utf-8'))
-            decrypted_password = fern.decrypt(
-                encrypted_password.encode('utf-8')
-            ).decode()
+                api = CUNYFirstAPI(username, decrypted_password, school.upper())
+                api.login()
 
-            api = CUNYFirstAPI(username, decrypted_password, school.upper())
-            api.login()
+                grade_result = refresh(api)
+                grade_hash = str(hash(frozenset(grade_result.classes)))
 
-            grade_result = refresh(api)
-            grade_hash = str(hash(frozenset(grade_result.classes)))
+                if grade_hash != query_dict['gradeHash']:
+                    message = create_text_message(grade_result, is_welcome)
+                    send_text(message, phoneNumber)
+                    cursor.execute(f'UPDATE Users SET gradeHash = {grade_hash} WHERE id={__id};')
 
-            if grade_hash != query_dict['gradeHash']:
-                message = create_text_message(grade_result, is_welcome)
-                send_text(message, phoneNumber)
-                cursor.execute(f'UPDATE Users SET gradeHash = {grade_hash} WHERE id={__id};')
+                api.logout()
+                remove_user_if_necessary(cursor,username, date_created)
+            except StopIteration:
+                pass
 
-            api.logout()
-            remove_user_if_necessary(cursor,username, date_created)
-        except StopIteration:
-            pass
-
-        except:
-            traceback.print_exc()
+            except:
+                traceback.print_exc()
         time.sleep(constants.WAIT_INTERVAL)
 
 '''
