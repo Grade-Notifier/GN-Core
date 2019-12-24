@@ -25,7 +25,7 @@ def print_to_screen(text, status=None, title=None):
     if title:
         pstr += f'--title="{title}" '
 
-    pstr += f'\n{text}"\n'
+    pstr += f'\n{text}\n'
     pstr += "[END]"
     print(pstr)
 
