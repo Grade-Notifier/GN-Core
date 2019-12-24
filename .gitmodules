@@ -1,0 +1,6 @@
+[submodule "src/helper/src/helper/forge"]
+	path = src/helper/src/helper/forge
+	url = https://github.com/digitalbazaar/forge.git
+[submodule "src/helper/security/forge"]
+	path = src/helper/security/forge
+	url = https://github.com/digitalbazaar/forge.git
