@@ -145,24 +145,39 @@ def create_text_message(change_log, is_welcome=False):
 def find_changes(old, new):
 
     new_gpa = new.gpa
-    changelog = []
 
-    for i in range(0, len(new.classes)):
-        class2 = new.classes[i]
-        if i >= len(old.classes):
-            changelog.append({
-                'name': class2.name,
-                'grade': class2.grade,
-                'gradepts': class2.gradepts
-            })
-        else:
-            class1 = old.classes[i]
-            if class1.name == class2.name and class1 != class2:
-                changelog.append({
-                    'name': class2.name,
-                    'grade': class2.grade,
-                    'gradepts': class2.gradepts
-                })
+    changelog = []
+    previous = set()
+    [previous.add(old_class) for old_class in old.classes]
+    [changelog.append(new_class) for new_class in new.classes if new_class not in previous]
+
+    # previous = {}
+    # for item in old.classes:
+    #     previous.add(item)
+    # for item in new.classes:
+    #     if item not in previous:
+    #         changelog.append({
+    #             'name': class2.name,
+    #             'grade': class2.grade,
+    #             'gradepts': class2.gradepts
+    #         })
+            
+    # for i in range(0, len(new.classes)):
+    #     class2 = new.classes[i]
+    #     if i >= len(old.classes):
+    #         changelog.append({
+    #             'name': class2.name,
+    #             'grade': class2.grade,
+    #             'gradepts': class2.gradepts
+    #         })
+    #     else:
+    #         class1 = old.classes[i]
+    #         if class1.name == class2.name and class1 != class2:
+    #             changelog.append({
+    #                 'name': class2.name,
+    #                 'grade': class2.grade,
+    #                 'gradepts': class2.gradepts
+    #             })
 
     return None if len(changelog) == 0 else Changelog(
         changelog, new_gpa)  # always add gpa to the list
@@ -287,7 +302,7 @@ def start_notifier(is_welcome=False):
         except ValueError:
             print('[DEBUG] (ValueError, start_notifier) Trying again...')
             # send message asking for more info to help us?
-            pass
+            continue
         changelog = find_changes(old_result, result) \
             if result != None \
             else None
