@@ -187,8 +187,10 @@ class TestPrintToScreenMethod(unittest.TestCase):
         string_to_print = "This text should be displayed!"
         print_to_screen(string_to_print)
         sys.stdout = old_stdout # Put the old stream back in place
-        expected = "RENDER::" + string_to_print + "\n"
+        expected = "RENDER:: \n" + string_to_print +"\n[END]\n"
         actual = buffer.getvalue()
+        print(expected)
+        print(actual)
         self.assertEqual(expected, actual)
 
 
@@ -239,7 +241,7 @@ class TestAPIIntegration(unittest.TestCase):
             global username
             global password
             api2 = cunyfirstapi.CUNYFirstAPI(username, password)
-            session = api.get_current_session()
+            session = api2.get_current_session()
             
             self.assertFalse(api2.is_logged_in(session))
             self.assertFalse(api2.is_logged_in())
@@ -247,8 +249,8 @@ class TestAPIIntegration(unittest.TestCase):
 
             # valid credentials were passed in
             # user should be logged in
-            self.assertTrue(api2.is_logged_in(session))
             self.assertTrue(api2.is_logged_in())
+            self.assertTrue(api2.is_logged_in(session))
             
 class TestCustomHashMethod(unittest.TestCase):
     def test_custom_hash_case_insensitive(self):
