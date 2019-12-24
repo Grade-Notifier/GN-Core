@@ -205,7 +205,7 @@ def create_connection():
             host=DB_HOST,
             passwd=DB_PASSWORD
         )
-    except Error as e:
+    except Exception as e:
         print("Error while connecting to MySQL", e)
 
 def get_cursor():
