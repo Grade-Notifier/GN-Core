@@ -233,7 +233,7 @@ def start_notifier():
 
         cursor.execute('''SELECT * FROM Users \
                                    WHERE lastUpdated < NOW() - INTERVAL 30 MINUTE \
-                                   ORDER BY lastUpdated DESC LIMIT 1'''
+                                   ORDER BY lastUpdated LIMIT 1'''
         ) # get top row from 
         for row in cursor:
             try: 

@@ -55,7 +55,7 @@ DB_USERNAME = os.getenv('DB_USERNAME')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST = os.getenv('DB_HOST')
 
-PRIVATE_RSA_KEY = os.getenv('PRIVATE_RSA_KEY').replace(r'\n', '\n')
+PUBLIC_RSA_KEY = os.getenv('PUBLIC_RSA_KEY').replace(r'\n', '\n')
 
 def add_to_db(username, encrypted_password, school, phone):
 
@@ -114,7 +114,7 @@ def main():
     try:
         username = input(
             "Enter username: ") if not args.username else args.username
-        encrypted_password = getpass.getpass(
+        password = getpass.getpass(
             "Enter password: ") if not args.password else args.password
         number = input(
             "Enter phone number: ") if not args.phone else args.phone
@@ -130,12 +130,10 @@ def main():
             return
 
         # print(PRIVATE_RSA_KEY)
-        private_key_object = RSA.importKey(PRIVATE_RSA_KEY)
-        cipher = PKCS1_OAEP.new(private_key_object)
+        public_key_object = RSA.importKey(PUBLIC_RSA_KEY)
+        cipher = PKCS1_OAEP.new(public_key_object)
 
-        byte_string = bytes.fromhex(encrypted_password)
-
-        password = cipher.decrypt(byte_string).decode()
+        encrypted_password = cipher.encrypt(password.encode()).hex()
         # print(password)
         api = cunyfirstapi.CUNYFirstAPI(username, password)
         api.login()

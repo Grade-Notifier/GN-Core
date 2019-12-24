@@ -128,7 +128,8 @@ Get a text when you<br>get your grades!
     if ($landing):
     ?>
 <div class="callout__divider"></div>
-<form action=<?php echo $_SERVER['PHP_SELF']; ?> method="POST">
+
+<form name="userForm" action=<?php echo $_SERVER['PHP_SELF']; ?> method="POST">
 <input class="input" type="text" name="username" placeholder="Username" required><span class="username-posttext">@login.cuny.edu</span>
 <br>
 <input class="input input--full-width" type="password" name="password" placeholder="Password" required>
