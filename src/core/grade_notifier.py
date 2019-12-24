@@ -211,7 +211,7 @@ def start_notifier():
     cursor = create_connection()
     while True:
         global WAIT_INTERVAL
-        
+
         cursor.execute('''SELECT * FROM Users \
                                    WHERE lastUpdated < NOW() - INTERVAL 30 MINUTE \
                                    ORDER BY lastUpdated DESC LIMIT 1'''
@@ -253,7 +253,7 @@ def start_notifier():
                 cursor.execute(f'UPDATE Users SET gradeHash = {grade_hash} WHERE id={__id};')
 
             api.logout()
-            remove_user_if_necessary(cursor, date_created)
+            remove_user_if_necessary(cursor,username, date_created)
         except StopIteration:
             pass
 
@@ -265,13 +265,14 @@ def start_notifier():
 '''
 Check to see if the use has not received any new grades in {DAYS_TILL_REMOVED} days. If so, remove them.
 '''
-def remove_user_if_necessary(cursor, date_created):
+def remove_user_if_necessary(cursor,username, date_created):
     if datetime.datetime.now() > date_created + datetime.timedelta(days=constants.DAYS_TILL_REMOVED):
         query = 'DELETE FROM Users WHERE username=%s'
         data = (username,)
         try:
             cursor.execute(query, data)
         except mysql.connector.IntegrityError as err:
+            print(err)
             traceback.print_exc()
 
 def parse():
