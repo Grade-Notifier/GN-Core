@@ -116,7 +116,8 @@ CUNY_FIRST_LOGOUT_3_URL = 'https://ssologin.cuny.edu/oamsso-bin/logout.pl?end_ur
 LOG_PATH = "/home/fa18/313/adeh6562/public_html/grade-notifier/logs"
 LOG_PATH_DEV = "./logs"
 
-
+WAIT_INTERVAL = 1
+DAYS_TILL_REMOVED = 14
 
 def abs_repo_path():
     return REPO_ABS_DIRECTORY_PATH
