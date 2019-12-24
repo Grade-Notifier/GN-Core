@@ -65,6 +65,7 @@ DB_USERNAME = os.getenv('DB_USERNAME')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST     = os.getenv('DB_HOST')
 
+myconnector = None
 redacted_print_std = None
 redacted_print_err = None
 client = None
@@ -197,18 +198,32 @@ def refresh(api):
 
 
 def create_connection():
-    myconnector = mysql.connector.Connect(
-        user=DB_USERNAME,
-        host=DB_HOST,
-        passwd=DB_PASSWORD
-    )
-    cursor = myconnector.cursor()
-    myconnector.autocommit = True
-    cursor.execute('USE GradeNotifier')
-    return cursor
+    global myconnector
+    try:
+        myconnector = mysql.connector.Connect(
+            user=DB_USERNAME,
+            host=DB_HOST,
+            passwd=DB_PASSWORD
+        )
+    except Error as e:
+        print("Error while connecting to MySQL", e)
+
+def get_cursor():
+    if myconnector.is_connected():
+        cursor = myconnector.cursor()
+        myconnector.autocommit = True
+        cursor.execute('USE GradeNotifier')
+        return cursor
+    return None
 
 def start_notifier():
-    cursor = create_connection()
+
+    create_connection()
+    cursor = get_cursor()
+
+    if cursor == None:
+        return
+
     while True:
         global WAIT_INTERVAL
 
@@ -260,12 +275,11 @@ def start_notifier():
         except:
             traceback.print_exc()
         time.sleep(constants.WAIT_INTERVAL)
-       
 
 '''
 Check to see if the use has not received any new grades in {DAYS_TILL_REMOVED} days. If so, remove them.
 '''
-def remove_user_if_necessary(cursor,username, date_created):
+def remove_user_if_necessary(cursor, username, date_created):
     if datetime.datetime.now() > date_created + datetime.timedelta(days=constants.DAYS_TILL_REMOVED):
         query = 'DELETE FROM Users WHERE username=%s'
         data = (username,)
