@@ -127,13 +127,13 @@ Get a text when you<br>get your grades!
     let pkeyBytes = "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyD0L92P1+ok+6p5gwxtJ\n08e9J/UaBdtgCHp7d/N8hbiTp2WyDAETOQhDhaZC5hBWxS5w7EMsvSfOirv4rDkz\nHhnXlI45AWF1ZOVMvf/jC+1adp4xmxykqg7YeV0mWumz2Y3C/pxPnIhpxPBmo/fk\nDQGpTpNCGabrL474De0810QuXPg8HqhfDN9Rb6ZoOrKZeYlxn3yUKRu0DY2uIhg+\nUSDW4N/RiqZxvfX9T6TY1hmKWcZggz2MfMxFseOeWm3npo86pVPMuQaXnGbsRmaQ\nAbdLdvqd7lMsTrST+dDDCSOzuWvyxkYPKWw0o5jnpJ7lwZr2VidfLM2t5z95F8+2\nQQIDAQAB\n-----END PUBLIC KEY-----";
     let publicKey = forge.pki.publicKeyFromPem(pkeyBytes);
 
-
-    var encrypted = publicKey.encrypt(bytes, 'RSA-OAEP', {
+    let hashes = {
         md: forge.md.sha256.create(),
         mgf1: {
           md: forge.md.sha1.create()
         }
-    });
+    }
+    var encrypted = publicKey.encrypt(bytes, 'RSA-OAEP', hashes);
 
     document.userform.password.value = encrypted;
 
