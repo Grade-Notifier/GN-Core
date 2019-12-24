@@ -23,7 +23,6 @@ from twilio.rest import Client
 from lxml import html
 from os.path import join, dirname
 from dotenv import load_dotenv
-from helper.userdata import User
 from login_flow.loginState import LoginState
 from helper.message import Message
 from helper.gpa import GPA
@@ -59,17 +58,17 @@ load_dotenv()
 
 # Accessing variables.
 account_sid = os.getenv('TWILIO_SID')
-auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+auth_token  = os.getenv('TWILIO_AUTH_TOKEN')
+
+# Database 
 DB_USERNAME = os.getenv('DB_USERNAME')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
-DB_HOST = os.getenv('DB_HOST')
-key = os.getenv('DB_ENCRYPTION_KEY').encode('utf-8')
+DB_HOST     = os.getenv('DB_HOST')
 
 redacted_print_std = None
 redacted_print_err = None
-user = None
 client = None
-state = None
+state  = None
 
 '''
     Sends a text message via Twilio
@@ -158,8 +157,6 @@ def welcome_message():
         .newline()
     return new_message
 
-
-
 def parse_grades_to_class(raw_grades):
     results = []
     for grade in raw_grades:
@@ -172,11 +169,11 @@ def parse_grades_to_class(raw_grades):
             grade["gradepts"],
         )
         results.append(new_class)
-
     return results
 
 def refresh(api):
     actObj = api.move_to(Locations.student_grades)
+
     # action.grades returns a dict of
     # results: [grades], term_gpa: term_gpa (float), 
     # cumulative_gpa: cumulative_gpa (float)
@@ -198,113 +195,99 @@ def refresh(api):
         # cunyfirstapi just try and refresh
         return refresh(api)
 
-def start_notifier():
 
-    myconnector = mysql.connector.Connect(user=DB_USERNAME,
-            host=DB_HOST, passwd=DB_PASSWORD)
-
+def create_connection():
+    myconnector = mysql.connector.Connect(
+        user=DB_USERNAME,
+        host=DB_HOST,
+        passwd=DB_PASSWORD
+    )
     cursor = myconnector.cursor()
     myconnector.autocommit = True
     cursor.execute('USE GradeNotifier')
+    return cursor
+
+def start_notifier():
+    cursor = create_connection()
     while True:
-        global key
-        cursor.execute('''SELECT * FROM Users WHERE lastUpdated < NOW() - INTERVAL 30 MINUTE ORDER BY lastUpdated DESC LIMIT 1''') # get top row from 
-        # cursor.execute('''SELECT * FROM Users LIMIT 1''')
+        global WAIT_INTERVAL
+        
+        cursor.execute('''SELECT * FROM Users \
+                                   WHERE lastUpdated < NOW() - INTERVAL 30 MINUTE \
+                                   ORDER BY lastUpdated DESC LIMIT 1'''
+        ) # get top row from 
+
         try: 
             row = cursor.next()
             column_names = cursor.column_names
 
             query_dict = {k: v for k,v in zip(column_names, row)}
-            # pprint(query_dict)
 
-            if query_dict['lastUpdated'].year == 1970:
-                is_welcome = True
-            else:
-                is_welcome = False
+            phoneNumber         = query_dict['phoneNumber']
+            last_updated        = query_dict['lastUpdated']
+            username            = query_dict['username']
+            school              = query_dict['school']
+            grade_hash          = query_dict['gradeHash']
+            encrypted_password  = query_dict['password']
+            date_created        = query_dict['dateCreated']
+            __id                = query_dict['id']
 
-            cursor.execute(f'UPDATE Users SET lastUpdated = NOW() WHERE id={query_dict["id"]};')
+            is_welcome = last_updated.year == 1970
 
-            encrypted_password = query_dict['password']
-
+            cursor.execute(f'UPDATE Users SET lastUpdated = NOW() WHERE id={__id};')
             
+            fern = Fernet(os.getenv('DB_ENCRYPTION_KEY').encode('utf-8'))
+            decrypted_password = fern.decrypt(
+                encrypted_password.encode('utf-8')
+            ).decode()
 
-            f = Fernet(key)
-            password = f.decrypt(encrypted_password.encode('utf-8')).decode()
-
-            api = CUNYFirstAPI(query_dict['username'], password, query_dict['school'].upper())
+            api = CUNYFirstAPI(username, decrypted_password, school.upper())
             api.login()
 
             grade_result = refresh(api)
+            grade_hash = str(hash(frozenset(grade_result.classes)))
 
-            frozen_set_grades = frozenset(grade_result.classes)
-            grade_hash = str(hash(frozen_set_grades))
-
-            '''
-            IMPORTANT NOTE!!!
-            Hash seed value changes each time you run so you need 
-            to set the hash seed to be the same each time
-            so when running this script, run it as
-            PYTHONHASHSEED=0 python3 ...
-            '''
-
-            print(grade_hash)
             if grade_hash != query_dict['gradeHash']:
-                # we have a difference
-                print('GRADE DIFFERENCE, SENDING MESSAGE!')
                 message = create_text_message(grade_result, is_welcome)
-                send_text(message, query_dict['phoneNumber'])
-
-                cursor.execute(f'UPDATE Users SET gradeHash = {grade_hash} WHERE id={query_dict["id"]};')
+                send_text(message, phoneNumber)
+                cursor.execute(f'UPDATE Users SET gradeHash = {grade_hash} WHERE id={__id};')
 
             api.logout()
-
-            if datetime.datetime.now() > query_dict['dateCreated'] + datetime.timedelta(days=14):
-                # if the session is older than 14 days, remove from DB
-                query = 'DELETE FROM Users WHERE username=%s'
-                data = (username,)
-                cursor.execute(query, data)
-
+            remove_user_if_necessary(cursor, date_created)
         except StopIteration:
             pass
 
         except:
             traceback.print_exc()
-        time.sleep(1)
+        time.sleep(constants.WAIT_INTERVAL)
        
 
-def exit_handler():
-    send_text(constants.SESSION_ENDED_TEXT, user.get_number())
-    remove_user_instance(user.get_username())
-
-
-def already_in_session_message():
-    return constants.ALREADY_IN_SESSION
-
+'''
+Check to see if the use has not received any new grades in {DAYS_TILL_REMOVED} days. If so, remove them.
+'''
+def remove_user_if_necessary(cursor, date_created):
+    if datetime.datetime.now() > date_created + datetime.timedelta(days=constants.DAYS_TILL_REMOVED):
+        query = 'DELETE FROM Users WHERE username=%s'
+        data = (username,)
+        try:
+            cursor.execute(query, data)
+        except mysql.connector.IntegrityError as err:
+            traceback.print_exc()
 
 def parse():
     parser = argparse.ArgumentParser(
         description='Specify commands for CUNY Grade Notifier Retriever v1.0')
-
-    # Production
-    parser.add_argument('--prod')
-
-    # Development
-    parser.add_argument('--enable_phone')
-
+   
+    parser.add_argument('--prod')         # Production
+    parser.add_argument('--enable_phone') # Development
     return parser.parse_args()
-
 
 def initialize_twilio():
     global client
     client = Client(account_sid, auth_token)
 
-
 def main():
-    global user
     global state
-    global api
-    global redacted_print_std
-    global redacted_print_err
 
     args = parse()
     state = LoginState.determine_state(args)
@@ -314,12 +297,10 @@ def main():
         # or when specifically asked
         if state == LoginState.PROD or args.enable_phone:
             initialize_twilio()
-        
-        start_notifier()
 
+        start_notifier()
     except: 
         traceback.print_exc()
-
 
 if __name__ == '__main__':
     main()
