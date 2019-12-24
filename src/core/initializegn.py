@@ -20,9 +20,10 @@ import os
 import requests
 import getpass
 import traceback
-from cryptography.fernet import Fernet
 import subprocess
 import cunyfirstapi
+from Crypto.Cipher import PKCS1_OAEP
+from Crypto.PublicKey import RSA
 from helper import constants
 from lxml import html
 from helper.fileManager import create_dir
@@ -54,7 +55,7 @@ DB_USERNAME = os.getenv('DB_USERNAME')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST = os.getenv('DB_HOST')
 
-key = os.getenv('DB_ENCRYPTION_KEY').encode('utf-8')
+PRIVATE_RSA_KEY = os.getenv('PRIVATE_RSA_KEY').replace(r'\n', '\n')
 
 def add_to_db(username, encrypted_password, school, phone):
 
@@ -128,8 +129,13 @@ def main():
             )
             return
 
-        f = Fernet(key)
-        password = f.decrypt(encrypted_password.encode('utf-8')).decode()
+        # print(PRIVATE_RSA_KEY)
+        private_key_object = RSA.importKey(PRIVATE_RSA_KEY)
+        cipher = PKCS1_OAEP.new(private_key_object)
+
+        byte_string = bytes.fromhex(encrypted_password)
+
+        password = cipher.decrypt(byte_string).decode()
         # print(password)
         api = cunyfirstapi.CUNYFirstAPI(username, password)
         api.login()

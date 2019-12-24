@@ -14,7 +14,8 @@ License: MIT
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 # Remote
-from cryptography.fernet import Fernet
+from Crypto.Cipher import PKCS1_OAEP
+from Crypto.PublicKey import RSA
 from cunyfirstapi import Locations
 from cunyfirstapi import CUNYFirstAPI
 from bs4 import BeautifulSoup
@@ -64,6 +65,9 @@ auth_token  = os.getenv('TWILIO_AUTH_TOKEN')
 DB_USERNAME = os.getenv('DB_USERNAME')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST     = os.getenv('DB_HOST')
+
+# Encryption
+PRIVATE_RSA_KEY = os.getenv('PRIVATE_RSA_KEY').replace(r'\n', '\n')
 
 myconnector = None
 redacted_print_std = None
@@ -250,10 +254,12 @@ def start_notifier():
 
                 cursor.execute(f'UPDATE Users SET lastUpdated = NOW() WHERE id={__id};')
                 
-                fern = Fernet(os.getenv('DB_ENCRYPTION_KEY').encode('utf-8'))
-                decrypted_password = fern.decrypt(
-                    encrypted_password.encode('utf-8')
-                ).decode()
+                private_key_object = RSA.importKey(PRIVATE_RSA_KEY)
+                cipher = PKCS1_OAEP.new(private_key_object)
+
+                byte_string = bytes.fromhex(encrypted_password)
+
+                decrypted_password = cipher.decrypt(byte_string).decode()
 
                 api = CUNYFirstAPI(username, decrypted_password, school.upper())
                 api.login()
@@ -267,7 +273,7 @@ def start_notifier():
                     cursor.execute(f'UPDATE Users SET gradeHash = {grade_hash} WHERE id={__id};')
 
                 api.logout()
-                remove_user_if_necessary(cursor,username, date_created)
+                remove_user_if_necessary(cursor, username, date_created)
             except StopIteration:
                 pass
 
