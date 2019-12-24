@@ -4,9 +4,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ACCOUNT_PASSWORD = os.getenv('LOCALHOST_PASSWORD')
-ACCOUNT_USERNAME = os.getenv('LOCALHOST_USERNAME')
-mydb = mysql.connector.connect(user=ACCOUNT_USERNAME, host='localhost', passwd=ACCOUNT_PASSWORD)
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_USERNAME = os.getenv('DB_USERNAME')
+DB_HOST = os.getenv('DB_HOST')
+mydb = mysql.connector.connect(user=DB_USERNAME, host=DB_HOST, passwd=DB_PASSWORD)
 mycursor = mydb.cursor()
 mycursor.execute('CREATE DATABASE IF NOT EXISTS GradeNotifier')
 mycursor.execute('USE GradeNotifier')
