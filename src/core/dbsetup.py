@@ -6,7 +6,7 @@ load_dotenv()
 
 ACCOUNT_PASSWORD = os.getenv('LOCALHOST_PASSWORD')
 ACCOUNT_USERNAME = os.getenv('LOCALHOST_USERNAME')
-mydb = mysql.connector.connect(user=ACCOUNT_USERNAME,host='localhost', passwd=ACCOUNT_PASSWORD)
+mydb = mysql.connector.connect(user=ACCOUNT_USERNAME, host='localhost', passwd=ACCOUNT_PASSWORD)
 mycursor = mydb.cursor()
 mycursor.execute('CREATE DATABASE IF NOT EXISTS GradeNotifier')
 mycursor.execute('USE GradeNotifier')

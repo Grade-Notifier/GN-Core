@@ -13,12 +13,12 @@ License: MIT
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
+import mysql.connector
 import argparse
 import time
 import os
 import requests
 import getpass
-import mysql.connector
 import traceback
 from cryptography.fernet import Fernet
 import subprocess
@@ -59,13 +59,13 @@ key = os.getenv('DB_ENCRYPTION_KEY').encode('utf-8')
 def add_to_db(username, encrypted_password, school, phone):
 
     myconnector = mysql.connector.Connect(user=DB_USERNAME,
-        host=DB_HOST,passwd=DB_PASSWORD)
+            host=DB_HOST, passwd=DB_PASSWORD)
     cursor = myconnector.cursor()
     myconnector.autocommit = True
     cursor.execute('USE GradeNotifier')
 
     query_string = (f'''INSERT INTO Users (username, password, school, phoneNumber) VALUES '''
-        f'''(%s, %s, %s, %s);''')
+            f'''(%s, %s, %s, %s);''')
 
     # query_string = myconnector.converter.escape(query_string)
     # print(query_string)
@@ -76,7 +76,7 @@ def add_to_db(username, encrypted_password, school, phone):
 
 def user_exists(username, school):
     myconnector = mysql.connector.Connect(user=DB_USERNAME,
-        host=DB_HOST, passwd=DB_PASSWORD)
+            host=DB_HOST, passwd=DB_PASSWORD)
     cursor = myconnector.cursor()
     myconnector.autocommit = True
     cursor.execute('USE GradeNotifier')

@@ -14,14 +14,13 @@ License: MIT
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 # Remote
+from cryptography.fernet import Fernet
 from cunyfirstapi import Locations
 from cunyfirstapi import CUNYFirstAPI
 from bs4 import BeautifulSoup
 from lxml import etree
 from twilio.rest import Client
 from lxml import html
-from pprint import pprint
-from cryptography.fernet import Fernet
 from os.path import join, dirname
 from dotenv import load_dotenv
 from helper.userdata import User
