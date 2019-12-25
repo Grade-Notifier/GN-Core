@@ -6,3 +6,5 @@ pylint
 python-dotenv
 colorconsole
 cunyfirstapi
+mysql
+mysql-connector

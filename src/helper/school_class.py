@@ -32,3 +32,6 @@ class Class():
     def __eq__(self, other):
         return self.grade == other.grade \
             and self.gradepts == other.gradepts
+
+    def __hash__(self):
+        return hash(f'{self.name}{self.description}{self.units}{self.grading}{self.grade}{self.gradepts}')
