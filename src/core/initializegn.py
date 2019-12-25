@@ -119,9 +119,6 @@ def main():
             "Enter phone number: ") if not args.phone else args.phone
         prod = False if not args.prod else True
 
-        password = decrypt(encrypted_password, 'test_keys/private.pem')
-        # password = f.decrypt(encrypted_password.encode('utf-8')).decode()
-        print(password)
 
         if user_exists(username, args.school.upper()):
             print_to_screen(
@@ -132,6 +129,9 @@ def main():
             )
             return
 
+        password = decrypt(encrypted_password, 'test_keys/private.pem')
+        # password = f.decrypt(encrypted_password.encode('utf-8')).decode()
+        # print(password)
         
         api = cunyfirstapi.CUNYFirstAPI(username, password)
         api.login()
