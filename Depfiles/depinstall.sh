@@ -21,7 +21,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]] || [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 # CSS/Node
-if [[ "$HOSTNAME" == "venus" ]] || [[ "$HOSTNAME" == "mars" ]] ; then
+if [[ "$HOSTNAME" == "venus" ]] || [[ "$HOSTNAME" == "mars" ]] || [["$HOSTNAME" == "ubuntu-s-4vcpu-8gb-nyc1-01"]] ; then
     npm install;
     npm install gulp-cli -g;
     npm install gulp -D;
