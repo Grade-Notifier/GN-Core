@@ -1,8 +1,6 @@
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.Signature import PKCS1_PSS
-from Crypto.Hash import SHA
-from Crypto import Random
 import Crypto
 import base64
 KEY_SIZE = 2048
@@ -26,8 +24,8 @@ def encrypt(message):
     ciphertext = cipher.encrypt(message)
     return ciphertext
 
-def decrypt(ciphertext_base64, path='../../test_keys/private.pem'):
-    key = RSA.importKey(open(path).read())
+def decrypt(ciphertext_base64, private_key):
+    key = RSA.importKey(private_key)
     cipher = PKCS1_OAEP.new(key=key, hashAlgo=Crypto.Hash.SHA256, mgfunc=lambda x,y: Crypto.Signature.PKCS1_PSS.pss.MGF1(x,y, Crypto.Hash.SHA1))
     ciphertext = base64.b64decode(ciphertext_base64)
     message = cipher.decrypt(ciphertext)

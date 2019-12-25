@@ -1,4 +1,5 @@
 <?php
+
 $arr = array();
 $status = '';
 $title = '';
@@ -10,7 +11,7 @@ function display()
     global $arr, $status, $title, $message;
     $cmd = '';
 
-    $cmd = 'python3 src/core/initializegn.py --username=' . escapeshellcmd($_POST["username"]) . ' --password=' . escapeshellcmd($_POST["password"]) . ' --school=' . escapeshellcmd($_POST["school"]) . ' --phone=' . escapeshellcmd($_POST["phone"]);
+    $cmd = 'python3.7 src/core/initializegn.py --username=' . escapeshellcmd($_POST["username"]) . ' --password=' . escapeshellcmd($_POST["password"]) . ' --school=' . escapeshellcmd($_POST["school"]) . ' --phone=' . escapeshellcmd($_POST["phone"]);
 
     $message = exec($cmd, $arr);
 
@@ -102,6 +103,7 @@ if (isset($_POST["submit"])) {
             <h1 class="callout">
                 <?php
                 if ($landing) :
+
                 ?>
                     Get a text when you<br>get your grades!
                 <?php
@@ -126,6 +128,8 @@ if (isset($_POST["submit"])) {
                         PyzPOctAVGW94TV17iwA1vXvaY0/SGQfP3xgr0zgNrplaoDN4SN7PVF5IX+wpzn/\
                         JwIDAQAB\
                         -----END PUBLIC KEY-----';
+                        console.log(publicKeyEncoded);
+
                         let publicKey = forge.pki.publicKeyFromPem(publicKeyEncoded);
                         let ciphertext = publicKey.encrypt(document.userform.password.value, 'RSA-OAEP', {
                             md: forge.md.sha256.create(),

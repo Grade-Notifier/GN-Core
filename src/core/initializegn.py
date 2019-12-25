@@ -17,6 +17,7 @@ import mysql.connector
 import argparse
 import time
 import os
+import re
 import requests
 import getpass
 import traceback
@@ -44,17 +45,14 @@ __maintainer__ = "Ehud Adler & Akiva Sherman"
 __email__ = "self@ehudadler.com"
 __status__ = "Production"
 
-# Create .env file path.
-dotenv_path = join(constants.abs_repo_path(), '.env')
-
-# Load file from the path.
+# Load file.
 load_dotenv()
 
 # Accessing variables.
 DB_USERNAME = os.getenv('DB_USERNAME')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST = os.getenv('DB_HOST')
-
+PRIVATE_RSA_KEY = os.getenv('PRIVATE_RSA_KEY').replace(r'\n', '\n')
 
 def add_to_db(username, encrypted_password, school, phone):
 
@@ -119,6 +117,8 @@ def main():
             "Enter phone number: ") if not args.phone else args.phone
         prod = False if not args.prod else True
 
+        # clean username
+        username = re.sub(r'@login\.cuny\.edu', '', username).lower()
 
         if user_exists(username, args.school.upper()):
             print_to_screen(
@@ -129,8 +129,7 @@ def main():
             )
             return
 
-        password = decrypt(encrypted_password, 'test_keys/private.pem')
-        # password = f.decrypt(encrypted_password.encode('utf-8')).decode()
+        password = decrypt(encrypted_password, PRIVATE_RSA_KEY)
         # print(password)
         
         api = cunyfirstapi.CUNYFirstAPI(username, password)

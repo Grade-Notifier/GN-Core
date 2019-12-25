@@ -65,6 +65,9 @@ DB_USERNAME = os.getenv('DB_USERNAME')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST     = os.getenv('DB_HOST')
 
+# Encryption
+PRIVATE_RSA_KEY = os.getenv('PRIVATE_RSA_KEY').replace(r'\n', '\n')
+
 myconnector = None
 redacted_print_std = None
 redacted_print_err = None
@@ -251,7 +254,7 @@ def start_notifier():
 
             cursor.execute(f'UPDATE Users SET lastUpdated = NOW() WHERE id={__id};')
             
-            decrypted_password = decrypt(encrypted_password, 'test_keys/private.pem')
+            decrypted_password = decrypt(encrypted_password, PRIVATE_RSA_KEY)
 
             api = CUNYFirstAPI(username, decrypted_password, school.upper())
             api.login()
