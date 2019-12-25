@@ -25,5 +25,8 @@
   "bugs": {
     "url": "https://github.com/Grade-Notifier/GN-Core/issues"
   },
-  "homepage": "https://github.com/Grade-Notifier/GN-Core#readme"
+  "homepage": "https://github.com/Grade-Notifier/GN-Core#readme",
+  "dependencies": {
+    "jsrsasign": "^8.0.12"
+  }
 }
