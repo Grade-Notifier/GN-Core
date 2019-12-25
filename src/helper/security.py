@@ -26,8 +26,8 @@ def encrypt(message):
     ciphertext = cipher.encrypt(message)
     return ciphertext
 
-def decrypt(ciphertext_base64):
-    key = RSA.importKey(open('../../test_keys/private.pem').read())
+def decrypt(ciphertext_base64, path='../../test_keys/private.pem'):
+    key = RSA.importKey(open(path).read())
     cipher = PKCS1_OAEP.new(key=key, hashAlgo=Crypto.Hash.SHA256, mgfunc=lambda x,y: Crypto.Signature.PKCS1_PSS.pss.MGF1(x,y, Crypto.Hash.SHA1))
     ciphertext = base64.b64decode(ciphertext_base64)
     message = cipher.decrypt(ciphertext)

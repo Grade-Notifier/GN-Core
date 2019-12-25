@@ -35,7 +35,7 @@ from helper.changelog import Changelog
 from helper.refresh_result import RefreshResult
 from helper.school_class import Class
 from helper.redacted_stdout import RedactedPrint, STDOutOptions, RedactedFile
-
+from helper.security import decrypt
 import requests
 import getpass
 import re
@@ -251,10 +251,7 @@ def start_notifier():
 
             cursor.execute(f'UPDATE Users SET lastUpdated = NOW() WHERE id={__id};')
             
-            fern = Fernet(os.getenv('DB_ENCRYPTION_KEY').encode('utf-8'))
-            decrypted_password = fern.decrypt(
-                encrypted_password.encode('utf-8')
-            ).decode()
+            decrypted_password = decrypt(encrypted_password, 'test_keys/private.pem')
 
             api = CUNYFirstAPI(username, decrypted_password, school.upper())
             api.login()

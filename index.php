@@ -10,7 +10,7 @@ function display()
     global $arr, $status, $title, $message;
     $cmd = '';
 
-    $cmd = escapeshellcmd('python3 src/core/initializegn.py --username=' . $_POST["username"] . ' --password=' . $_POST["password"] . ' --school=' . $_POST["school"] . ' --phone=' . $_POST["phone"]);
+    $cmd = 'python3 src/core/initializegn.py --username=' . escapeshellcmd($_POST["username"]) . ' --password=' . escapeshellcmd($_POST["password"]) . ' --school=' . escapeshellcmd($_POST["school"]) . ' --phone=' . escapeshellcmd($_POST["phone"]));
 
     $message = exec($cmd, $arr);
 
@@ -61,15 +61,6 @@ if (isset($_POST["submit"])) {
 <html>
 
 <head>
-    <?php
-    if (gethostname() == "venus" || gethostname() == "mars") {
-        require_once 'vendor/autoload.php';
-        $dotenv = Dotenv\Dotenv::create(__DIR__);
-        $dotenv->load();
-        $mars_user = getenv('MARS_USERNAME');
-        echo '<base href="/~' . $mars_user . '/grade-notifier/Grade-Notifier/">';
-    }
-    ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CUNY Grade Notifier</title>
@@ -127,14 +118,14 @@ if (isset($_POST["submit"])) {
                     function encryptPassword() {
                         let rsa = forge.pki.rsa;
                         let publicKeyEncoded = '-----BEGIN PUBLIC KEY-----\
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1qQpNjXpsJ/BFhqn7HPG\
-upVFCpNYU6nrT1F5fFg3B4lt/oTO3blsl1SQpK2UXwq1Zd8xF2dG6+1OKuOLrDsi\
-Gnd7GcRJy/iXgoTIPnluRLa4FfuzDafZxRGgzZDsHhYSItx2q7NdjCtqADcNs5Pl\
-4JdIYRT2t+lZ6W4HLfjKYVzRqVGLGP/BQItcR6yVP1Pmt9CEEBHQJwuVrP2SYBxk\
-GxrxrYUcAha/n8mKewUIHzJtJmFLli2FlOsIUtgT9H2Qc3ctUExqs6f2FdVuByVf\
-P17+bwRAn+7lx94I7FDDbNuia0tHK8eP0K+cRzvtoFydS6tzvcV0+WlzzP3XJe7j\
-xQIDAQAB\
------END PUBLIC KEY-----';
+                        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzokZSSqC0pjo2IVLqqfa\
+                        wjJs9XRtuEK4g4ac6shZMhgGRn/NG3EWeTki8csiTW8+k2hKdffto8D37sDLPDJv\
+                        CZ60YhYp3X8pqkafzmBdC/K4uqgtHUbRKknBULSibtAwnoJyXfEpkF6U1eqG0NTT\
+                        d9HNgpk7/JsKuGsKRsWPAYmYr9022rFwtcFkh+QmiLPoy228HrgS3kMYcumTIXDb\
+                        qWFgnLmDDGhJsoMACLbyKAH1tJLXywxmi8Ez5sNBFE6+KKwAgXMkWqzRZdQOMdTf\
+                        PyzPOctAVGW94TV17iwA1vXvaY0/SGQfP3xgr0zgNrplaoDN4SN7PVF5IX+wpzn/\
+                        JwIDAQAB\
+                        -----END PUBLIC KEY-----';
                         let publicKey = forge.pki.publicKeyFromPem(publicKeyEncoded);
                         let ciphertext = publicKey.encrypt(document.userform.password.value, 'RSA-OAEP', {
                             md: forge.md.sha256.create(),
@@ -143,8 +134,6 @@ xQIDAQAB\
                         document.userform.password.value = forge.util.encode64(ciphertext)
                     }
                 </script>
-
-                <button onClick="encryptPassword()">Click ME</button>
 
                 <div class="callout__divider"></div>
                 <form name="userform" action=<?php echo $_SERVER['PHP_SELF']; ?> method="POST" onSubmit="encryptPassword()">
@@ -223,6 +212,7 @@ xQIDAQAB\
             <div class="credits">
                 <h3 class="credit">Made with ❤️ by Ehud Adler</h3>
                 <h4 class="credit">Big thanks to @ericshermancs</h4>
+                <h4 class="credit">Also thank you to our server guys @sommerbenjamin and @michaelkolber</h4>
                 <h4 class="credit">Please see our <a href="https://github.com/Grade-Notifier/GN-Core/blob/master/CONTRIBUTORS.md" title="Contributors">full list of contributors</a>.</h4>
             </div>
         </div>
