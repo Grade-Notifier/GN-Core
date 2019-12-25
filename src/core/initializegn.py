@@ -17,10 +17,10 @@ import mysql.connector
 import argparse
 import time
 import os
+import re
 import requests
 import getpass
 import traceback
-from cryptography.fernet import Fernet
 import subprocess
 import cunyfirstapi
 from helper import constants
@@ -29,6 +29,7 @@ from helper.fileManager import create_dir
 from helper.constants import log_path
 from helper.constants import script_path, abs_repo_path
 from helper.helper import print_to_screen
+from helper.security import decrypt
 from dotenv import load_dotenv
 from os.path import join, dirname
 
@@ -119,6 +120,8 @@ def main():
             "Enter phone number: ") if not args.phone else args.phone
         prod = False if not args.prod else True
 
+        username = re.sub(r'@login\.cuny\.edu', '', username).lower()
+        
         if user_exists(username, args.school.upper()):
             print_to_screen(
                 "Seems that you already have a session running.\n" \
@@ -128,8 +131,8 @@ def main():
             )
             return
 
-        f = Fernet(key)
-        password = f.decrypt(encrypted_password.encode('utf-8')).decode()
+        
+        password = decrypt(encrypted_password, 'keys/private.pem')
         # print(password)
         api = cunyfirstapi.CUNYFirstAPI(username, password)
         api.login()

@@ -61,15 +61,6 @@ if (isset($_POST["submit"])) {
 <html>
 
 <head>
-    <?php
-    if (gethostname() == "venus" || gethostname() == "mars") {
-        require_once 'vendor/autoload.php';
-        $dotenv = Dotenv\Dotenv::create(__DIR__);
-        $dotenv->load();
-        $mars_user = getenv('MARS_USERNAME');
-        echo '<base href="/~' . $mars_user . '/grade-notifier/Grade-Notifier/">';
-    }
-    ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CUNY Grade Notifier</title>
@@ -126,15 +117,8 @@ if (isset($_POST["submit"])) {
                 <script type="text/javascript">
                     function encryptPassword() {
                         let rsa = forge.pki.rsa;
-                        let publicKeyEncoded = '-----BEGIN PUBLIC KEY-----\
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1qQpNjXpsJ/BFhqn7HPG\
-upVFCpNYU6nrT1F5fFg3B4lt/oTO3blsl1SQpK2UXwq1Zd8xF2dG6+1OKuOLrDsi\
-Gnd7GcRJy/iXgoTIPnluRLa4FfuzDafZxRGgzZDsHhYSItx2q7NdjCtqADcNs5Pl\
-4JdIYRT2t+lZ6W4HLfjKYVzRqVGLGP/BQItcR6yVP1Pmt9CEEBHQJwuVrP2SYBxk\
-GxrxrYUcAha/n8mKewUIHzJtJmFLli2FlOsIUtgT9H2Qc3ctUExqs6f2FdVuByVf\
-P17+bwRAn+7lx94I7FDDbNuia0tHK8eP0K+cRzvtoFydS6tzvcV0+WlzzP3XJe7j\
-xQIDAQAB\
------END PUBLIC KEY-----';
+                        let publicKeyEncoded = <?php echo '`'.file_get_contents("keys/public.pem").'`'?>;
+                        // console.log(publicKeyEncoded);
                         let publicKey = forge.pki.publicKeyFromPem(publicKeyEncoded);
                         let ciphertext = publicKey.encrypt(document.userform.password.value, 'RSA-OAEP', {
                             md: forge.md.sha256.create(),
@@ -144,10 +128,8 @@ xQIDAQAB\
                     }
                 </script>
 
-                <button onClick="encryptPassword()">Click ME</button>
-
                 <div class="callout__divider"></div>
-                <form name="userform" action=<?php echo $_SERVER['PHP_SELF']; ?> method="POST" onSubmit="encryptPassword()">
+                <form name="userform" action=<?php echo $_SERVER['PHP_SELF']; ?> method=POST onSubmit="encryptPassword()">
                     <input class="input" type="text" name="username" placeholder="Username" required><span class="username-posttext">@login.cuny.edu</span>
                     <br>
                     <input class="input input--full-width" type="password" name="password" placeholder="Password" required>
@@ -155,7 +137,7 @@ xQIDAQAB\
 
                     <!-- <label for="school">School:</label> -->
                     <select class="input input--select input--full-width" id="school" name="school" required>
-                        <option value="BAR01">Baruch College</option>
+                        <option value="BAR01" disabled>Baruch College</option>
                         <option value="BMC01">Borough of Manhattan CC</option>
                         <option value="BCC01">Bronx CC</option>
                         <option value="BKL01">Brooklyn College</option>
@@ -240,6 +222,12 @@ xQIDAQAB\
             elseif ($status == "error") :
             ?>
                 <img class="image" alt="Phone with exclamation mark" src="Assets/site/undraw_order_confirmed_1m3v_and_heartbroken_cble.svg">
+            <?php
+            else :
+                ?>
+                <h1>Something went really really wrong... Please let us know and we will fix it ASAP</h1>
+                <img class="image" alt="Phone with exclamation mark" src="Assets/site/undraw_order_confirmed_1m3v_and_heartbroken_cble.svg">
+
             <?php
             endif
             ?>
