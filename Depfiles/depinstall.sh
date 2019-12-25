@@ -2,7 +2,8 @@
 
 # Python
 while read p; do
-pip3 install $p --user
+pip3 install $p;
+echo '\n';
 done < ./Depfiles/dependencies.pip
 
 # PHP
