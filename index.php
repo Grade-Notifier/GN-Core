@@ -11,7 +11,7 @@ function display()
     global $arr, $status, $title, $message;
     $cmd = '';
 
-    $cmd = 'python3.7 src/core/initializegn.py --username=' . escapeshellcmd($_POST["username"]) . ' --password=' . escapeshellcmd($_POST["password"]) . ' --school=' . escapeshellcmd($_POST["school"]) . ' --phone=' . escapeshellcmd($_POST["phone"]);
+    $cmd = 'python3 src/core/initializegn.py --username=' . escapeshellcmd($_POST["username"]) . ' --password=' . escapeshellcmd($_POST["password"]) . ' --school=' . escapeshellcmd($_POST["school"]) . ' --phone=' . escapeshellcmd($_POST["phone"]);
 
     $message = exec($cmd, $arr);
 
