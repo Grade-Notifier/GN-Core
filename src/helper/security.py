@@ -1,20 +1,18 @@
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.Signature import PKCS1_PSS
-from Crypto.Hash import SHA
-from Crypto import Random
 import Crypto
 import base64
 KEY_SIZE = 2048
 
 def gen_keys():
     key = RSA.generate(KEY_SIZE)
-    private_key = key.export_key()
+    private_key = key.export_key("PEM")
     file_out = open("keys/private.pem", "wb")
     file_out.write(private_key)
     file_out.close()
     
-    public_key = key.publickey().export_key()
+    public_key = key.publickey().export_key("PEM")
     file_out = open("keys/public.pem", "wb")
     file_out.write(public_key)
     file_out.close()
@@ -26,6 +24,7 @@ def encrypt(message, path='keys/public.pem'):
     ciphertext = cipher.encrypt(message)
     return ciphertext
 
+
 def decrypt(ciphertext_base64, path='keys/private.pem'):
     key = open(path).read()
     key = RSA.importKey(key)
@@ -33,7 +32,6 @@ def decrypt(ciphertext_base64, path='keys/private.pem'):
     ciphertext = base64.b64decode(ciphertext_base64)
     message = cipher.decrypt(ciphertext)
     return message
-
 
 if __name__ == '__main__':
     gen_keys()

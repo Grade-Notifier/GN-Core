@@ -1,3 +1,4 @@
-<Files ".env">  
-  Require all denied
+<Files .env>
+    Order allow,deny
+    Deny from all
 </Files>
