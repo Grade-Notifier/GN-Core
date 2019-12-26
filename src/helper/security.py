@@ -5,18 +5,18 @@ import Crypto
 import base64
 KEY_SIZE = 2048
 
-def gen_keys():
+def gen_keys(path='../../private/keys'):
     key = RSA.generate(KEY_SIZE)
     private_key = key.export_key("PEM")
-    file_out = open("keys/private.pem", "wb")
+    file_out = open(f"{path}/private.pem", "wb")
     file_out.write(private_key)
     file_out.close()
     
     public_key = key.publickey().export_key("PEM")
-    file_out = open("keys/public.pem", "wb")
+    file_out = open(f"{path}/public.pem", "wb")
     file_out.write(public_key)
     file_out.close()
-    print("Keys have been written to keys/")
+    print(f"Keys have been written to {path}")
 
 def encrypt(message, path='keys/public.pem'):
     key = RSA.importKey(open(path).read())
