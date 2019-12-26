@@ -18,7 +18,7 @@ def gen_keys():
     file_out = open("keys/public.pem", "wb")
     file_out.write(public_key)
     file_out.close()
-    print("WARNING:: Don't forget to update the index.php")
+    print("Keys have been written to keys/")
 
 def encrypt(message, path='keys/public.pem'):
     key = RSA.importKey(open(path).read())
@@ -33,3 +33,7 @@ def decrypt(ciphertext_base64, path='keys/private.pem'):
     ciphertext = base64.b64decode(ciphertext_base64)
     message = cipher.decrypt(ciphertext)
     return message
+
+
+if __name__ == '__main__':
+    gen_keys()
