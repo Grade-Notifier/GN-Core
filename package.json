@@ -28,5 +28,6 @@
   "homepage": "https://github.com/Grade-Notifier/GN-Core#readme",
   "dependencies": {
     "jsrsasign": "^8.0.12"
-  }
+  },
+  "browserslist": ["last 2 versions"]
 }

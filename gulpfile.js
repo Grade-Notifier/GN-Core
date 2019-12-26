@@ -18,9 +18,7 @@ gulp.task('serve', function() {
 
 gulp.task('css', function () {
     var plugins = [
-        autoprefixer({
-            browsers: ['last 2 versions']
-        })
+        autoprefixer()
     ];
 
     return gulp
