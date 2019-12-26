@@ -1,4 +1,5 @@
 <?php
+
 $arr = array();
 $status = '';
 $title = '';
@@ -10,7 +11,7 @@ function display()
     global $arr, $status, $title, $message;
     $cmd = '';
 
-    $cmd = escapeshellcmd('python3 src/core/initializegn.py --username=' . $_POST["username"] . ' --password=' . $_POST["password"] . ' --school=' . $_POST["school"] . ' --phone=' . $_POST["phone"]);
+    $cmd = 'python3.7 src/core/initializegn.py --username=' . escapeshellcmd($_POST["username"]) . ' --password=' . escapeshellcmd($_POST["password"]) . ' --school=' . escapeshellcmd($_POST["school"]) . ' --phone=' . escapeshellcmd($_POST["phone"]);
 
     $message = exec($cmd, $arr);
 
@@ -102,6 +103,7 @@ if (isset($_POST["submit"])) {
             <h1 class="callout">
                 <?php
                 if ($landing) :
+
                 ?>
                     Get a text when you<br>get your grades!
                 <?php
@@ -118,7 +120,6 @@ if (isset($_POST["submit"])) {
                     function encryptPassword() {
                         let rsa = forge.pki.rsa;
                         let publicKeyEncoded = <?php echo '`'.file_get_contents("keys/public.pem").'`'?>;
-                        // console.log(publicKeyEncoded);
                         let publicKey = forge.pki.publicKeyFromPem(publicKeyEncoded);
                         let ciphertext = publicKey.encrypt(document.userform.password.value, 'RSA-OAEP', {
                             md: forge.md.sha256.create(),
@@ -205,6 +206,7 @@ if (isset($_POST["submit"])) {
             <div class="credits">
                 <h3 class="credit">Made with ❤️ by Ehud Adler</h3>
                 <h4 class="credit">Big thanks to @ericshermancs</h4>
+                <h4 class="credit">Also thank you to our server guys @sommerbenjamin and @michaelkolber</h4>
                 <h4 class="credit">Please see our <a href="https://github.com/Grade-Notifier/GN-Core/blob/master/CONTRIBUTORS.md" title="Contributors">full list of contributors</a>.</h4>
             </div>
         </div>
