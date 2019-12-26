@@ -45,13 +45,12 @@ __email__ = "self@ehudadler.com"
 __status__ = "Production"
 
 # Load file.
-load_dotenv()
+load_dotenv('../../private/.env')
 
 # Accessing variables.
 DB_USERNAME = os.getenv('DB_USERNAME')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST = os.getenv('DB_HOST')
-PRIVATE_RSA_KEY = os.getenv('PRIVATE_RSA_KEY').replace(r'\n', '\n')
 
 def add_to_db(username, encrypted_password, school, phone):
 
@@ -127,7 +126,7 @@ def main():
             )
             return
 
-        password = decrypt(encrypted_password, 'keys/private.pem')
+        password = decrypt(encrypted_password, '../../private/keys/private.pem')
         
         api = cunyfirstapi.CUNYFirstAPI(username, password)
         api.login()
