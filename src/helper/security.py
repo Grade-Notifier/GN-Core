@@ -16,7 +16,7 @@ def gen_keys():
     file_out = open("keys/public.pem", "wb")
     file_out.write(public_key)
     file_out.close()
-    print("WARNING:: Don't forget to update the index.php")
+    print("Keys have been written to keys/")
 
 def encrypt(message, path='keys/public.pem'):
     key = RSA.importKey(open(path).read())
