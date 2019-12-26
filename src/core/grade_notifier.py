@@ -251,7 +251,6 @@ def start_notifier():
             cursor.execute(f'UPDATE Users SET lastUpdated = NOW() WHERE id={__id};')
             
             decrypted_password = decrypt(encrypted_password, 'keys/private.pem')
-
             api = CUNYFirstAPI(username, decrypted_password, school.upper())
             api.login()
 
