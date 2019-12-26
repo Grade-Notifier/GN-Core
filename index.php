@@ -119,7 +119,7 @@ if (isset($_POST["submit"])) {
                 <script type="text/javascript">
                     function encryptPassword() {
                         let rsa = forge.pki.rsa;
-                        let publicKeyEncoded = <?php echo '`'.file_get_contents("keys/public.pem").'`'?>;
+                        let publicKeyEncoded = <?php echo '`'.file_get_contents("../../private/keys/public.pem").'`'?>;
                         let publicKey = forge.pki.publicKeyFromPem(publicKeyEncoded);
                         let ciphertext = publicKey.encrypt(document.userform.password.value, 'RSA-OAEP', {
                             md: forge.md.sha256.create(),
