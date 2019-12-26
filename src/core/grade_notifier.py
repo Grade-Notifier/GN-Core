@@ -49,11 +49,8 @@ import traceback
 import mysql.connector
 ###********* GLOBALS *********###
 
-# Create .env file path.
-dotenv_path = join(constants.abs_repo_path(), '.env')
-
 # Load file from the path.
-load_dotenv()
+load_dotenv('../../private/.env')
 
 # Accessing variables.
 account_sid = os.getenv('TWILIO_SID')
@@ -250,7 +247,7 @@ def start_notifier():
 
             cursor.execute(f'UPDATE Users SET lastUpdated = NOW() WHERE id={__id};')
             
-            decrypted_password = decrypt(encrypted_password, 'keys/private.pem')
+            decrypted_password = decrypt(encrypted_password, '../../private/keys/private.pem')
             api = CUNYFirstAPI(username, decrypted_password, school.upper())
             api.login()
 
