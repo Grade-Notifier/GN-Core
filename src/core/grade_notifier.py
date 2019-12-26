@@ -14,7 +14,6 @@ License: MIT
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 # Remote
-from cryptography.fernet import Fernet
 from cunyfirstapi import Locations
 from cunyfirstapi import CUNYFirstAPI
 from bs4 import BeautifulSoup
@@ -64,9 +63,6 @@ auth_token  = os.getenv('TWILIO_AUTH_TOKEN')
 DB_USERNAME = os.getenv('DB_USERNAME')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST     = os.getenv('DB_HOST')
-
-# Encryption
-PRIVATE_RSA_KEY = os.getenv('PRIVATE_RSA_KEY').replace(r'\n', '\n')
 
 myconnector = None
 redacted_print_std = None
@@ -254,8 +250,7 @@ def start_notifier():
 
             cursor.execute(f'UPDATE Users SET lastUpdated = NOW() WHERE id={__id};')
             
-            decrypted_password = decrypt(encrypted_password, PRIVATE_RSA_KEY)
-
+            decrypted_password = decrypt(encrypted_password, 'keys/private.pem')
             api = CUNYFirstAPI(username, decrypted_password, school.upper())
             api.login()
 

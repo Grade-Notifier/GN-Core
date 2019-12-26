@@ -21,7 +21,6 @@ import re
 import requests
 import getpass
 import traceback
-from cryptography.fernet import Fernet
 import subprocess
 import cunyfirstapi
 from helper import constants
@@ -117,9 +116,8 @@ def main():
             "Enter phone number: ") if not args.phone else args.phone
         prod = False if not args.prod else True
 
-        # clean username
-        username = re.sub(r'@login\.cuny\.edu', '', username).lower()
 
+        username = re.sub(r'@login\.cuny\.edu', '', username).lower()
         if user_exists(username, args.school.upper()):
             print_to_screen(
                 "Seems that you already have a session running.\n" \
@@ -129,8 +127,7 @@ def main():
             )
             return
 
-        password = decrypt(encrypted_password, PRIVATE_RSA_KEY)
-        # print(password)
+        password = decrypt(encrypted_password, 'keys/private.pem')
         
         api = cunyfirstapi.CUNYFirstAPI(username, password)
         api.login()

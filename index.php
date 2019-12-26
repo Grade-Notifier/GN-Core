@@ -119,17 +119,7 @@ if (isset($_POST["submit"])) {
                 <script type="text/javascript">
                     function encryptPassword() {
                         let rsa = forge.pki.rsa;
-                        let publicKeyEncoded = '-----BEGIN PUBLIC KEY-----\
-                        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzokZSSqC0pjo2IVLqqfa\
-                        wjJs9XRtuEK4g4ac6shZMhgGRn/NG3EWeTki8csiTW8+k2hKdffto8D37sDLPDJv\
-                        CZ60YhYp3X8pqkafzmBdC/K4uqgtHUbRKknBULSibtAwnoJyXfEpkF6U1eqG0NTT\
-                        d9HNgpk7/JsKuGsKRsWPAYmYr9022rFwtcFkh+QmiLPoy228HrgS3kMYcumTIXDb\
-                        qWFgnLmDDGhJsoMACLbyKAH1tJLXywxmi8Ez5sNBFE6+KKwAgXMkWqzRZdQOMdTf\
-                        PyzPOctAVGW94TV17iwA1vXvaY0/SGQfP3xgr0zgNrplaoDN4SN7PVF5IX+wpzn/\
-                        JwIDAQAB\
-                        -----END PUBLIC KEY-----';
-                        console.log(publicKeyEncoded);
-
+                        let publicKeyEncoded = <?php echo '`'.file_get_contents("keys/public.pem").'`'?>;
                         let publicKey = forge.pki.publicKeyFromPem(publicKeyEncoded);
                         let ciphertext = publicKey.encrypt(document.userform.password.value, 'RSA-OAEP', {
                             md: forge.md.sha256.create(),
@@ -140,7 +130,7 @@ if (isset($_POST["submit"])) {
                 </script>
 
                 <div class="callout__divider"></div>
-                <form name="userform" action=<?php echo $_SERVER['PHP_SELF']; ?> method="POST" onSubmit="encryptPassword()">
+                <form name="userform" action=<?php echo $_SERVER['PHP_SELF']; ?> method=POST onSubmit="encryptPassword()">
                     <input class="input" type="text" name="username" placeholder="Username" required><span class="username-posttext">@login.cuny.edu</span>
                     <br>
                     <input class="input input--full-width" type="password" name="password" placeholder="Password" required>
@@ -148,7 +138,7 @@ if (isset($_POST["submit"])) {
 
                     <!-- <label for="school">School:</label> -->
                     <select class="input input--select input--full-width" id="school" name="school" required>
-                        <option value="BAR01">Baruch College</option>
+                        <option value="BAR01" disabled>Baruch College</option>
                         <option value="BMC01">Borough of Manhattan CC</option>
                         <option value="BCC01">Bronx CC</option>
                         <option value="BKL01">Brooklyn College</option>
@@ -234,6 +224,12 @@ if (isset($_POST["submit"])) {
             elseif ($status == "error") :
             ?>
                 <img class="image" alt="Phone with exclamation mark" src="Assets/site/undraw_order_confirmed_1m3v_and_heartbroken_cble.svg">
+            <?php
+            else :
+                ?>
+                <h1>Something went really really wrong... Please let us know and we will fix it ASAP</h1>
+                <img class="image" alt="Phone with exclamation mark" src="Assets/site/undraw_order_confirmed_1m3v_and_heartbroken_cble.svg">
+
             <?php
             endif
             ?>
