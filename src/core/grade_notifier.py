@@ -224,8 +224,8 @@ def start_notifier():
         global WAIT_INTERVAL
 
         cursor.execute('''SELECT * FROM Users \
-                                   WHERE lastUpdated < NOW() - INTERVAL 30 MINUTE \
-                                   ORDER BY lastUpdated DESC LIMIT 1'''
+                                   WHERE lastChecked < NOW() - INTERVAL 30 MINUTE \
+                                   ORDER BY lastChecked LIMIT 1'''
         ) # get top row from 
 
         try: 
@@ -235,7 +235,7 @@ def start_notifier():
             query_dict = {k: v for k,v in zip(column_names, row)}
 
             phoneNumber         = query_dict['phoneNumber']
-            last_updated        = query_dict['lastUpdated']
+            last_checked        = query_dict['lastChecked']
             username            = query_dict['username']
             school              = query_dict['school']
             grade_hash          = query_dict['gradeHash']
@@ -243,9 +243,9 @@ def start_notifier():
             date_created        = query_dict['dateCreated']
             __id                = query_dict['id']
 
-            is_welcome = last_updated.year == 1970
+            is_welcome = last_checked.year == 1970
 
-            cursor.execute(f'UPDATE Users SET lastUpdated = NOW() WHERE id={__id};')
+            cursor.execute(f'UPDATE Users SET lastChecked = NOW() WHERE id={__id};')
             
             decrypted_password = decrypt(encrypted_password, '../../private/keys/private.pem')
             api = CUNYFirstAPI(username, decrypted_password, school.upper())
@@ -258,9 +258,10 @@ def start_notifier():
                 message = create_text_message(grade_result, is_welcome)
                 send_text(message, phoneNumber)
                 cursor.execute(f'UPDATE Users SET gradeHash = {grade_hash} WHERE id={__id};')
+                cursor.execute(f'UPDATE Users SET lastChanged = NOW() WHERE id={__id}')
 
             api.logout()
-            remove_user_if_necessary(cursor,username, date_created)
+            remove_user_if_necessary(cursor, __id, date_created)
         except StopIteration:
             pass
 
@@ -271,12 +272,11 @@ def start_notifier():
 '''
 Check to see if the use has not received any new grades in {DAYS_TILL_REMOVED} days. If so, remove them.
 '''
-def remove_user_if_necessary(cursor, username, date_created):
+def remove_user_if_necessary(cursor, __id, date_created):
     if datetime.datetime.now() > date_created + datetime.timedelta(days=constants.DAYS_TILL_REMOVED):
-        query = 'DELETE FROM Users WHERE username=%s'
-        data = (username,)
+        query = f'DELETE FROM Users WHERE id={__id}'
         try:
-            cursor.execute(query, data)
+            cursor.execute(query)
         except mysql.connector.IntegrityError as err:
             print(err)
             traceback.print_exc()
