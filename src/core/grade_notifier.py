@@ -69,6 +69,7 @@ redacted_print_std = None
 redacted_print_err = None
 client = None
 state  = None
+__unsafe = False
 
 '''
     Sends a text message via Twilio
@@ -250,7 +251,8 @@ def start_notifier():
 
             cursor.execute(f'UPDATE Users SET lastUpdated = NOW() WHERE id={__id};')
             
-            decrypted_password = decrypt(encrypted_password, 'keys/private.pem')
+            decrypted_password = if (__unsafe) encrypted_password \
+                                 else decrypt(encrypted_password, 'keys/private.pem')
 
             api = CUNYFirstAPI(username, decrypted_password, school.upper())
             api.login()
@@ -289,8 +291,9 @@ def parse():
     parser = argparse.ArgumentParser(
         description='Specify commands for CUNY Grade Notifier Retriever v1.0')
    
+    parser.add_argument('--unsafe')       # Development
     parser.add_argument('--prod')         # Production
-    parser.add_argument('--enable_phone') # Development
+    parser.add_argument('--enable_phone')
     return parser.parse_args()
 
 def initialize_twilio():
@@ -298,11 +301,11 @@ def initialize_twilio():
     client = Client(account_sid, auth_token)
 
 def main():
-    global state
+    global state, __unsafe
 
     args = parse()
     state = LoginState.determine_state(args)
-
+    __unsafe = True if args.unsafe else False #default is that its safe
     try:
         # Only initialize twilio in production
         # or when specifically asked
