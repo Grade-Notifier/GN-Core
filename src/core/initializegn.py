@@ -44,18 +44,13 @@ __maintainer__ = "Ehud Adler & Akiva Sherman"
 __email__ = "self@ehudadler.com"
 __status__ = "Production"
 
-# Create .env file path.
-dotenv_path = join(constants.abs_repo_path(), '.env')
-
-# Load file from the path.
-load_dotenv()
+# Load file.
+load_dotenv('../../private/.env')
 
 # Accessing variables.
 DB_USERNAME = os.getenv('DB_USERNAME')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST = os.getenv('DB_HOST')
-
-# key = os.getenv('DB_ENCRYPTION_KEY').encode('utf-8')
 
 def add_to_db(username, encrypted_password, school, phone):
 
@@ -122,8 +117,8 @@ def main():
             "Enter phone number: ") if not args.phone else args.phone
         prod = False if not args.prod else True
 
+
         username = re.sub(r'@login\.cuny\.edu', '', username).lower()
-        
         if user_exists(username, args.school.upper()):
             print_to_screen(
                 "Seems that you already have a session running.\n" \
@@ -133,11 +128,10 @@ def main():
             )
             return
 
-        
+
         password = if (args.unsafe) encrypted_password \
-                   else decrypt(encrypted_password, 'keys/private.pem')
+                   else decrypt(encrypted_password, '../../private/keys/private.pem')
                    
-        # print(password)
         api = cunyfirstapi.CUNYFirstAPI(username, password)
         api.login()
         if api.is_logged_in():

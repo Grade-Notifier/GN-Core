@@ -2,7 +2,7 @@
 
 # Python
 while read p; do
-pip3 install $p;
+pip3 install $p -U;
 echo '\n';
 done < ./Depfiles/dependencies.pip
 
