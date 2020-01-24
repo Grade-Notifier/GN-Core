@@ -25,7 +25,7 @@ from dotenv import load_dotenv
 from login_flow.loginState import LoginState
 from helper.message import Message
 from helper.gpa import GPA
-from helper.constants import instance_path, abs_repo_path
+from helper.constants import instance_path, abs_repo_path, SESSION_ENDED_TEXT
 from helper import constants
 from helper import fileManager
 from helper import helper
@@ -260,7 +260,10 @@ def start_notifier():
                 cursor.execute(f'UPDATE Users SET gradeHash = {grade_hash} WHERE id={__id};')
 
             api.logout()
-            remove_user_if_necessary(cursor,username, date_created)
+            removed = remove_user_if_necessary(cursor,username, date_created)
+            if removed:
+                send_text(SESSION_ENDED_TEXT, phoneNumber)
+
         except StopIteration:
             pass
 
@@ -277,9 +280,12 @@ def remove_user_if_necessary(cursor, username, date_created):
         data = (username,)
         try:
             cursor.execute(query, data)
+            return True
         except mysql.connector.IntegrityError as err:
             print(err)
             traceback.print_exc()
+
+    return False
 
 def parse():
     parser = argparse.ArgumentParser(
