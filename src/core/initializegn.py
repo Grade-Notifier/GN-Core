@@ -101,6 +101,8 @@ def parse():
 
     # Development
     parser.add_argument('--enable_phone')
+    parser.add_argument('--unsafe')       # Development
+
     return parser.parse_args()
 
 
@@ -126,8 +128,10 @@ def main():
             )
             return
 
-        password = decrypt(encrypted_password, '../../private/keys/private.pem')
-        
+
+        password = if (args.unsafe) encrypted_password \
+                   else decrypt(encrypted_password, '../../private/keys/private.pem')
+                   
         api = cunyfirstapi.CUNYFirstAPI(username, password)
         api.login()
         if api.is_logged_in():
