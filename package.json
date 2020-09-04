@@ -10,7 +10,7 @@
     "gulp-postcss": "^8.0.0",
     "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.4",
-    "node-sass": "^4.11.0",
+    "node-sass": "^4.13.1",
     "postcss-cli": "^6.1.1"
   },
   "scripts": {
