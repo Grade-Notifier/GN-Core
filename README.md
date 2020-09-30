@@ -93,4 +93,5 @@ A: Wait a few more minutes sometimes the system are overloaded and the message t
 
 
 Made with ❤️ by Ehud Adler & Eric Akiva Sherman.
+Thank You.
 
